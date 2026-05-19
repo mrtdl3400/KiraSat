@@ -1,0 +1,24 @@
+﻿@model KiraSepet.DataAccessLayer.AppUser
+
+<h2>Kayıt Ol</h2>
+
+<form method="post">
+    <div class="mb-3">
+        <label>Ad Soyad</label>
+        <input type="text" asp-for="NameSurname" class="form-control" />
+    </div>
+
+     
+
+    <div class="mb-3">
+        <label>Email</label>
+        <input type="email" asp-for="Email" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Şifre</label>
+        <input type="password" asp-for="Password" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Kayıt Ol</button>
+</form>

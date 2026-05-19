@@ -1,0 +1,83 @@
+﻿@model List<KiraSepet.WebUI.Models.CartItem>
+
+<div class="container mt-5">
+
+    <h2 class="mb-4">Sepetim</h2>
+
+    @if (TempData["OrderMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["OrderMessage"]
+        </div>
+    }
+
+    @if (TempData["CartMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["CartMessage"]
+
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <table class="table table-hover table-striped align-middle shadow-sm">
+
+        <tr>
+            <th>Ürün</th>
+            <th>Fiyat</th>
+            <th>Adet</th>
+            <th>Toplam</th>
+            <th>Adet</th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ProductName</td>
+                <td>@item.SalePrice ₺</td>
+                <td>@item.Quantity</td>
+                <td>@(item.SalePrice * item.Quantity) ₺</td>
+
+                <td>
+
+                    <a href="/Cart/IncreaseQuantity/@item.ProductId" class="btn btn-outline-dark btn-sm">+</a>
+                    <a href="/Cart/DecreaseQuantity/@item.ProductId" class="btn btn-outline-dark btn-sm">-</a>
+                    <a href="/Cart/RemoveFromCart/@item.ProductId" class="btn btn-outline-danger btn-sm">Sil</a> 
+                   
+                  
+                </td>
+
+            </tr>
+        }
+
+</table>
+    <div class="mt-4 text-end">
+
+        <h4>
+            Genel Toplam:
+
+            <span class="text-success">
+                @Model.Sum(x => x.SalePrice * x.Quantity) ₺
+            </span>
+        </h4>
+
+        @if (Model.Any())
+        {
+            <a href="/Payment/Index" class="btn btn-success mt-2">
+                Ödemeye Geç
+            </a>
+        }
+        else
+        {
+            <div class="alert alert-info mt-3">
+                Sepetiniz şu anda boş.
+            </div>
+        }
+        
+
+    </div>
+
+
+
+</div>
+    

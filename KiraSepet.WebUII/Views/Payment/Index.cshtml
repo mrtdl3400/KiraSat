@@ -1,0 +1,52 @@
+﻿@model List<KiraSepet.WebUI.Models.CartItem>
+
+<div class="container mt-5">
+
+    <h2 class="mb-4">Ödeme Sayfası 💳</h2>
+
+    <div class="card shadow p-4">
+
+        <div class="mb-3">
+            <label>Kart Üzerindeki İsim</label>
+            <input type="text" class="form-control" placeholder="Mert Dalkıran">
+        </div>
+
+        <div class="mb-3">
+            <label>Kart Numarası</label>
+            <input type="text" class="form-control" placeholder="0000 0000 0000 0000">
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+                <label>Son Kullanma Tarihi</label>
+                <input type="text" class="form-control" placeholder="12/30">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label>CVV</label>
+                <input type="text" class="form-control" placeholder="123">
+            </div>
+
+        </div>
+
+        <hr />
+
+        <h4 class="text-end">
+            Toplam:
+            <span class="text-success">
+                @Model.Sum(x => x.SalePrice * x.Quantity) ₺
+            </span>
+        </h4>
+
+        <div class="text-end mt-3">
+
+            <a href="/Payment/CompletePayment" class="btn btn-success btn-lg">
+                Ödemeyi Tamamla
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

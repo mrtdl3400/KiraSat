@@ -1,0 +1,188 @@
+﻿<div class="login-container">
+
+    <div class="left-panel">
+        <div class="logo-box">KIRASAT</div>
+
+        <h1>
+            Al, Sat, Kirala.<br />
+            <span>Güvenle Kazan.</span>
+        </h1>
+
+        <p>
+            Binlerce ürün, binlerce fırsat.<br />
+            İhtiyacın olan her şey KiraSat'ta.
+        </p>
+
+        <div class="feature-box">
+            <h3>🔒 Güvenli Alışveriş</h3>
+            <p>Güvenli ödeme ve korumalı alışveriş.</p>
+        </div>
+
+        <div class="feature-box">
+            <h3>💰 En Uygun Fiyatlar</h3>
+            <p>Kiralık ve satılık ürünlerde avantajlı fiyatlar.</p>
+        </div>
+
+        <div class="feature-box">
+            <h3>⚡ Hızlı ve Kolay</h3>
+            <p>Kolay kullanım, hızlı işlem.</p>
+        </div>
+    </div>
+
+    <div class="right-panel">
+
+        <div class="login-card">
+
+            <h2>Hoş Geldin!</h2>
+            <p>Devam etmek için hesabına giriş yap.</p>
+
+            <form method="post">
+
+                <label>E-posta Adresiniz</label>
+                <input type="email" name="Email" class="form-control" placeholder="E-posta adresiniz" />
+
+                <label>Şifreniz</label>
+                <input type="password" name="Password" class="form-control" placeholder="Şifreniz" />
+
+                <button type="submit" class="btn-login">
+                    Giriş Yap
+                </button>
+
+                <a href="/Register/Index" class="btn-register">
+                    Hesabın yok mu? Kayıt Ol
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+
+    body {
+        background: #f4f5fb;
+    }
+
+    .login-container {
+        display: flex;
+        min-height: 90vh;
+        padding: 40px;
+        gap: 30px;
+    }
+
+    .left-panel {
+        flex: 1;
+        background: linear-gradient(135deg,#070b2d,#11184f);
+        border-radius: 30px;
+        padding: 60px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .logo-box {
+        display: inline-block;
+        padding: 10px 18px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 30px;
+        margin-bottom: 40px;
+        font-weight: bold;
+    }
+
+    .left-panel h1 {
+        font-size: 65px;
+        font-weight: 900;
+        line-height: 1.1;
+    }
+
+        .left-panel h1 span {
+            color: #8b5cf6;
+        }
+
+    .left-panel p {
+        margin-top: 30px;
+        color: #d1d5db;
+        font-size: 22px;
+    }
+
+    .feature-box {
+        margin-top: 35px;
+    }
+
+        .feature-box h3 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .feature-box p {
+            margin: 0;
+            font-size: 18px;
+        }
+
+    .right-panel {
+        width: 520px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .login-card {
+        background: white;
+        width: 100%;
+        padding: 45px;
+        border-radius: 30px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    }
+
+        .login-card h2 {
+            font-size: 48px;
+            font-weight: 900;
+            color: #111827;
+            text-align: center;
+        }
+
+        .login-card p {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 35px;
+        }
+
+        .login-card label {
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: block;
+            margin-top: 18px;
+        }
+
+    .form-control {
+        height: 58px;
+        border-radius: 16px;
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+
+    .btn-login {
+        width: 100%;
+        border: none;
+        background: linear-gradient(135deg,#070b2d,#11184f);
+        color: white;
+        height: 58px;
+        border-radius: 16px;
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 25px;
+    }
+
+    .btn-register {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        text-decoration: none;
+        font-weight: bold;
+        color: #4f46e5;
+    }
+
+</style>

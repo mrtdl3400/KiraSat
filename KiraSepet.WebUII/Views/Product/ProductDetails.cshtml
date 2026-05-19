@@ -1,0 +1,259 @@
+﻿@model KiraSepet.EntityLayer.Product
+
+<div class="product-detail-page">
+    <div class="product-detail-card">
+
+        <div class="product-image-area">
+            <img src="@Model.ImageUrl" alt="@Model.ProductName" />
+        </div>
+
+        <div class="product-info-area">
+            <span class="category-badge">@Model.Category?.CategoryName</span>
+
+            <h1>@Model.ProductName</h1>
+
+            <p class="description">
+                @Model.Description
+            </p>
+
+            <div class="price-box">
+                <div>
+                    <small>Satış Fiyatı</small>
+                    <strong>@Model.SalePrice ₺</strong>
+                </div>
+
+                <div>
+                    <small>Günlük Kiralama</small>
+                    <strong>@Model.DailPrice ₺</strong>
+                </div>
+            </div>
+
+            <p><b>Stok:</b> @Model.StockCount adet</p>
+
+            <p>
+                <b>Kiralanabilir mi?</b>
+                @if (Model.IsRentable)
+                {
+                    <span class="rent-yes">Evet</span>
+                }
+                else
+                {
+                    <span class="rent-no">Hayır</span>
+                }
+            </p>
+
+            <div class="detail-buttons">
+                <a href="/Cart/AddToCart/@Model.Id" class="btn-buy">Kirala / Satın Al</a>
+                <a href="/Product/Index" class="btn-back">Listeye Dön</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="comment-area">
+    <h3>Yorum Yap</h3>
+
+    <form method="post" action="/Product/AddComment">
+        <input type="hidden" name="ProductId" value="@Model.Id" />
+
+        <input type="text" name="UserName" class="form-control" placeholder="Adınız" />
+
+        <label class="mt-3">Puanınız</label>
+        <select name="Rating" class="form-control mt-2">
+            <option value="5">⭐⭐⭐⭐⭐ - Çok İyi</option>
+            <option value="4">⭐⭐⭐⭐ - İyi</option>
+            <option value="3">⭐⭐⭐ - Orta</option>
+            <option value="2">⭐⭐ - Kötü</option>
+            <option value="1">⭐ - Çok Kötü</option>
+        </select>
+
+        <textarea name="CommentText"
+                  class="form-control mt-3"
+                  rows="5"
+                  placeholder="Yorumunuzu yazın..."></textarea>
+
+        <button type="submit" class="btn btn-dark mt-3">
+            Yorumu Gönder
+        </button>
+    </form>
+</div>
+
+
+
+<style>
+    .product-detail-page {
+        min-height: 80vh;
+        background: #f5f7fb;
+        padding: 50px;
+    }
+
+    .product-detail-card {
+        max-width: 1100px;
+        margin: auto;
+        background: white;
+        border-radius: 28px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        overflow: hidden;
+    }
+
+    .product-image-area {
+        background: #eef2ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+    }
+
+        .product-image-area img {
+            max-width: 100%;
+            max-height: 420px;
+            object-fit: contain;
+            border-radius: 20px;
+        }
+
+    .product-info-area {
+        padding: 50px;
+    }
+
+    .category-badge {
+        display: inline-block;
+        background: #111827;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 30px;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    .product-info-area h1 {
+        font-size: 42px;
+        font-weight: 900;
+        color: #111827;
+        margin-bottom: 20px;
+    }
+
+    .description {
+        color: #4b5563;
+        font-size: 17px;
+        line-height: 1.7;
+        margin-bottom: 30px;
+    }
+
+    .price-box {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+        .price-box div {
+            background: #f3f4f6;
+            padding: 18px;
+            border-radius: 18px;
+        }
+
+        .price-box small {
+            color: #6b7280;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .price-box strong {
+            font-size: 24px;
+            color: #111827;
+        }
+
+    .rent-yes {
+        background: #16a34a;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: bold;
+    }
+
+    .rent-no {
+        background: #dc2626;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: bold;
+    }
+
+    .detail-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .btn-buy,
+    .btn-back {
+        padding: 14px 22px;
+        border-radius: 14px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .btn-buy {
+        background: #111827;
+        color: white;
+    }
+
+    .btn-back {
+        background: #e5e7eb;
+        color: #111827;
+    }
+
+    comment-box {
+        background: #f3f4f6;
+        padding: 20px;
+        border-radius: 18px;
+        margin-top: 20px;
+    }
+
+    .comment-box h5 {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .comment-box small {
+        color: gray;
+    }
+
+    .comment-box p {
+        margin-top: 10px;
+    }
+</style>
+
+
+
+
+
+<hr />
+
+
+<hr />
+
+<h3>Kullanıcı Yorumları</h3>
+
+@foreach (var item in ViewBag.comments)
+{
+    <div class="comment-box">
+
+        <h5>@item.UserName</h5>
+
+        <small>@item.CreatedDate</small>
+
+        <p>@item.CommentText</p>
+
+    </div>
+
+        <p>
+            @for (int i = 1; i <= item.Rating; i++)
+            {
+                <span>⭐</span>
+            }
+        </p>
+}

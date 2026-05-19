@@ -1,0 +1,62 @@
+﻿@model KiraSepet.EntityLayer.Product
+
+<h2 class="mb-4">Ürün Güncelle</h2>
+
+<form method="post" enctype="multipart/form-data">
+
+    <label>Ürün Görseli</label>
+    <input type="file" name="imageFile" class="form-control" />
+    <br />
+
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="ImageUrl" />
+
+    <label>Ürün Adı</label>
+    <input type="text" asp-for="ProductName" class="form-control" />
+    <br />
+    <label>Marka</label>
+    <input type="text" asp-for="Brand" class="form-control" />
+    <br />
+
+    <label>Satış Fiyatı</label>
+    <input type="text" asp-for="SalePrice" class="form-control" />
+
+    <label>Ürün Açıklaması</label>
+    <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+
+    <br />
+   
+    
+    
+
+    <label>Günlük Kiralama Fiyatı</label>
+    <input type="text" asp-for="DailPrice" class="form-control" />
+    <div class="mb-3">
+        <label>Stok Adedi</label>
+        <input type="number" asp-for="StockCount" class="form-control" />
+    </div>
+    <br />
+
+    <label>Kategori ID</label>
+    <label>Kategori</label>
+    <select asp-for="CategoryId" class="form-control">
+
+        @foreach (var item in ViewBag.Categories)
+        {
+            <option value="@item.Id">@item.CategoryName</option>
+        }
+
+    </select>
+    <br />
+    <br />
+
+    <label>Kiralanabilir mi?</label>
+    <input type="checkbox" asp-for="IsRentable" />
+    <br /><br />
+
+    <button type="submit" class="btn btn-success">Güncelle</button>
+
+    
+
+</form>
+    

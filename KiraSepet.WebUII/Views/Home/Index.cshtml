@@ -1,0 +1,56 @@
+﻿<div class="container mt-4">
+
+    <div class="p-5 rounded-4 shadow-sm"
+         style="background: linear-gradient(135deg, #fff7ed, #ffffff);">
+
+        <div class="row align-items-center">
+
+            <div class="col-md-6">
+                <span class="badge bg-warning text-dark mb-3">KiraSat</span>
+
+                <h1 class="display-4 fw-bold">
+                    Satın alma, ihtiyacın kadar kirala.
+                </h1>
+
+                <p class="lead mt-3">
+                    Elektronikten bisiklete, oyun konsolundan mobilyaya kadar
+                    birçok ürünü kolayca kirala veya satın al.
+                </p>
+
+                <a href="/Product/Index" class="btn btn-warning btn-lg mt-3 px-4">
+                    Ürünlere Git
+                </a>
+
+                @if (Context.Session.GetString("UserRole") == "Admin")
+                {
+                    <a href="/Product/AddProduct" class="btn btn-outline-dark">Ürün Ekle</a>
+                }
+            </div>
+
+            <div class="col-md-6 text-center">
+                <img src="/images/kirasat-banner.png"
+                     style="width:100%; max-height:360px; object-fit:cover; border-radius:25px;" />
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row text-center mt-5">
+
+        <a href="/Product/Index?category=Elektronik" class="text-decoration-none text-dark">
+            💻 Elektronik
+        </a>
+
+        <a href="/Product/Index?category=Konsol">
+            🎮 Oyun & Konsol</a>
+
+        <a href="/Product/Index?category=Spor%20%26%20Outdoor">
+            🚴 Spor & Outdoor
+        </a>
+
+        <a href="/Product/Index?category=Mobilya">
+            🛋️ Mobilya</a>
+
+    </div>
+
+</div>

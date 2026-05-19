@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="KiraSepet.BusinessLayer/KiraSepet.BusinessLayer.csproj" />
+  <Project Path="KiraSepet.DataAccessLayer/KiraSepet.DataAccessLayer.csproj" />
+  <Project Path="KiraSepet.EntityLayer/KiraSepet.EntityLayer.csproj" />
+  <Project Path="KiraSepet.WebUII/KiraSepet.WebUII.csproj" />
+</Solution>

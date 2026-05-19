@@ -1,0 +1,155 @@
+﻿@{
+    var isAdmin = Context.Session.GetString("UserRole") == "Admin";
+}
+<div class="container mt-5">
+
+    <div class="row mb-4">
+
+        <div class="col-md-6">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+
+                <h2 class="fw-bold text-primary">
+                    Ürün Listesi
+                </h2>
+
+                @if (isAdmin)
+                {
+                    <a href="/Product/AddProduct/" class="btn btn-success">
+                        + Yeni Ürün Ekle
+                    </a>
+                }
+
+            </div>
+
+            <div class="text-center mb-4">
+                <h2 class="fw-bold display-4 text-dark">KiraSat</h2>
+                <p class="text-muted">Satın al, ihtiyacın kadar kirala.</p>
+            </div>
+
+        
+
+    </div>
+
+    <form method="get" class="mb-4">
+
+        <div class="input-group shadow-sm">
+
+            <input type="text"
+                   name="p"
+                   class="form-control"
+                   placeholder="Ürün ara..." />
+
+            <button class="btn btn-primary">
+                Ara
+            </button>
+
+        </div>
+
+    </form>
+
+
+    <div class="table-responsive">
+
+        <table class="table table-hover table-striped table-bordered shadow-sm align-middle">
+
+            <tr class="table-dark">
+                <th>ID</th>
+                <th>Görsel</th>
+                <th>Ürün Adı</th>
+                <th>Marka</th>
+                <th>Fiyat</th>
+                <th>Kategori</th>
+                <th>Stok</th>
+                <th>Kiralanabilir</th>
+                <th>İşlem</th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+
+                    <td>@item.Id</td>
+
+                    <td>
+                            
+                            <img src="@item.ImageUrl" width="80" height="80" style="object-fit:cover; border-radius:10px;" />
+                             
+                    </td>
+
+                    <td>@item.ProductName</td>
+
+                    <td>@item.Brand</td>
+
+                    <td>
+                        <div>
+                            <strong>Günlük Kira:</strong> @item.DailPrice ₺
+                        </div>
+
+                        <div>
+                            <strong>Satış:</strong> @item.SalePrice ₺
+                        </div>
+                    </td>
+
+                    <td>
+                        @(item.Category != null
+                            ? item.Category.CategoryName
+                            : "Kategori Yok")
+                    </td>
+                    <td>
+                        @if (item.StockCount <= 0)
+                        {
+                            <span class="badge bg-danger">Tükendi</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">@item.StockCount adet</span>
+                        }
+
+                    </td>
+                    <td>
+                        @if (item.IsRentable)
+                        {
+                            <span class="badge bg-success">Evet</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Hayır</span>
+                        }
+                    </td>
+
+                    <td>
+                        <div class="d-flex gap-2 flex-wrap">
+
+                            
+
+                            @if (isAdmin)
+                            {
+                                <a href="/Product/UpdateProduct/@item.Id"
+                                       class="btn btn-warning btn-sm">
+                                    Güncelle
+                                </a>
+
+                                <a href="/Product/DeleteProduct/@item.Id"
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('Silmek istediğinize emin misiniz?')">
+                                    Sil
+                                </a>
+                            }
+
+                            <a href="/Product/ProductDetails/@item.Id"
+                                   class="btn btn-info btn-sm">
+                                Detay
+                            </a>
+
+                            <a href="/Cart/AddToCart/@item.Id" class="btn btn-success btn-sm">
+                                Sepete Ekle
+                            </a>
+                            <a href="/Favorite/AddToFavorite/@item.Id" class="btn btn-outline-danger btn-sm">
+                                ❤ Favori
+                            </a>
+                        </div>
+                    </td>
+
+                </tr>
+            }

@@ -1,0 +1,43 @@
+﻿@model List<KiraSepet.EntityLayer.Category>
+
+<h2>Kategoriler</h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th>ID</th>
+        <th>Kategori Adı</th>
+        <th>Sil</th>
+        <th>Güncelle</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Id</td>
+            <td>@item.CategoryName</td>
+            <td>
+                <a href="/Category/Delete/@item.Id"
+                       class="btn btn-danger"
+                       onclick="return confirm('Bu kategoriyi silmek istediğine emin misin?')">
+                    Sil
+                </a>
+            </td>
+            <td>
+                <a href="/Category/UpdateCategory/@item.Id" class="btn btn-warning">Güncelle</a>
+
+                    
+
+            </td>
+
+        </tr>
+        
+        
+    }
+</table>
+<a href="/Category/AddCategory" class="btn btn-primary">
+    Yeni Kategori Ekle
+</a>
+
+</a>
+
+</a>

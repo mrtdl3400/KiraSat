@@ -1,0 +1,25 @@
+﻿@model List<KiraSepet.WebUII.Models.FavoriteItem>
+
+<div class="container mt-5">
+
+    <h2 class="mb-4">Favorilerim ❤️</h2>
+
+    <table class="table table-hover table-striped align-middle shadow-sm">
+
+        <tr>
+            <th>Ürün</th>
+            <th>Fiyat</th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ProductName</td>
+
+                <td>@item.SalePrice ₺</td>
+            </tr>
+        }
+
+    </table>
+
+</div>

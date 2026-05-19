@@ -1,0 +1,38 @@
+﻿@model List<KiraSepet.EntityLayer.Order>
+
+<div class="container mt-5">
+    <h2 class="mb-4">Sipariş Geçmişim</h2>
+
+    @if (Model.Any())
+    {
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Ürün</th>
+                    <th>Fiyat</th>
+                    <th>Adet</th>
+                    <th>Toplam</th>
+                    <th>Sipariş Tarihi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.ProductName</td>
+                        <td>@item.Price ₺</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.TotalPrice ₺</td>
+                        <td>@item.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            Henüz siparişiniz bulunmuyor.
+        </div>
+    }
+</div>
