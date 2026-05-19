@@ -21,13 +21,37 @@ public class ProductController : Controller
         _context = context;
         _webHostEnvironment = webHostEnvironment;
     }
-    public IActionResult Index(string p, string category)
+    public IActionResult Index(string p, string category, string city, string district)
     {
-        var values = _context.Products.Include(x => x.Category).AsQueryable();
+        var values = _context.Products
+            .Include(x => x.Category)
+            .AsQueryable();
 
         if (!string.IsNullOrEmpty(category))
         {
             values = values.Where(x => x.Category.CategoryName == category);
+        }
+
+        if (!string.IsNullOrEmpty(p))
+        {
+            values = values.Where(x => x.ProductName.Contains(p));
+        }
+
+        city = city?.ToLower().Trim();
+        district = district?.ToLower().Trim();
+
+        if (!string.IsNullOrEmpty(city))
+        {
+            values = values.Where(x =>
+                x.City != null &&
+                x.City.ToLower().Contains(city));
+        }
+
+        if (!string.IsNullOrEmpty(district))
+        {
+            values = values.Where(x =>
+                x.District != null &&
+                x.District.ToLower().Contains(district));
         }
 
         return View(values.ToList());
@@ -84,7 +108,11 @@ public class ProductController : Controller
         values.CategoryId = p.CategoryId;
         values.IsRentable = p.IsRentable;
         values.StockCount = p.StockCount;
-        values.Description = p.Description;
+        
+        values.Description = p.Description ?? "";
+        values.City = p.City ?? "";
+        values.District = p.District ?? "";
+        values.Address = p.Address ?? "";
 
         if (imageFile != null)
         {

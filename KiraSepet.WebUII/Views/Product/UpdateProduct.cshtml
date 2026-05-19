@@ -2,7 +2,7 @@
 
 <h2 class="mb-4">Ürün Güncelle</h2>
 
-<form method="post" enctype="multipart/form-data">
+<form method="post" asp-action="UpdateProduct" enctype="multipart/form-data">
 
     <label>Ürün Görseli</label>
     <input type="file" name="imageFile" class="form-control" />
@@ -23,6 +23,21 @@
 
     <label>Ürün Açıklaması</label>
     <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+
+    <div class="mb-3">
+        <label>Şehir</label>
+        <input type="text" asp-for="City" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>İlçe</label>
+        <input type="text" asp-for="District" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Adres</label>
+        <textarea asp-for="Address" class="form-control"></textarea>
+    </div>
 
     <br />
    
