@@ -68,7 +68,9 @@
 
                 @if (Model.IsRentable)
                 {
-                    <button type="button" class="btn btn-success ms-2" onclick="goToPayment()">
+                    <button type="button"
+                            class="btn btn-success ms-2"
+                            onclick="goToPayment(@Model.Id)">
                         Kirala
                     </button>
 
@@ -328,8 +330,29 @@
 </script>
 
 <script>
-    function goToPayment() {
-        var total = document.getElementById("totalPrice").innerText;
-        window.location.href = "/Payment/Index?totalPrice=" + total;
+    function goToPayment(productId) {
+
+        var totalElement = document.getElementById("totalPrice");
+
+        if (totalElement == null) {
+            alert("Önce kiralama ücretini hesaplayın.");
+            return;
+        }
+
+        var total = totalElement.innerText;
+
+        var startDate = document.getElementById("startDate").value;
+        var endDate = document.getElementById("endDate").value;
+
+        if (startDate == "" || endDate == "") {
+            alert("Lütfen başlangıç ve bitiş tarihi seçin.");
+            return;
+        }
+
+        window.location.href =
+            "/Payment/Index?productId=" + productId +
+            "&startDate=" + startDate +
+            "&endDate=" + endDate +
+            "&totalPrice=" + total;
     }
 </script>

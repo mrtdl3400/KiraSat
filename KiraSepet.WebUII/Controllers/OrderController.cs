@@ -22,7 +22,39 @@ namespace KiraSepet.WebUI.Controllers
                 .Where(x => x.UserEmail == userEmail)
                 .ToList();
 
+            var rentalValues = _context.RentalOrders
+                .Where(x => x.UserEmail == userEmail)
+                .ToList();
+
+            ViewBag.RentalOrders = rentalValues;
+
             return View(values);
         }
+
+        public IActionResult PurchasedOrders()
+        {
+            var userEmail = HttpContext.Session.GetString("UserEmail");
+
+            var values = _context.Orders
+                .Where(x => x.UserEmail == userEmail)
+                .ToList();
+
+            return View("Index", values);
+        }
+
+        public IActionResult RentedOrders()
+        {
+            var userEmail = HttpContext.Session.GetString("UserEmail");
+
+            var rentalValues = _context.RentalOrders
+                .Where(x => x.UserEmail == userEmail)
+                .ToList();
+
+            ViewBag.RentalOrders = rentalValues;
+
+            return View("Index", new List<KiraSepet.EntityLayer.Order>());
+        }
+
+
     }
 }

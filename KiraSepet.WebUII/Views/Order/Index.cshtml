@@ -3,6 +3,17 @@
 <div class="container mt-5">
     <h2 class="mb-4">Sipariş Geçmişim</h2>
 
+    <div class="mb-4 d-flex align-items-center">
+        <a href="/Order/PurchasedOrders" class="btn btn-primary">
+            Satın Aldıklarım
+        </a>
+
+        <a href="/Order/RentedOrders" class="btn btn-warning ms-2">
+            Kiraladıklarım
+        </a>
+
+    </div>
+
     @if (Model.Any())
     {
         <table class="table table-bordered table-striped">
@@ -36,3 +47,38 @@
         </div>
     }
 </div>
+
+@if (ViewBag.RentalOrders != null)
+{
+    <h2 class="mt-5">Kiralama Geçmişim</h2>
+
+    <table class="table table-bordered table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Ürün</th>
+                <th>Başlangıç</th>
+                <th>Bitiş</th>
+                <th>Toplam Gün</th>
+                <th>Toplam Ücret</th>
+                <th>Durum</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            @foreach (var item in ViewBag.RentalOrders)
+            {
+                <tr>
+                    <td>@item.ProductName</td>
+                    <td>@item.StartDate.ToShortDateString()</td>
+                    <td>@item.EndDate.ToShortDateString()</td>
+                    <td>@item.TotalDays Gün</td>
+                    <td>@item.TotalPrice ₺</td>
+                    <td>@item.Status</td>
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+}
