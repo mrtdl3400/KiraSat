@@ -21,37 +21,52 @@ public class ProductController : Controller
         _context = context;
         _webHostEnvironment = webHostEnvironment;
     }
+
+    private string NormalizeText(string text)
+    {
+        if (string.IsNullOrEmpty(text))
+            return "";
+
+        return text.ToLower()
+            .Replace("ı", "i")
+            .Replace("ğ", "g")
+            .Replace("ü", "u")
+            .Replace("ş", "s")
+            .Replace("ö", "o")
+            .Replace("ç", "c");
+    }
     public IActionResult Index(string p, string category, string city, string district)
     {
         var values = _context.Products
             .Include(x => x.Category)
-            .AsQueryable();
+            .ToList();
+
 
         if (!string.IsNullOrEmpty(category))
         {
-            values = values.Where(x => x.Category.CategoryName == category);
+            values = values.Where(x => x.Category.CategoryName == category).ToList();
         }
 
         if (!string.IsNullOrEmpty(p))
         {
-            values = values.Where(x => x.ProductName.Contains(p));
+            values = values.Where(x => x.ProductName.Contains(p)).ToList();
         }
 
-        city = city?.ToLower().Trim();
-        district = district?.ToLower().Trim();
+        city = NormalizeText(city);
+        district = NormalizeText(district);
 
         if (!string.IsNullOrEmpty(city))
         {
             values = values.Where(x =>
-                x.City != null &&
-                x.City.ToLower().Contains(city));
+            x.City != null &&
+           NormalizeText(x.City).Contains(city)).ToList();
         }
 
         if (!string.IsNullOrEmpty(district))
         {
             values = values.Where(x =>
-                x.District != null &&
-                x.District.ToLower().Contains(district));
+    x.District != null &&
+    NormalizeText(x.District).Contains(district)).ToList();
         }
 
         return View(values.ToList());
