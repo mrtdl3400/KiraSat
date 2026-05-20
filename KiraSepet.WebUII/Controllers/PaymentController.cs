@@ -16,9 +16,10 @@ namespace KiraSepet.WebUII.Controllers
 
         public static List<Order> orders = new List<Order>();
 
-        public IActionResult Index()
+        public IActionResult Index(decimal? totalPrice)
         {
-            return View(CartController.cartItems);
+            ViewBag.TotalPrice = totalPrice ?? 0;
+            return View();
         }
 
         public IActionResult CompletePayment()

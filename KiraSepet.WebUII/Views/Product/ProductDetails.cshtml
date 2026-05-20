@@ -22,6 +22,25 @@
                     <strong>@Model.SalePrice ₺</strong>
                 </div>
 
+                @if (Model.IsRentable)
+                {
+                    <div class="card mt-4 p-3 shadow-sm">
+                        <h5>📅 Kiralama Tarihi Seç</h5>
+
+                        <label>Başlangıç Tarihi</label>
+                        <input type="date" id="startDate" class="form-control mb-2" />
+
+                        <label>Bitiş Tarihi</label>
+                        <input type="date" id="endDate" class="form-control mb-2" />
+
+                        <button type="button" class="btn btn-primary mt-2" onclick="calculateRent()">
+                            Kiralama Ücretini Hesapla
+                        </button>
+
+                        <div class="alert alert-info mt-3" id="rentResult" style="display:none;"></div>
+                    </div>
+                }
+
                 <div>
                     <small>Günlük Kiralama</small>
                     <strong>@Model.DailPrice ₺</strong>
@@ -43,7 +62,18 @@
             </p>
 
             <div class="detail-buttons">
-                <a href="/Cart/AddToCart/@Model.Id" class="btn-buy">Kirala / Satın Al</a>
+                <a href="/Cart/AddToCart/@Model.Id" class="btn-buy">
+                    Satın Al
+                </a>
+
+                @if (Model.IsRentable)
+                {
+                    <button type="button" class="btn btn-success ms-2" onclick="goToPayment()">
+                        Kirala
+                    </button>
+
+                    
+                }
                 <a href="/Product/Index" class="btn-back">Listeye Dön</a>
             </div>
         </div>
@@ -257,3 +287,49 @@
             }
         </p>
 }
+
+<script>
+    function calculateRent() {
+
+        const start = new Date(document.getElementById("startDate").value);
+        const end = new Date(document.getElementById("endDate").value);
+
+        const diffTime = end - start;
+
+        const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+      const dailyPrice = parseFloat("@Model.DailPrice".replace(",", "."));
+
+        const total = diffDays * dailyPrice;
+
+        const resultDiv = document.getElementById("rentResult");
+
+           if (diffDays > 0) {
+
+        resultDiv.style.display = "block";
+
+        resultDiv.innerHTML = `
+    <div class="p-3 rounded shadow-sm bg-light">
+       
+            <h5 class="text-success">
+        💰 Toplam Ücret: <span id="totalPrice">${total}</span> ₺
+    </h5>
+    </div>
+    `;
+    }
+        else {
+
+            resultDiv.style.display = "block";
+
+            resultDiv.innerHTML =
+                "Lütfen geçerli tarih seçiniz!";
+        }
+    }
+</script>
+
+<script>
+    function goToPayment() {
+        var total = document.getElementById("totalPrice").innerText;
+        window.location.href = "/Payment/Index?totalPrice=" + total;
+    }
+</script>

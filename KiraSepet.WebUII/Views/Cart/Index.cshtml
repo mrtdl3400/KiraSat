@@ -63,7 +63,8 @@
 
         @if (Model.Any())
         {
-            <a href="/Payment/Index" class="btn btn-success mt-2">
+            <a href="/Payment/Index?totalPrice=@Model.Sum(x => x.SalePrice * x.Quantity)"
+               class="btn btn-success">
                 Ödemeye Geç
             </a>
         }
