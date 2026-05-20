@@ -42,5 +42,17 @@ namespace KiraSepet.WebUII.Controllers
 
             return RedirectToAction("Index");
         }
+
+        public IActionResult RemoveFromFavorite(int id)
+        {
+            var favoriteItem = favoriteItems.FirstOrDefault(x => x.ProductId == id);
+
+            if (favoriteItem != null)
+            {
+                favoriteItems.Remove(favoriteItem);
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }

@@ -9,14 +9,20 @@
         <tr>
             <th>Ürün</th>
             <th>Fiyat</th>
+            <th>İşlem</th>
         </tr>
 
         @foreach (var item in Model)
         {
             <tr>
                 <td>@item.ProductName</td>
-
                 <td>@item.SalePrice ₺</td>
+                <td>
+                    <a href="/Favorite/RemoveFromFavorite/@item.ProductId"
+                       class="btn btn-danger btn-sm">
+                        Favoriden Kaldır
+                    </a>
+                </td>
             </tr>
         }
 

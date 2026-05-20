@@ -98,13 +98,19 @@
                         </div>
                     </td>
 
-                        <td>@item.City / @item.District</td>
+                            <td>
+                                <span class="badge bg-info text-dark px-3 py-2">
+                                    📍 @item.City / @item.District
+                                </span>
+                            </td>
 
-                    <td>
-                        @(item.Category != null
-                            ? item.Category.CategoryName
-                            : "Kategori Yok")
-                    </td>
+                            <td>
+                                @(item.Category != null
+                                ? item.Category.CategoryName
+                                : "Kategori Yok")
+                            </td>
+
+                           
                     <td>
                         @if (item.StockCount <= 0)
                         {
