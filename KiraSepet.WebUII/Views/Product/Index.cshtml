@@ -22,10 +22,14 @@
 
             </div>
 
-            <div class="text-center mb-4">
-                <h2 class="fw-bold display-4 text-dark">KiraSat</h2>
-                <p class="text-muted">Satın al, ihtiyacın kadar kirala.</p>
+            
+            <div class="hero-text">
+                <h1>KiraSat</h1>
+                <p>Satın al, ihtiyacın kadar kirala.</p>
             </div>
+
+                
+            
 
         
 
@@ -134,37 +138,65 @@
                     </td>
 
                     <td>
-                        <div class="d-flex gap-2 flex-wrap">
-
-                            
-
-                            @if (isAdmin)
-                            {
-                                <a href="/Product/UpdateProduct/@item.Id"
-                                       class="btn btn-warning btn-sm">
-                                    Güncelle
-                                </a>
-
-                                <a href="/Product/DeleteProduct/@item.Id"
-                                       class="btn btn-danger btn-sm"
-                                       onclick="return confirm('Silmek istediğinize emin misiniz?')">
-                                    Sil
-                                </a>
-                            }
-
-                            <a href="/Product/ProductDetails/@item.Id"
-                                   class="btn btn-info btn-sm">
-                                Detay
-                            </a>
-
-                            <a href="/Cart/AddToCart/@item.Id" class="btn btn-success btn-sm">
-                                Sepete Ekle
-                            </a>
-                            <a href="/Favorite/AddToFavorite/@item.Id" class="btn btn-outline-danger btn-sm">
-                                ❤ Favori
-                            </a>
-                        </div>
+                                <div class="action-buttons">
+                                    <a href="/Product/UpdateProduct/@item.Id" class="btn btn-warning btn-sm">✏️ Güncelle</a>
+                                    <a href="/Product/DeleteProduct/@item.Id" class="btn btn-danger btn-sm">🗑️ Sil</a>
+                                    <a href="/Product/ProductDetails/@item.Id" class="btn btn-info btn-sm">🔍 Detay</a>
+                                    <a href="/Cart/AddToCart/@item.Id" class="btn btn-success btn-sm">🛒 Sepet</a>
+                                    <a href="/Favorite/AddFavorite/@item.Id" class="btn btn-outline-danger btn-sm">💗 Favori</a>
+                                </div>
                     </td>
 
+                            <style>
+                                                        .action-buttons {
+                                                            display: grid;
+                                                            grid-template-columns: repeat(2, 1fr);
+                                                            gap: 6px;
+                                                            min-width: 190px;
+                                                        }
+
+                                                            .action-buttons .btn {
+                                                                border-radius: 10px;
+                                                                font-size: 13px;
+                                                                font-weight: 600;
+                                                                padding: 7px 8px;
+                                                                white-space: nowrap;
+                                                                box-shadow: 0 2px 5px rgba(0,0,0,0.10);
+                                                                transition: 0.2s;
+                                                            }
+
+                                                                .action-buttons .btn:hover {
+                                                                    transform: scale(1.03);
+                                                                    opacity: 0.92;
+                                                                }
+                            </style>
+
+                            <style>
+                                                        .hero-text {
+                                                            text-align: center;
+                                                            margin-bottom: 35px;
+                                                            margin-top: 20px;
+                                                        }
+
+                                                            .hero-text h1 {
+                                                                font-size: 72px;
+                                                                font-weight: 800;
+                                                                background: linear-gradient(90deg,#0d6efd,#00c6ff);
+                                                                -webkit-background-clip: text;
+                                                                -webkit-text-fill-color: transparent;
+                                                                letter-spacing: 2px;
+                                                                text-shadow: 0 4px 15px rgba(0,0,0,0.10);
+                                                                margin-bottom: 10px;
+                                                            }
+
+                                                            .hero-text p {
+                                                                font-size: 22px;
+                                                                color: #666;
+                                                                font-weight: 500;
+                                                            }
+                            </style>
+
                 </tr>
+
+                                                              
             }

@@ -49,7 +49,12 @@ public class ProductController : Controller
 
         if (!string.IsNullOrEmpty(p))
         {
-            values = values.Where(x => x.ProductName.Contains(p)).ToList();
+            p = NormalizeText(p);
+
+            values = values.Where(x =>
+                x.ProductName != null &&
+                NormalizeText(x.ProductName).Contains(p)
+            ).ToList();
         }
 
         city = NormalizeText(city);

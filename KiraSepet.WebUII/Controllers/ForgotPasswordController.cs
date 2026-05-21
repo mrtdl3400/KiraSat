@@ -57,15 +57,16 @@ namespace KiraSepet.WebUII.Controllers
                     Console.WriteLine("OKUNAN HOST: " + _mailSettings.Host);
                     Console.WriteLine("OKUNAN PORT: " + _mailSettings.Port);
 
-                    client.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
+                    //client.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+                    //client.AuthenticationMechanisms.Remove("XOAUTH2");
 
 
 
-                    client.Authenticate(_mailSettings.Mail.Trim(), _mailSettings.Password.Trim());
+                    //client.Authenticate(_mailSettings.Mail.Trim(), _mailSettings.Password.Trim());
 
-                    client.Send(message);
+                    //client.Send(message);
 
-                    client.Disconnect(true);
+                    //client.Disconnect(true);
                 }
 
                 ViewBag.Message = "Şifre sıfırlama maili gönderildi.";

@@ -20,6 +20,8 @@ namespace KiraSepet.DataAccessLayer
         public DbSet<Category> Categories { get; set; }
         public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<RentalOrder> RentalOrders { get; set; }
+       
     }
 }
 

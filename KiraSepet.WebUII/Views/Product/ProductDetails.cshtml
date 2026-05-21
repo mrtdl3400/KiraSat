@@ -27,11 +27,13 @@
                     <div class="card mt-4 p-3 shadow-sm">
                         <h5>📅 Kiralama Tarihi Seç</h5>
 
-                        <label>Başlangıç Tarihi</label>
-                        <input type="date" id="startDate" class="form-control mb-2" />
+                        <input type="date" id="startDate"
+                               class="form-control mb-2"
+                               min="@DateTime.Now.ToString("yyyy-MM-dd")" />
 
-                        <label>Bitiş Tarihi</label>
-                        <input type="date" id="endDate" class="form-control mb-2" />
+                        <input type="date" id="endDate"
+                               class="form-control mb-2"
+                               min="@DateTime.Now.ToString("yyyy-MM-dd")" />
 
                         <button type="button" class="btn btn-primary mt-2" onclick="calculateRent()">
                             Kiralama Ücretini Hesapla

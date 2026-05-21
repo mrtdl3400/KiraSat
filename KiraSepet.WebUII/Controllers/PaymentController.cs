@@ -60,6 +60,15 @@ namespace KiraSepet.WebUII.Controllers
 
                 };
                 _context.Orders.Add(order);
+
+                // STOK DÜŞÜR
+                var soldProduct = _context.Products.FirstOrDefault(x => x.ProductName == item.ProductName);
+
+                if (soldProduct != null && soldProduct.StockCount >= item.Quantity)
+                {
+                    soldProduct.StockCount -= item.Quantity;
+                }
+
                 _context.SaveChanges();
             }
 
@@ -67,38 +76,40 @@ namespace KiraSepet.WebUII.Controllers
 
             var product = _context.Products.FirstOrDefault(x => x.Id == productId);
 
-            var startDate = Convert.ToDateTime(HttpContext.Session.GetString("RentalStartDate"));
+            var rentalStartDateString = HttpContext.Session.GetString("RentalStartDate");
+            var rentalEndDateString = HttpContext.Session.GetString("RentalEndDate");
 
-            var endDate = Convert.ToDateTime(HttpContext.Session.GetString("RentalEndDate"));
-
-            var totalPrice = Convert.ToDecimal(HttpContext.Session.GetString("RentalTotalPrice"));
-
-            var rentalOrder = new RentalOrder
+            if (!string.IsNullOrEmpty(rentalStartDateString) && !string.IsNullOrEmpty(rentalEndDateString))
             {
-                ProductName = product?.ProductName ?? "Ürün Bulunamadı",
+                var startDate = Convert.ToDateTime(rentalStartDateString);
+                var endDate = Convert.ToDateTime(rentalEndDateString);
+                var totalPrice = Convert.ToDecimal(HttpContext.Session.GetString("RentalTotalPrice"));
 
-                DailyRentPrice = product?.DailPrice ?? 0,
+                var rentalOrder = new RentalOrder
+                {
+                    ProductName = product?.ProductName ?? "Ürün Bulunamadı",
+                    DailyRentPrice = product?.DailPrice ?? 0,
+                    StartDate = startDate,
+                    EndDate = endDate,
+                    TotalDays = (endDate - startDate).Days,
+                    TotalPrice = totalPrice,
+                    UserEmail = HttpContext.Session.GetString("UserEmail"),
+                    OrderDate = DateTime.Now,
+                    Status = "Kiralandı",
+                    Quantity = 1
+                };
 
-                StartDate = startDate,
+                _context.RentalOrders.Add(rentalOrder);
 
-                EndDate = endDate,
+                // KİRALAMA STOK DÜŞÜR
+                if (product != null && product.StockCount >= 1)
+                {
+                    product.StockCount -= 1;
+                }
 
-                TotalDays = (endDate - startDate).Days,
+                _context.SaveChanges();
+            }
 
-                TotalPrice = totalPrice,
-
-                UserEmail = HttpContext.Session.GetString("UserEmail"),
-
-                OrderDate = DateTime.Now,
-
-                Status = "Kiralandı"
-            };
-
-            _context.RentalOrders.Add(rentalOrder);
-
-            _context.SaveChanges();
-
-           
 
 
             CartController.cartItems.Clear();
