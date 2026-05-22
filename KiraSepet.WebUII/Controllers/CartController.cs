@@ -19,6 +19,10 @@ namespace KiraSepet.WebUII.Controllers
         }
         public IActionResult AddToCart(int id)
         {
+            if (HttpContext.Session.GetString("UserName") == null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             var product = _context.Products.Find(id);
 
             if (product == null)

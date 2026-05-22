@@ -1,6 +1,7 @@
 ﻿using KiraSepet.DataAccessLayer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using KiraSepet.WebUI.Controllers;
 
 using KiraSepet.EntityLayer;
 namespace KiraSepet.WebUII.Controllers
@@ -20,34 +21,89 @@ namespace KiraSepet.WebUII.Controllers
     int? productId,
     DateTime? startDate,
     DateTime? endDate,
-    decimal? totalPrice)
-        {
+    string totalPrice)
+{
+    decimal parsedTotal = 0;
+
+            if (productId != null && startDate != null && endDate != null)
+            {
+                var product = _context.Products.FirstOrDefault(x => x.Id == productId);
+
+                if (product != null)
+                {
+                    int totalDays = (endDate.Value - startDate.Value).Days;
+
+                    if (totalDays > 0)
+                    {
+                        parsedTotal = product.DailPrice.Value * totalDays;
+                    }
+                }
+            }
+            else if (productId != null)
+            {
+                var saleProduct = _context.Products.FirstOrDefault(x => x.Id == productId);
+
+                if (saleProduct != null)
+                {
+                    parsedTotal = saleProduct.SalePrice;
+                }
+            }
+
             ViewBag.ProductId = productId;
+    ViewBag.StartDate = startDate;
+    ViewBag.EndDate = endDate;
+    ViewBag.TotalPrice = parsedTotal;
 
-            ViewBag.StartDate = startDate;
-
-            ViewBag.EndDate = endDate;
-
-            ViewBag.TotalPrice = totalPrice ?? 0;
-
-            HttpContext.Session.SetInt32("RentalProductId", productId ?? 0);
-
-            HttpContext.Session.SetString("RentalStartDate",
-                startDate?.ToString("yyyy-MM-dd") ?? "");
-
-            HttpContext.Session.SetString("RentalEndDate",
-                endDate?.ToString("yyyy-MM-dd") ?? "");
-
-            HttpContext.Session.SetString("RentalTotalPrice",
-                (totalPrice ?? 0).ToString());
+    HttpContext.Session.SetInt32("RentalProductId", productId ?? 0);
+    HttpContext.Session.SetString("RentalStartDate", startDate?.ToString("yyyy-MM-dd") ?? "");
+    HttpContext.Session.SetString("RentalEndDate", endDate?.ToString("yyyy-MM-dd") ?? "");
+    HttpContext.Session.SetString("RentalTotalPrice", parsedTotal.ToString());
+    ViewBag.CartTotal = CartController.cartItems.Sum(x => x.SalePrice * x.Quantity);
 
             return View();
-        }
-
+}
 
         public IActionResult CompletePayment()
         {
-            foreach (var item in CartController.cartItems)
+           
+        
+            var rentalTotal = HttpContext.Session.GetString("RentalTotalPrice");
+            var productId = HttpContext.Session.GetInt32("RentalProductId") ?? 0;
+
+            if (!string.IsNullOrEmpty(rentalTotal) && productId != 0)
+            {
+                var paymentProduct = _context.Products.FirstOrDefault(x => x.Id == productId);
+
+                if (paymentProduct != null)
+                {
+                    var order = new Order
+                    {
+                        ProductName = paymentProduct.ProductName,
+                        Price = paymentProduct.SalePrice,
+                        Quantity = 1,
+                        TotalPrice = Convert.ToDecimal(rentalTotal),
+                        OrderDate = DateTime.Now,
+                        UserEmail = HttpContext.Session.GetString("UserEmail")
+                    };
+
+                    _context.Orders.Add(order);
+
+                    paymentProduct.StockCount -= 1;
+
+                    _context.SaveChanges();
+
+                    HttpContext.Session.Remove("RentalProductId");
+                    HttpContext.Session.Remove("RentalTotalPrice");
+
+                    TempData["OrderMessage"] = "Ödemeniz gerçekleşti. Siparişiniz oluşturuldu!";
+
+                    return RedirectToAction("Index", "Order");
+                }
+            }
+
+           
+
+                foreach (var item in CartController.cartItems)
             {
                 var order = new Order
                 {
@@ -72,9 +128,9 @@ namespace KiraSepet.WebUII.Controllers
                 _context.SaveChanges();
             }
 
-            var productId = HttpContext.Session.GetInt32("RentalProductId") ?? 0;
+            var rentalProductId = HttpContext.Session.GetInt32("RentalProductId") ?? 0;
 
-            var product = _context.Products.FirstOrDefault(x => x.Id == productId);
+            var product = _context.Products.FirstOrDefault(x => x.Id == rentalProductId);
 
             var rentalStartDateString = HttpContext.Session.GetString("RentalStartDate");
             var rentalEndDateString = HttpContext.Session.GetString("RentalEndDate");

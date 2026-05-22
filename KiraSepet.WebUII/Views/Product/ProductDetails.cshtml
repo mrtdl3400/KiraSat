@@ -31,6 +31,8 @@
                                class="form-control mb-2"
                                min="@DateTime.Now.ToString("yyyy-MM-dd")" />
 
+                        <input type="hidden" id="hiddenTotalPrice" value="0" />
+
                         <input type="date" id="endDate"
                                class="form-control mb-2"
                                min="@DateTime.Now.ToString("yyyy-MM-dd")" />
@@ -38,6 +40,8 @@
                         <button type="button" class="btn btn-primary mt-2" onclick="calculateRent()">
                             Kiralama Ücretini Hesapla
                         </button>
+
+                        
 
                         <div class="alert alert-info mt-3" id="rentResult" style="display:none;"></div>
                     </div>
@@ -64,19 +68,28 @@
             </p>
 
             <div class="detail-buttons">
-                <a href="/Cart/AddToCart/@Model.Id" class="btn-buy">
+                <a href="/Payment/Index?productId=@Model.Id&type=buy"
+                   class="btn btn-dark">
                     Satın Al
                 </a>
 
                 @if (Model.IsRentable)
                 {
-                    <button type="button"
-                            class="btn btn-success ms-2"
-                            onclick="goToPayment(@Model.Id)">
-                        Kirala
-                    </button>
-
-                    
+                    @if (Context.Session.GetString("UserName") == null)
+                    {
+                        <a href="/Login/Index"
+                           class="btn btn-success ms-2"
+                           onclick="alert('Kiralama işleminizi yapmak için lütfen giriş yapın veya kaydolun!')">
+                            Kirala
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="/Payment/Index?productId=@Model.Id&type=rent"
+                           class="btn btn-success ms-2">
+                            Kirala
+                        </a>
+                    }
                 }
                 <a href="/Product/Index" class="btn-back">Listeye Dön</a>
             </div>
@@ -296,6 +309,7 @@
     function calculateRent() {
 
         const start = new Date(document.getElementById("startDate").value);
+        
         const end = new Date(document.getElementById("endDate").value);
 
         const diffTime = end - start;
@@ -312,14 +326,16 @@
 
         resultDiv.style.display = "block";
 
-        resultDiv.innerHTML = `
+            resultDiv.innerHTML = `
     <div class="p-3 rounded shadow-sm bg-light">
-       
-            <h5 class="text-success">
-        💰 Toplam Ücret: <span id="totalPrice">${total}</span> ₺
-    </h5>
+
+        <h5 class="text-success">
+            💰 Toplam Ücret: <span id="totalPrice">${total}</span> ₺
+        </h5>
     </div>
     `;
+
+    document.getElementById("hiddenTotalPrice").value = total;
     }
         else {
 
@@ -334,27 +350,62 @@
 <script>
     function goToPayment(productId) {
 
-        var totalElement = document.getElementById("totalPrice");
+            var totalElement = document.getElementById("totalPrice");
 
-        if (totalElement == null) {
-            alert("Önce kiralama ücretini hesaplayın.");
-            return;
-        }
+            
 
-        var total = totalElement.innerText;
+    if (totalElement == null || totalElement.innerText.trim() == "" || totalElement.innerText.includes("0")) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Kiralama ücreti hesaplanmadı',
+            text: 'Lütfen önce başlangıç ve bitiş tarihini seçip kiralama ücretini hesaplayın.',
+            confirmButtonText: 'Tamam'
+        });
+        return;
+    }
+
+        
 
         var startDate = document.getElementById("startDate").value;
         var endDate = document.getElementById("endDate").value;
 
-        if (startDate == "" || endDate == "") {
-            alert("Lütfen başlangıç ve bitiş tarihi seçin.");
-            return;
-        }
+            if (startDate == "" || endDate == "") {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Tarih seçilmedi',
+            text: 'Lütfen başlangıç ve bitiş tarihini seçin.',
+            confirmButtonText: 'Tamam'
+        });
+        return;
+    }
 
-        window.location.href =
-            "/Payment/Index?productId=" + productId +
-            "&startDate=" + startDate +
-            "&endDate=" + endDate +
-            "&totalPrice=" + total;
+          var total = document.getElementById("hiddenTotalPrice").value;
+
+            console.log(total);
+
+    window.location.href =
+        "/Payment/Index?productId=" + productId +
+        "&startDate=" + startDate +
+        "&endDate=" + endDate +
+        "&totalPrice=" + encodeURIComponent(total);
+    }
+
+
+    <script>
+    function loginAlert() {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Giriş yapmanız gerekiyor',
+            text: 'Kiralama işlemi için giriş yapmalısınız.',
+            showCancelButton: true,
+            confirmButtonText: 'Giriş Yap',
+            cancelButtonText: 'Vazgeç'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '/Login/Index';
+            }
+        });
     }
 </script>
+
+

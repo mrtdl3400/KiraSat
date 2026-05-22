@@ -11,7 +11,7 @@
     <label>Fiyat</label>
     <input asp-for="SalePrice" class="form-control" />
     <br />
-    div class="mb-3">
+    <div class="mb-3">
     <label>Şehir</label>
     <input type="text" asp-for="City" class="form-control" />
 </div>
@@ -54,8 +54,12 @@
     <input type="text" name="Brand" class="form-control" />
     <br />
 
-    <label>Ürün Açıklaması</label>
-    <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+   
+
+    <div class="mb-3">
+        <label>Açıklama</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
 
     <br />
 

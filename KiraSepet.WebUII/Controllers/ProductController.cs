@@ -105,6 +105,11 @@ public class ProductController : Controller
             p.ImageUrl = "/images/products/" + newImageName;
         }
 
+        if (string.IsNullOrWhiteSpace(p.Description))
+        {
+            p.Description = "";
+        }
+
         _context.Products.Add(p);
         _context.SaveChanges();
 

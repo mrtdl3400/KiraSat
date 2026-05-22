@@ -35,7 +35,9 @@
         <h4 class="text-end">
             Toplam:
             <span class="text-success">
-                @ViewBag.TotalPrice ₺
+                @(ViewBag.TotalPrice != null && Convert.ToDecimal(ViewBag.TotalPrice) > 0
+    ? ViewBag.TotalPrice
+    : ViewBag.CartTotal)
             </span>
         </h4>
 

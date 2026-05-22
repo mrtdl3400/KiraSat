@@ -22,9 +22,18 @@
             </div>
 
             
-            <div class="hero-text">
-                <h1>KiraSat</h1>
-                <p>Satın al, ihtiyacın kadar kirala.</p>
+            <div class="p-5 mb-4 rounded-4 shadow-sm text-center text-white"
+                 style="background: linear-gradient(135deg, #0d6efd, #6610f2);">
+
+                <h1 class="display-3 fw-bold">KiraSat</h1>
+
+                <p class="fs-4 mt-3">
+                    Satın al, ihtiyacın kadar kirala.
+                </p>
+
+                <p class="mb-0 opacity-75">
+                    Ürünleri keşfet, favorilerine ekle, sepete at veya kirala.
+                </p>
             </div>
 
                 
@@ -81,13 +90,16 @@
 
                     <td>@item.Id</td>
 
-                    <td>
-                            
-                            <img src="@item.ImageUrl" width="80" height="80" style="object-fit:cover; border-radius:10px;" />
-                             
-                    </td>
+                            <a href="/Product/ProductDetails/@item.Id">
+                                <img src="@item.ImageUrl" width="80" height="80"
+                                     style="object-fit:cover; border-radius:10px;" />
+                            </a>
 
-                    <td>@item.ProductName</td>
+                   <td>
+                   <a href="/Product/ProductDetails/@item.Id" class="text-decoration-none fw-bold text-dark">
+                   @item.ProductName
+                   </a>
+                   </td>
 
                     <td>@item.Brand</td>
 
@@ -144,8 +156,30 @@
                                 }
 
                                 <a href="/Product/ProductDetails/@item.Id" class="btn btn-info btn-sm">🔍 Detay</a>
-                                <a href="/Cart/AddToCart/@item.Id" class="btn btn-success btn-sm">🛒 Sepet</a>
-                                <a href="/Favorite/AddToFavorite/@item.Id" class="btn btn-outline-danger btn-sm">💖 Favori</a>
+                                @if (Context.Session.GetString("UserName") == null)
+                                {
+                                    <button type="button" class="btn btn-success btn-sm" onclick="loginAlert()">
+                                        🛒 Sepet
+                                    </button>
+                                }
+                                else
+                                {
+                                    <a href="/Cart/AddToCart/@item.Id" class="btn btn-success btn-sm">
+                                        🛒 Sepet
+                                    </a>
+                                }
+                                @if (Context.Session.GetString("UserName") == null)
+                                {
+                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="loginAlert()">
+                                        💖 Favori
+                                    </button>
+                                }
+                                else
+                                {
+                                    <a href="/Favorite/AddToFavorite/@item.Id" class="btn btn-outline-danger btn-sm">
+                                        💖 Favori
+                                    </a>
+                                }
                     </td>
 
                             <style>
@@ -198,6 +232,24 @@
                             </style>
 
                 </tr>
+
+
+                        <script>
+                                                function loginAlert() {
+                                                    Swal.fire({
+                                                        icon: 'warning',
+                                                        title: 'Giriş yapmanız gerekiyor',
+                                                        text: 'Bu işlemi yapmak için giriş yapmalısınız.',
+                                                        showCancelButton: true,
+                                                        confirmButtonText: 'Giriş Yap',
+                                                        cancelButtonText: 'Vazgeç'
+                                                    }).then((result) => {
+                                                        if (result.isConfirmed) {
+                                                            window.location.href = '/Login/Index';
+                                                        }
+                                                    });
+                                                }
+                        </script>
 
                                                               
             }

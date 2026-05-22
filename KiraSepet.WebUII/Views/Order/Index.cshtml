@@ -1,5 +1,17 @@
 ﻿@model List<KiraSepet.EntityLayer.Order>
 
+@if (TempData["OrderMessage"] != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Başarılı!',
+            text: '@TempData["OrderMessage"]',
+            confirmButtonText: 'Tamam'
+        });
+    </script>
+}+
+
 <div class="container mt-5">
     <h2 class="mb-4">Sipariş Geçmişim</h2>
 
