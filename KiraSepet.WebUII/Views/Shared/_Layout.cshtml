@@ -29,28 +29,39 @@
 
                         </div>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="urunDropdown" role="button" data-bs-toggle="dropdown">
-                                Ürünler
-                            </a>
+                            @if (Context.Session.GetString("UserRole") == "Admin")
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-light" href="#" role="button" data-bs-toggle="dropdown">
+                                        Ürünler
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="/Product/Index">Ürün Listesi</a></li>
+                                        <li><a class="dropdown-item" href="/Product/AddProduct">Ürün Ekle</a></li>
+                                    </ul>
+                                </li>
+                            }
 
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-controller="Product" asp-action="Index">Ürün Listesi</a></li>
-                                <li><a class="dropdown-item" asp-controller="Product" asp-action="AddProduct">Ürün Ekle</a></li>
-                                <div class="d-flex">
-
-
-                                </div>
-                            </ul>
-                        </li>
+                           
 
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="kategoriDropdown" role="button" data-bs-toggle="dropdown">
                                 Kategoriler
                             </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-controller="Category" asp-action="Index">Kategori Listesi</a></li>
-                                <li><a class="dropdown-item" asp-controller="Category" asp-action="AddCategory">Kategori Ekle</a></li>
-                            </ul>
+                                <ul class="dropdown-menu">
+
+                                    <li><a class="dropdown-item" href="/Product/Index?category=Elektronik">Elektronik</a></li>
+                                    <li><a class="dropdown-item" href="/Product/Index?category=Mobilya">Mobilya</a></li>
+                                    <li><a class="dropdown-item" href="/Product/Index?category=Spor">Spor</a></li>
+
+                                    @if (Context.Session.GetString("UserRole") == "Admin")
+                                    {
+                                        <li><hr class="dropdown-divider" /></li>
+                                        <li><a class="dropdown-item" href="/Category/Index">Kategori Listesi</a></li>
+                                        <li><a class="dropdown-item" href="/Category/AddCategory">Kategori Ekle</a></li>
+                                    }
+
+                                </ul>
                         </li>
                         <li class="nav-item">
 

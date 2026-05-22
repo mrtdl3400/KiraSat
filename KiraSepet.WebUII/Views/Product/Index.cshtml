@@ -88,12 +88,13 @@
             {
                 <tr>
 
-                    <td>@item.Id</td>
-
-                            <a href="/Product/ProductDetails/@item.Id">
-                                <img src="@item.ImageUrl" width="80" height="80"
-                                     style="object-fit:cover; border-radius:10px;" />
-                            </a>
+                            <td class="text-center align-middle">
+                                <a href="/Product/ProductDetails/@item.Id">
+                                    <img src="@item.ImageUrl"
+                                         class="img-fluid"
+                                         style="width:80px; height:80px; object-fit:cover; border-radius:12px;" />
+                                </a>
+                            </td>
 
                    <td>
                    <a href="/Product/ProductDetails/@item.Id" class="text-decoration-none fw-bold text-dark">
@@ -250,6 +251,13 @@
                                                     });
                                                 }
                         </script>
+
+                        <style>
+                                                table img {
+                                                    display: block;
+                                                    margin: auto;
+                                                }
+                        </style>
 
                                                               
             }
