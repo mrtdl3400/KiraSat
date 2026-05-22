@@ -15,7 +15,11 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>@item.ProductName</td>
+                <td>
+                    <a href="/Product/ProductDetails/@item.ProductId" class="text-decoration-none fw-bold text-dark">
+                        @item.ProductName
+                    </a>
+                </td>
                 <td>@item.SalePrice ₺</td>
                 <td>
                     <a href="/Favorite/RemoveFromFavorite/@item.ProductId"

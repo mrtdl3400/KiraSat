@@ -13,14 +13,29 @@ namespace KiraSepet.WebUII.Controllers
             _context = context;
         }
 
-        public static List<FavoriteItem> favoriteItems = new List<FavoriteItem>();
+        public static Dictionary<string, List<FavoriteItem>> userFavorites = new Dictionary<string, List<FavoriteItem>>();
 
         public IActionResult Index()
         {
-            return View(favoriteItems);
+            var userName = HttpContext.Session.GetString("UserName") ?? "Guest";
+
+            if (!userFavorites.ContainsKey(userName))
+            {
+                userFavorites[userName] = new List<FavoriteItem>();
+            }
+
+            return View(userFavorites[userName]);
         }
         public IActionResult AddToFavorite(int id)
         {
+            var userName = HttpContext.Session.GetString("UserName") ?? "Guest";
+
+            if (!userFavorites.ContainsKey(userName))
+            {
+                userFavorites[userName] = new List<FavoriteItem>();
+            }
+
+            var favoriteItems = userFavorites[userName];
             var product = _context.Products.Find(id);
 
             if (product == null)
@@ -45,6 +60,14 @@ namespace KiraSepet.WebUII.Controllers
 
         public IActionResult RemoveFromFavorite(int id)
         {
+            var userName = HttpContext.Session.GetString("UserName") ?? "Guest";
+
+            if (!userFavorites.ContainsKey(userName))
+            {
+                userFavorites[userName] = new List<FavoriteItem>();
+            }
+
+            var favoriteItems = userFavorites[userName];
             var favoriteItem = favoriteItems.FirstOrDefault(x => x.ProductId == id);
 
             if (favoriteItem != null)

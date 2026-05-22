@@ -1,4 +1,5 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Http
+@{
     var isAdmin = Context.Session.GetString("UserRole") == "Admin";
 }
 <div class="container-fluid px-4">
@@ -13,11 +14,9 @@
                     Ürün Listesi
                 </h2>
 
-                @if (isAdmin)
+                @if (Context.Session.GetString("UserRole") == "Admin")
                 {
-                    <a href="/Product/AddProduct/" class="btn btn-success">
-                        + Yeni Ürün Ekle
-                    </a>
+                    <a href="/Product/AddProduct" class="btn btn-primary">Ürün Ekle</a>
                 }
 
             </div>
@@ -137,14 +136,16 @@
                         }
                     </td>
 
-                    <td>
-                                <div class="action-buttons">
+                            <td>
+                                @if (Context.Session.GetString("UserRole") == "Admin")
+                                {
                                     <a href="/Product/UpdateProduct/@item.Id" class="btn btn-warning btn-sm">✏️ Güncelle</a>
                                     <a href="/Product/DeleteProduct/@item.Id" class="btn btn-danger btn-sm">🗑️ Sil</a>
-                                    <a href="/Product/ProductDetails/@item.Id" class="btn btn-info btn-sm">🔍 Detay</a>
-                                    <a href="/Cart/AddToCart/@item.Id" class="btn btn-success btn-sm">🛒 Sepet</a>
-                                    <a href="/Favorite/AddFavorite/@item.Id" class="btn btn-outline-danger btn-sm">💗 Favori</a>
-                                </div>
+                                }
+
+                                <a href="/Product/ProductDetails/@item.Id" class="btn btn-info btn-sm">🔍 Detay</a>
+                                <a href="/Cart/AddToCart/@item.Id" class="btn btn-success btn-sm">🛒 Sepet</a>
+                                <a href="/Favorite/AddToFavorite/@item.Id" class="btn btn-outline-danger btn-sm">💖 Favori</a>
                     </td>
 
                             <style>

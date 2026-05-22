@@ -69,26 +69,24 @@
                                 }
                             </a>
                             
-                           
+                           @{
+    var userName = Context.Session.GetString("UserName") ?? "Guest";
+    var favCount = FavoriteController.userFavorites.ContainsKey(userName)
+        ? FavoriteController.userFavorites[userName].Count
+        : 0;
+}
+
+<li class="nav-item">
+    <a class="nav-link text-dark d-flex align-items-center gap-1" href="/Favorite/Index">
+        ♡ Favoriler
+
+        @if (favCount > 0)
+        {
+            <span class="badge bg-danger">@favCount</span>
+        }
+    </a>
+</li>
     
-                                    <li class="nav-item">
-                                        <a class="nav-link text-dark" href="/Favorite/Index">
-                                            ♡ Favoriler
-
-                                            @if (FavoriteController.favoriteItems.Count > 0)
-                                            {
-                                                <span class="badge bg-danger">
-                                                    @FavoriteController.favoriteItems.Count
-                                                </span>
-                                            }
-                                        </a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a class="nav-link text-dark" href="/Order/Index">
-                                            📦 Siparişlerim
-                                        </a>
-                                    </li>
                         
                         @if (Context.Session.GetString("UserEmail") == null)
                          {
