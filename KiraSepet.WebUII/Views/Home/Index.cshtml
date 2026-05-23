@@ -12,10 +12,32 @@
                     Satın alma, ihtiyacın kadar kirala.
                 </h1>
 
+                <form method="get" action="/Product/Index" class="mt-4">
+                    <div class="input-group shadow-sm">
+
+                        <input type="text"
+                               name="p"
+                               class="form-control form-control-lg rounded-start-pill"
+                               placeholder="Ürün ara...">
+
+                        <button class="btn btn-dark rounded-end-pill px-4" type="submit">
+                            Ara
+                        </button>
+
+                    </div>
+                </form>
+
                 <p class="lead mt-3">
                     Elektronikten bisiklete, oyun konsolundan mobilyaya kadar
                     birçok ürünü kolayca kirala veya satın al.
                 </p>
+
+                <p class="lead mt-3">
+                    Elektronikten bisiklete, oyun konsolundan mobilyaya kadar
+                    birçok ürünü kolayca kirala veya satın al.
+                </p>
+
+               
 
                 <a href="/Product/Index" class="btn btn-warning btn-lg mt-3 px-4">
                     Ürünlere Git
@@ -23,7 +45,11 @@
 
                 @if (Context.Session.GetString("UserRole") == "Admin")
                 {
-                    <a href="/Product/AddProduct" class="btn btn-outline-dark">Ürün Ekle</a>
+
+                    <a href="/Product/AddProduct/"
+                       style="background:#111827; color:white; border:none; border-radius:50px; padding:12px 28px; font-weight:600; box-shadow:0 4px 12px rgba(0,0,0,0.15); text-decoration:none; transition:0.3s;">
+                        + Ürün Ekle
+                    </a>
                 }
             </div>
 

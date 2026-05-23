@@ -79,8 +79,15 @@
                                     </span>
                                 }
                             </a>
+
+
                             
                            @{
+                                    <li class="nav-item">
+                                        <a class="nav-link text-warning" href="/Order/Index">
+                                            📦 Siparişlerim
+                                        </a>
+                                    </li>
     var userName = Context.Session.GetString("UserName") ?? "Guest";
     var favCount = FavoriteController.userFavorites.ContainsKey(userName)
         ? FavoriteController.userFavorites[userName].Count
