@@ -105,13 +105,28 @@
     </div>
 }
 
+@if (TempData["RatingError"] != null)
+{
+    <div class="alert alert-warning">
+        @TempData["RatingError"]
+    </div>
+}
+@if (ViewBag.RatingCount > 0)
+{
+    <h4>⭐ Ortalama Puan: @ViewBag.AverageRating.ToString("0.0") / 5</h4>
+    <p>Toplam @ViewBag.RatingCount değerlendirme</p>
+}
+else
+{
+    <p>Bu ürüne henüz puan verilmedi.</p>
+}
 <div class="comment-area">
-    <h3>Yorum Yap</h3>
+    <h3>Ürünü Puanla</h3>
 
     <form method="post" action="/Product/AddComment">
         <input type="hidden" name="ProductId" value="@Model.Id" />
 
-        <input type="text" name="UserName" class="form-control" placeholder="Adınız" />
+        
 
         <label class="mt-3">Puanınız</label>
         <select name="Rating" class="form-control mt-2">
@@ -122,13 +137,10 @@
             <option value="1">⭐ - Çok Kötü</option>
         </select>
 
-        <textarea name="CommentText"
-                  class="form-control mt-3"
-                  rows="5"
-                  placeholder="Yorumunuzu yazın..."></textarea>
+        
 
         <button type="submit" class="btn btn-dark mt-3">
-            Yorumu Gönder
+            Puan Ver
         </button>
     </form>
 </div>
@@ -290,27 +302,9 @@
 
 <hr />
 
-<h3>Kullanıcı Yorumları</h3>
 
-@foreach (var item in ViewBag.comments)
-{
-    <div class="comment-box">
 
-        <h5>@item.UserName</h5>
 
-        <small>@item.CreatedDate</small>
-
-        <p>@item.CommentText</p>
-
-    </div>
-
-        <p>
-            @for (int i = 1; i <= item.Rating; i++)
-            {
-                <span>⭐</span>
-            }
-        </p>
-}
 
 <script>
     function calculateRent() {
@@ -398,7 +392,7 @@
     }
 
 
-    <script>
+    
     function loginAlert() {
         Swal.fire({
             icon: 'warning',

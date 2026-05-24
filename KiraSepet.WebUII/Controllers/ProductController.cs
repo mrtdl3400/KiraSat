@@ -6,6 +6,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+
+
 namespace KiraSepet.WebUII.Controllers;
 
 
@@ -198,29 +200,40 @@ public class ProductController : Controller
             .OrderByDescending(x => x.CreatedDate)
             .ToList();
 
+        var ratings = _context.Comments
+    .Where(x => x.ProductId == id)
+    .Select(x => x.Rating)
+    .ToList();
+
+        ViewBag.AverageRating = ratings.Any() ? ratings.Average() : 0;
+        ViewBag.RatingCount = ratings.Count;
+
         return View(values);
     }
     private bool IsAdmin()
     {
         return HttpContext.Session.GetString("UserRole") == "Admin";
     }
+   
+
     [HttpPost]
+    
     public IActionResult AddComment(Comment comment)
     {
-        if (string.IsNullOrEmpty(comment.UserName))
-        {
-            comment.UserName = "Misafir";
-        }
+        comment.UserName = HttpContext.Session.GetString("UserName") ?? "Misafir";
 
-        bool yorumVarMi = _context.Comments
-            .Any(x => x.ProductId == comment.ProductId && x.UserName == comment.UserName);
+        bool puanVarMi = _context.Comments
+            .Any(x => x.ProductId == comment.ProductId
+                   && x.UserName == comment.UserName);
 
-        if (yorumVarMi)
+        if (puanVarMi)
         {
-            TempData["CommentError"] = "Bu ürüne daha önce yorum yaptınız.";
+            TempData["RatingError"] = "Üzgünüz, bu ürüne daha önce puan verdiniz.";
+
             return RedirectToAction("ProductDetails", new { id = comment.ProductId });
         }
 
+        comment.CommentText = "Puanlama";
         comment.CreatedDate = DateTime.Now;
 
         _context.Comments.Add(comment);
