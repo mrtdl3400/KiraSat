@@ -98,6 +98,13 @@
     </div>
 </div>
 
+@if (TempData["CommentError"] != null)
+{
+    <div class="alert alert-warning">
+        @TempData["CommentError"]
+    </div>
+}
+
 <div class="comment-area">
     <h3>Yorum Yap</h3>
 

@@ -204,10 +204,23 @@ public class ProductController : Controller
     {
         return HttpContext.Session.GetString("UserRole") == "Admin";
     }
-
     [HttpPost]
     public IActionResult AddComment(Comment comment)
     {
+        if (string.IsNullOrEmpty(comment.UserName))
+        {
+            comment.UserName = "Misafir";
+        }
+
+        bool yorumVarMi = _context.Comments
+            .Any(x => x.ProductId == comment.ProductId && x.UserName == comment.UserName);
+
+        if (yorumVarMi)
+        {
+            TempData["CommentError"] = "Bu ürüne daha önce yorum yaptınız.";
+            return RedirectToAction("ProductDetails", new { id = comment.ProductId });
+        }
+
         comment.CreatedDate = DateTime.Now;
 
         _context.Comments.Add(comment);
@@ -215,8 +228,9 @@ public class ProductController : Controller
 
         return RedirectToAction("ProductDetails", new { id = comment.ProductId });
     }
-
 }
+
+
 
 
 
