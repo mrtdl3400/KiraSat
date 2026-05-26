@@ -85,8 +85,9 @@
                     }
                     else
                     {
-                        <a href="/Payment/Index?productId=@Model.Id&totalPrice=@ViewBag.RentalTotal&type=rent"
-                           class="btn btn-success ms-2">
+                        <a href="javascript:void(0);"
+                           class="btn btn-success ms-2"
+                           onclick="goToPayment(@Model.Id)">
                             Kirala
                         </a>
                     }
@@ -111,6 +112,24 @@
         @TempData["RatingError"]
     </div>
 }
+<script>
+    function goToPayment(productId) {
+
+        var startDate = document.getElementById("startDate").value;
+        var endDate = document.getElementById("endDate").value;
+
+        if (startDate == "" || endDate == "") {
+            alert("Lütfen tarih seçin");
+            return;
+        }
+
+        window.location.href =
+            "/Payment/Index?productId=" + productId +
+            "&startDate=" + startDate +
+            "&endDate=" + endDate +
+            "&type=rent";
+    }
+</script>
 @if (ViewBag.RatingCount > 0)
 {
     <h4>⭐ Ortalama Puan: @ViewBag.AverageRating.ToString("0.0") / 5</h4>
@@ -355,15 +374,7 @@ else
 
             
 
-    if (totalElement == null || totalElement.innerText.trim() == "" || totalElement.innerText.includes("0")) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Kiralama ücreti hesaplanmadı',
-            text: 'Lütfen önce başlangıç ve bitiş tarihini seçip kiralama ücretini hesaplayın.',
-            confirmButtonText: 'Tamam'
-        });
-        return;
-    }
+    
 
         
 

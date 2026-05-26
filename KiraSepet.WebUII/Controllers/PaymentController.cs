@@ -17,11 +17,7 @@ namespace KiraSepet.WebUII.Controllers
 
         public static List<Order> orders = new List<Order>();
 
-        public IActionResult Index(
-    int? productId,
-    DateTime? startDate,
-    DateTime? endDate,
-    string totalPrice)
+        public IActionResult Index(int? productId, DateTime? startDate, DateTime? endDate, string type, string totalPrice )
         {
             decimal parsedTotal = 0;
 
@@ -47,17 +43,18 @@ namespace KiraSepet.WebUII.Controllers
             {
                 var rentalTotal = HttpContext.Session.GetString("RentalTotalPrice");
 
-                if (!string.IsNullOrEmpty(rentalTotal))
-                {
-                    parsedTotal = Convert.ToDecimal(rentalTotal);
-                }
-                else
-                {
-                    var saleProduct = _context.Products.FirstOrDefault(x => x.Id == productId);
 
-                    if (saleProduct != null)
+                var saleProduct = _context.Products.FirstOrDefault(x => x.Id == productId);
+
+                if (saleProduct != null)
+                {
+                    if (type == "rent")
                     {
                         parsedTotal = saleProduct.DailPrice.Value;
+                    }
+                    else
+                    {
+                        parsedTotal = saleProduct.SalePrice;
                     }
                 }
             }
