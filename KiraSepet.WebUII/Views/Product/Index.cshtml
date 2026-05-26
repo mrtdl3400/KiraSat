@@ -84,11 +84,16 @@
             
             </tr>
 
-            @foreach (var item in Model)
-            {
-                <tr>
+                    @foreach (var item in Model)
+                    {
+                        <tr class="align-middle">
+
+                            <td>@item.Id</td>
 
                             <td class="text-center align-middle">
+
+                                
+
                                 <a href="/Product/ProductDetails/@item.Id">
                                     <img src="@item.ImageUrl"
                                          class="img-fluid"
