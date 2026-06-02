@@ -1,9 +1,10 @@
 ﻿using KiraSepet.DataAccessLayer;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using KiraSepet.WebUI.Controllers;
-
 using KiraSepet.EntityLayer;
+using KiraSepet.WebUI.Controllers;
+using KiraSepet.WebUI.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 namespace KiraSepet.WebUII.Controllers
 {
     public class PaymentController : Controller
@@ -15,9 +16,31 @@ namespace KiraSepet.WebUII.Controllers
             _context = context;
         }
 
+        private string GetCartKey()
+        {
+            return "Cart_" + HttpContext.Session.GetString("UserName");
+        }
+
+        private List<CartItem> GetCart()
+        {
+            var cartJson = HttpContext.Session.GetString(GetCartKey());
+
+            if (string.IsNullOrEmpty(cartJson))
+            {
+                return new List<CartItem>();
+            }
+
+            return JsonSerializer.Deserialize<List<CartItem>>(cartJson) ?? new List<CartItem>();
+        }
+
+        private void SaveCart(List<CartItem> cartItems)
+        {
+            HttpContext.Session.SetString(GetCartKey(), JsonSerializer.Serialize(cartItems));
+        }
+
         public static List<Order> orders = new List<Order>();
 
-        public IActionResult Index(int? productId, DateTime? startDate, DateTime? endDate, string type, string totalPrice )
+        public IActionResult Index(int? productId, DateTime? startDate, DateTime? endDate, string type, string totalPrice)
         {
             decimal parsedTotal = 0;
 
@@ -67,7 +90,7 @@ namespace KiraSepet.WebUII.Controllers
             HttpContext.Session.SetString("RentalTotalPrice", parsedTotal.ToString());
             HttpContext.Session.SetInt32("RentalProductId", productId ?? 0);
 
-            ViewBag.CartTotal = CartController.cartItems.Sum(x => x.SalePrice * x.Quantity);
+            ViewBag.CartTotal = 0;
 
             return View();
         }
@@ -119,81 +142,83 @@ namespace KiraSepet.WebUII.Controllers
 
 
 
-                foreach (var item in CartController.cartItems)
+            foreach (var item in GetCart())
+            {
+                var order = new Order
                 {
-                    var order = new Order
-                    {
-                        ProductName = item.ProductName,
-                        Price = item.SalePrice,
-                        Quantity = item.Quantity,
-                        TotalPrice = item.SalePrice * item.Quantity,
-                        OrderDate = DateTime.Now,
-                        UserEmail = HttpContext.Session.GetString("UserEmail")
+                    ProductName = item.ProductName,
+                    Price = item.SalePrice,
+                    Quantity = item.Quantity,
+                    TotalPrice = item.SalePrice * item.Quantity,
+                    OrderDate = DateTime.Now,
+                    UserEmail = HttpContext.Session.GetString("UserEmail")
 
-                    };
-                    _context.Orders.Add(order);
+                };
+                _context.Orders.Add(order);
 
-                    // STOK DÜŞÜR
-                    var soldProduct = _context.Products.FirstOrDefault(x => x.ProductName == item.ProductName);
+                // STOK DÜŞÜR
+                var soldProduct = _context.Products.FirstOrDefault(x => x.ProductName == item.ProductName);
 
-                    if (soldProduct != null && soldProduct.StockCount >= item.Quantity)
-                    {
-                        soldProduct.StockCount -= item.Quantity;
-                    }
-
-                    _context.SaveChanges();
+                if (soldProduct != null && soldProduct.StockCount >= item.Quantity)
+                {
+                    soldProduct.StockCount -= item.Quantity;
                 }
 
-                var rentalProductId = HttpContext.Session.GetInt32("RentalProductId") ?? 0;
-
-                var product = _context.Products.FirstOrDefault(x => x.Id == rentalProductId);
-
-                var rentalStartDateString = HttpContext.Session.GetString("RentalStartDate");
-                var rentalEndDateString = HttpContext.Session.GetString("RentalEndDate");
-
-                if (!string.IsNullOrEmpty(rentalStartDateString) && !string.IsNullOrEmpty(rentalEndDateString))
-                {
-                    var startDate = Convert.ToDateTime(rentalStartDateString);
-                    var endDate = Convert.ToDateTime(rentalEndDateString);
-                    var totalPrice = Convert.ToDecimal(HttpContext.Session.GetString("RentalTotalPrice"));
-
-                    var rentalOrder = new RentalOrder
-                    {
-                        ProductName = product?.ProductName ?? "Ürün Bulunamadı",
-                        DailyRentPrice = product?.DailPrice ?? 0,
-                        StartDate = startDate,
-                        EndDate = endDate,
-                        TotalDays = (endDate - startDate).Days,
-                        TotalPrice = totalPrice,
-                        UserEmail = HttpContext.Session.GetString("UserEmail"),
-                        OrderDate = DateTime.Now,
-                        Status = "Kiralandı",
-                        Quantity = 1
-                    };
-
-                    _context.RentalOrders.Add(rentalOrder);
-
-                    // KİRALAMA STOK DÜŞÜR
-                    if (product != null && product.StockCount >= 1)
-                    {
-                        product.StockCount -= 1;
-                    }
-
-                    _context.SaveChanges();
-                }
-
-
-
-                CartController.cartItems.Clear();
-
-                HttpContext.Session.Remove("Cart");
-                HttpContext.Session.Remove("CartCount");
-
-                TempData["OrderMessage"] = "Ödemeniz gerçekleştirildi. Siparişiniz oluşturuldu!";
-
-                return RedirectToAction("Index", "Order");
+                _context.SaveChanges();
             }
 
+            var rentalProductId = HttpContext.Session.GetInt32("RentalProductId") ?? 0;
+
+            var product = _context.Products.FirstOrDefault(x => x.Id == rentalProductId);
+
+            var rentalStartDateString = HttpContext.Session.GetString("RentalStartDate");
+            var rentalEndDateString = HttpContext.Session.GetString("RentalEndDate");
+
+            if (!string.IsNullOrEmpty(rentalStartDateString) && !string.IsNullOrEmpty(rentalEndDateString))
+            {
+                var startDate = Convert.ToDateTime(rentalStartDateString);
+                var endDate = Convert.ToDateTime(rentalEndDateString);
+                var totalPrice = Convert.ToDecimal(HttpContext.Session.GetString("RentalTotalPrice"));
+
+                var rentalOrder = new RentalOrder
+                {
+                    ProductName = product?.ProductName ?? "Ürün Bulunamadı",
+                    DailyRentPrice = product?.DailPrice ?? 0,
+                    StartDate = startDate,
+                    EndDate = endDate,
+                    TotalDays = (endDate - startDate).Days,
+                    TotalPrice = totalPrice,
+                    UserEmail = HttpContext.Session.GetString("UserEmail"),
+                    OrderDate = DateTime.Now,
+                    Status = "Kiralandı",
+                    Quantity = 1
+                };
+
+                _context.RentalOrders.Add(rentalOrder);
+
+                // KİRALAMA STOK DÜŞÜR
+                if (product != null && product.StockCount >= 1)
+                {
+                    product.StockCount -= 1;
+                }
+
+                _context.SaveChanges();
+            }
+
+
+
+            SaveCart(new List<CartItem>());
+
+            HttpContext.Session.Remove("Cart");
+            HttpContext.Session.Remove("CartCount");
+
+            TempData["OrderMessage"] = "Ödemeniz gerçekleştirildi. Siparişiniz oluşturuldu!";
+
+            return RedirectToAction("Index", "Order");
         }
+
     }
+}
+
+    
  

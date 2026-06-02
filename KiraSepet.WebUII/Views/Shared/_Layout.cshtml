@@ -1,4 +1,4 @@
-﻿@using KiraSepet.WebUII.Controllers
+﻿+@using KiraSepet.WebUII.Controllers
 
 <!DOCTYPE html>
 <html lang="en">
@@ -72,12 +72,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-light" href="/Cart/Index">
                                 🛒 Sepet
-                                @if (CartController.cartItems.Count > 0)
-                                {
                                     <span class="badge bg-danger">
-                                        @CartController.cartItems.Count
+                                        0
                                     </span>
-                                }
                             </a>
 
 

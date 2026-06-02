@@ -1,6 +1,6 @@
 ﻿using KiraSepet.EntityLayer;
 using Microsoft.EntityFrameworkCore;
-
+using KiraSepet.EntityLayer;
 
 namespace KiraSepet.DataAccessLayer
 {
@@ -21,7 +21,8 @@ namespace KiraSepet.DataAccessLayer
         public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<RentalOrder> RentalOrders { get; set; }
-       
+        public DbSet<CartItem> CartItems { get; set; }
+
     }
 }
 
@@ -41,4 +42,3 @@ namespace KiraSepet.DataAccessLayer
 
 // Entity Framework class’ı okuyup SQL tablosuna çevirdi.
 
-//
