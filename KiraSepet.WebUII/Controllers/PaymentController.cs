@@ -90,6 +90,12 @@ namespace KiraSepet.WebUII.Controllers
             HttpContext.Session.SetString("RentalTotalPrice", parsedTotal.ToString());
             HttpContext.Session.SetInt32("RentalProductId", productId ?? 0);
 
+            if (type == "rent" && startDate != null && endDate != null)
+            {
+                HttpContext.Session.SetString("RentalStartDate", startDate.Value.ToString("o"));
+                HttpContext.Session.SetString("RentalEndDate", endDate.Value.ToString("o"));
+            }
+
             ViewBag.CartTotal = 0;
 
             return View();
@@ -102,7 +108,16 @@ namespace KiraSepet.WebUII.Controllers
             var rentalTotal = HttpContext.Session.GetString("RentalTotalPrice");
             var productId = HttpContext.Session.GetInt32("RentalProductId") ?? 0;
 
-            if (!string.IsNullOrEmpty(rentalTotal) && productId != 0)
+            var startDateStr = HttpContext.Session.GetString("RentalStartDate");
+            var endDateStr = HttpContext.Session.GetString("RentalEndDate");
+
+
+
+
+
+            if (!string.IsNullOrEmpty(rentalTotal) && productId != 0
+            && !string.IsNullOrEmpty(startDateStr)
+            && !string.IsNullOrEmpty(endDateStr))
             {
                 var paymentProduct = _context.Products.FirstOrDefault(x => x.Id == productId);
                 if (paymentProduct != null)
@@ -115,11 +130,12 @@ namespace KiraSepet.WebUII.Controllers
                         ProductId = paymentProduct.Id,
                         ProductName = paymentProduct.ProductName,
                         DailyRentPrice = paymentProduct.DailPrice ?? 0,
-                        StartDate = DateTime.Now,
-                        EndDate = DateTime.Now.AddDays(1),
-                        TotalDays = 1,
+                        StartDate = Convert.ToDateTime(HttpContext.Session.GetString("RentalStartDate")),
+                        EndDate = Convert.ToDateTime(HttpContext.Session.GetString("RentalEndDate")),
+                        TotalDays = (Convert.ToDateTime(HttpContext.Session.GetString("RentalEndDate")) - Convert.ToDateTime(HttpContext.Session.GetString("RentalStartDate"))).Days,
                         TotalPrice = Convert.ToDecimal(rentalTotal),
-                        UserEmail = HttpContext.Session.GetString("UserEmail"),
+                        UserEmail = HttpContext.Session.GetString("UserEmail")
+                                    ?? HttpContext.Session.GetString("UserName"),
                         OrderDate = DateTime.Now,
                         Status = "Kiralandı",
                         Quantity = 1
@@ -133,6 +149,10 @@ namespace KiraSepet.WebUII.Controllers
 
                     HttpContext.Session.Remove("RentalProductId");
                     HttpContext.Session.Remove("RentalTotalPrice");
+                    HttpContext.Session.Remove("RentalStartDate");
+                    HttpContext.Session.Remove("RentalEndDate");
+
+
 
                     TempData["OrderMessage"] = "Kiralama işleminiz gerçekleşti.";
 
@@ -140,9 +160,13 @@ namespace KiraSepet.WebUII.Controllers
                 }
             }
 
+            var userName = HttpContext.Session.GetString("UserName");
 
+            var cartItems = _context.CartItems
+                .Where(x => x.UserName == userName)
+                .ToList();
 
-            foreach (var item in GetCart())
+            foreach (var item in cartItems)
             {
                 var order = new Order
                 {
@@ -176,17 +200,17 @@ namespace KiraSepet.WebUII.Controllers
 
             if (!string.IsNullOrEmpty(rentalStartDateString) && !string.IsNullOrEmpty(rentalEndDateString))
             {
-                var startDate = Convert.ToDateTime(rentalStartDateString);
-                var endDate = Convert.ToDateTime(rentalEndDateString);
+                DateTime rentalStartDate = Convert.ToDateTime(rentalStartDateString);
+                DateTime rentalEndDate = Convert.ToDateTime(rentalEndDateString);
                 var totalPrice = Convert.ToDecimal(HttpContext.Session.GetString("RentalTotalPrice"));
 
                 var rentalOrder = new RentalOrder
                 {
                     ProductName = product?.ProductName ?? "Ürün Bulunamadı",
                     DailyRentPrice = product?.DailPrice ?? 0,
-                    StartDate = startDate,
-                    EndDate = endDate,
-                    TotalDays = (endDate - startDate).Days,
+                    StartDate = rentalStartDate,
+                    EndDate = rentalEndDate,
+                    TotalDays = (rentalEndDate - rentalStartDate).Days,
                     TotalPrice = totalPrice,
                     UserEmail = HttpContext.Session.GetString("UserEmail"),
                     OrderDate = DateTime.Now,
@@ -207,10 +231,10 @@ namespace KiraSepet.WebUII.Controllers
 
 
 
-            SaveCart(new List<CartItem>());
+           
 
-            HttpContext.Session.Remove("Cart");
-            HttpContext.Session.Remove("CartCount");
+            _context.CartItems.RemoveRange(cartItems);
+            _context.SaveChanges();
 
             TempData["OrderMessage"] = "Ödemeniz gerçekleştirildi. Siparişiniz oluşturuldu!";
 

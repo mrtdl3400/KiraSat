@@ -33,7 +33,8 @@ namespace KiraSepet.WebUI.Controllers
 
         public IActionResult PurchasedOrders()
         {
-            var userEmail = HttpContext.Session.GetString("UserEmail");
+            var userEmail = HttpContext.Session.GetString("UserEmail")
+                ?? HttpContext.Session.GetString("UserName");
 
             var values = _context.Orders
                 .Where(x => x.UserEmail == userEmail)

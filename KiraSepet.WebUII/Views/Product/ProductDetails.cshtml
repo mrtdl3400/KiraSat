@@ -326,15 +326,26 @@ else
 
 
 <script>
+       
+
     function calculateRent() {
 
-        const start = new Date(document.getElementById("startDate").value);
-        
-        const end = new Date(document.getElementById("endDate").value);
+            const startValue = document.getElementById("startDate").value;
+    const endValue = document.getElementById("endDate").value;
+
+    if (!startValue || !endValue) {
+        document.getElementById("rentResult").style.display = "block";
+        document.getElementById("rentResult").innerHTML = "Lütfen başlangıç ve bitiş tarihini seçiniz!";
+        return;
+    }
+
+       const start = new Date(startValue);
+
+       const end = new Date(endValue);
 
         const diffTime = end - start;
 
-        const diffDays = diffTime / (1000 * 60 * 60 * 24);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
       const dailyPrice = parseFloat("@Model.DailPrice".replace(",", "."));
 
@@ -396,10 +407,11 @@ else
             console.log(total);
 
     window.location.href =
-        "/Payment/Index?productId=" + productId +
-        "&startDate=" + startDate +
-        "&endDate=" + endDate +
-        "&totalPrice=" + encodeURIComponent(total);
+    "/Payment/Index?productId=" + productId +
+    "&type=rent" +
+    "&startDate=" + startDate +
+    "&endDate=" + endDate +
+    "&totalPrice=" + encodeURIComponent(total);
     }
 
 

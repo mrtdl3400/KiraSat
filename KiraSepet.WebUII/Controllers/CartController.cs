@@ -1,13 +1,9 @@
 ﻿using KiraSepet.DataAccessLayer;
 using KiraSepet.EntityLayer;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 
 namespace KiraSepet.WebUI.Controllers
 {
-    
-    
-
     public class CartController : Controller
     {
         private readonly Context _context;
@@ -17,42 +13,27 @@ namespace KiraSepet.WebUI.Controllers
             _context = context;
         }
 
-        private string GetCartKey()
-        {
-            return "Cart_" + HttpContext.Session.GetString("UserName");
-        }
-
-        private List<CartItem> GetCart()
-        {
-            var cartJson = HttpContext.Session.GetString(GetCartKey());
-
-            if (string.IsNullOrEmpty(cartJson))
-            {
-                return new List<CartItem>();
-            }
-
-            return JsonSerializer.Deserialize<List<CartItem>>(cartJson) ?? new List<CartItem>();
-        }
-
-        private void SaveCart(List<CartItem> cartItems)
-        {
-            HttpContext.Session.SetString(GetCartKey(), JsonSerializer.Serialize(cartItems));
-        }
-
         public IActionResult Index()
         {
-            if (HttpContext.Session.GetString("UserName") == null)
+            var userName = HttpContext.Session.GetString("UserName");
+
+            if (userName == null)
             {
                 return RedirectToAction("Index", "Login");
             }
 
-            var cartItems = GetCart();
+            var cartItems = _context.CartItems
+                .Where(x => x.UserName == userName)
+                .ToList();
+
             return View(cartItems);
         }
 
         public IActionResult AddToCart(int id)
         {
-            if (HttpContext.Session.GetString("UserName") == null)
+            var userName = HttpContext.Session.GetString("UserName");
+
+            if (userName == null)
             {
                 return RedirectToAction("Index", "Login");
             }
@@ -64,18 +45,18 @@ namespace KiraSepet.WebUI.Controllers
                 return RedirectToAction("Index", "Product");
             }
 
-            var cartItems = GetCart();
-
-            var cartItem = cartItems.FirstOrDefault(x => x.ProductId == id);
+            var cartItem = _context.CartItems
+                .FirstOrDefault(x => x.ProductId == id && x.UserName == userName);
 
             if (cartItem == null)
             {
-                cartItems.Add(new CartItem
+                _context.CartItems.Add(new CartItem
                 {
                     ProductId = product.Id,
                     ProductName = product.ProductName,
                     SalePrice = product.SalePrice,
-                    Quantity = 1
+                    Quantity = 1,
+                    UserName = userName
                 });
             }
             else
@@ -83,69 +64,82 @@ namespace KiraSepet.WebUI.Controllers
                 cartItem.Quantity++;
             }
 
-            SaveCart(cartItems);
+            _context.SaveChanges();
 
-            TempData["Message"] = "Ürün sepete eklendi!";
+            var cartCount = _context.CartItems
+                .Where(x => x.UserName == userName)
+                .Sum(x => x.Quantity);
+
+            HttpContext.Session.SetInt32("CartCount", cartCount);
 
             return RedirectToAction("Index");
         }
 
         public IActionResult IncreaseQuantity(int id)
         {
-            var cartItems = GetCart();
+            var userName = HttpContext.Session.GetString("UserName");
 
-            var cartItem = cartItems.FirstOrDefault(x => x.ProductId == id);
+            var cartItem = _context.CartItems
+                .FirstOrDefault(x => x.ProductId == id && x.UserName == userName);
 
             if (cartItem != null)
             {
                 cartItem.Quantity++;
+                _context.SaveChanges();
             }
-
-            SaveCart(cartItems);
 
             return RedirectToAction("Index");
         }
 
         public IActionResult DecreaseQuantity(int id)
         {
-            var cartItems = GetCart();
+            var userName = HttpContext.Session.GetString("UserName");
 
-            var cartItem = cartItems.FirstOrDefault(x => x.ProductId == id);
+            var cartItem = _context.CartItems
+                .FirstOrDefault(x => x.ProductId == id && x.UserName == userName);
 
             if (cartItem != null && cartItem.Quantity > 1)
             {
                 cartItem.Quantity--;
+                _context.SaveChanges();
             }
-
-            SaveCart(cartItems);
 
             return RedirectToAction("Index");
         }
 
         public IActionResult RemoveFromCart(int id)
         {
-            var cartItems = GetCart();
+            var userName = HttpContext.Session.GetString("UserName");
 
-            var cartItem = cartItems.FirstOrDefault(x => x.ProductId == id);
+            var cartItem = _context.CartItems
+                .FirstOrDefault(x => x.ProductId == id && x.UserName == userName);
 
             if (cartItem != null)
             {
-                cartItems.Remove(cartItem);
+                _context.CartItems.Remove(cartItem);
+                _context.SaveChanges();
             }
-
-            SaveCart(cartItems);
 
             return RedirectToAction("Index");
         }
 
         public IActionResult CompleteOrder()
         {
-            var cartItems = new List<CartItem>();
-            SaveCart(cartItems);
+            var userName = HttpContext.Session.GetString("UserName");
+
+            var cartItems = _context.CartItems
+                .Where(x => x.UserName == userName)
+                .ToList();
+
+            _context.CartItems.RemoveRange(cartItems);
+            _context.SaveChanges();
 
             TempData["OrderMessage"] = "Sipariş başarıyla oluşturuldu!";
-
             return RedirectToAction("Index");
         }
     }
 }
+
+
+
+
