@@ -11,7 +11,23 @@ namespace KiraSepet.WebUI.Controllers
         public CartController(Context context)
         {
             _context = context;
+
+
         }
+
+        
+
+        private void UpdateCartCount()
+        {
+            var userName = HttpContext.Session.GetString("UserName");
+
+            var cartCount = _context.CartItems
+                .Where(x => x.UserName == userName)
+                .Sum(x => x.Quantity);
+
+            HttpContext.Session.SetInt32("CartCount", cartCount);
+        }
+
 
         public IActionResult Index()
         {
@@ -22,12 +38,16 @@ namespace KiraSepet.WebUI.Controllers
                 return RedirectToAction("Index", "Login");
             }
 
+            UpdateCartCount();
+
             var cartItems = _context.CartItems
                 .Where(x => x.UserName == userName)
                 .ToList();
 
             return View(cartItems);
+        
         }
+
 
         public IActionResult AddToCart(int id)
         {
@@ -86,10 +106,13 @@ namespace KiraSepet.WebUI.Controllers
             {
                 cartItem.Quantity++;
                 _context.SaveChanges();
+
+                UpdateCartCount();
             }
 
             return RedirectToAction("Index");
         }
+
 
         public IActionResult DecreaseQuantity(int id)
         {
@@ -99,10 +122,12 @@ namespace KiraSepet.WebUI.Controllers
                 .FirstOrDefault(x => x.ProductId == id && x.UserName == userName);
 
             if (cartItem != null && cartItem.Quantity > 1)
-            {
-                cartItem.Quantity--;
-                _context.SaveChanges();
-            }
+{
+    cartItem.Quantity--;
+    _context.SaveChanges();
+
+    UpdateCartCount();
+}
 
             return RedirectToAction("Index");
         }
@@ -118,6 +143,8 @@ namespace KiraSepet.WebUI.Controllers
             {
                 _context.CartItems.Remove(cartItem);
                 _context.SaveChanges();
+
+                UpdateCartCount();
             }
 
             return RedirectToAction("Index");

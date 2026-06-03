@@ -36,6 +36,12 @@ namespace KiraSepet.WebUI.Controllers
                 HttpContext.Session.SetString("UserName", user.NameSurname);
                 HttpContext.Session.SetString("UserRole", user.Role);
 
+                var cartCount = _context.CartItems
+                .Where(x => x.UserName == user.NameSurname)
+                .Sum(x => x.Quantity);
+
+                HttpContext.Session.SetInt32("CartCount", cartCount);
+
                 if (user.Role == "Admin")
                 {
                     return RedirectToAction("Index", "Product");
