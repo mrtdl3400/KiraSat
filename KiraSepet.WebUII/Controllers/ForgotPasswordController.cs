@@ -1,10 +1,13 @@
-﻿using KiraSepet.DataAccessLayer;
+using KiraSepet.DataAccessLayer;
 using KiraSepet.WebUI.Models;
 using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using System.Text.Json;
+
 
 
 namespace KiraSepet.WebUII.Controllers
@@ -13,11 +16,16 @@ namespace KiraSepet.WebUII.Controllers
     {
         private readonly Context _context;
         private readonly MailSettings _mailSettings;
+        private readonly IDataProtector _protector;
 
-        public ForgotPasswordController(Context context, IOptions<MailSettings> mailSettings)
+        public ForgotPasswordController(
+            Context context,
+            IOptions<MailSettings> mailSettings,
+            IDataProtectionProvider dataProtectionProvider)
         {
             _context = context;
             _mailSettings = mailSettings.Value;
+            _protector = dataProtectionProvider.CreateProtector("KiraSepet.PasswordReset");
         }
 
         [HttpGet]
@@ -29,11 +37,30 @@ namespace KiraSepet.WebUII.Controllers
         [HttpPost]
         public IActionResult Index(string email)
         {
+            Console.WriteLine("GELEN EMAIL = " + email);
+
             var user = _context.AppUsers
             .FirstOrDefault(x => x.Email.Trim().ToLower() == email.Trim().ToLower());
 
             if (user != null)
             {
+
+
+                var tokenPayload = new PasswordResetToken
+                {
+                    Email = user.Email,
+                    ExpiresAt = DateTime.UtcNow.AddMinutes(30)
+                };
+
+                var token = _protector.Protect(JsonSerializer.Serialize(tokenPayload));
+
+                var resetLink = Url.Action(
+                    "ResetPassword",
+                    "ForgotPassword",
+                    new { token },
+
+
+                    Request.Scheme);
                 var message = new MimeMessage();
 
                 message.From.Add(new MailboxAddress(
@@ -44,36 +71,137 @@ namespace KiraSepet.WebUII.Controllers
 
                 message.Subject = "KiraSepet Şifre Sıfırlama";
 
-                message.Body = new TextPart("plain")
+                message.Body = new TextPart("html")
                 {
-                    Text = $"Merhaba {user.NameSurname}, şifre sıfırlama talebiniz alınmıştır."
+                    Text = $@"
+                     <p>Merhaba {user.NameSurname},</p>
+                     <p>Şifrenizi yenilemek için aşağıdaki linke tıklayın:</p>
+                     <p><a href=""{resetLink}"">Şifremi Yenile</a></p>
+                     <p>Bu link 30 dakika geçerlidir.</p>"
                 };
 
-                using (var client = new SmtpClient())
+                try
                 {
-                    Console.WriteLine("OKUNAN MAIL: " + _mailSettings.Mail);
-                    Console.WriteLine("OKUNAN PASSWORD UZUNLUK: " + _mailSettings.Password.Length);
+                    using (var client = new SmtpClient())
+                    {
+                        Console.WriteLine("OKUNAN MAIL: " + _mailSettings.Mail);
+                        Console.WriteLine("OKUNAN PASSWORD UZUNLUK: " + _mailSettings.Password.Length);
 
-                    Console.WriteLine("OKUNAN HOST: " + _mailSettings.Host);
-                    Console.WriteLine("OKUNAN PORT: " + _mailSettings.Port);
+                        Console.WriteLine("OKUNAN HOST: " + _mailSettings.Host);
+                        Console.WriteLine("OKUNAN PORT: " + _mailSettings.Port);
 
-                    //client.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-                    //client.AuthenticationMechanisms.Remove("XOAUTH2");
+                        client.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
 
+                        client.Authenticate(_mailSettings.Mail.Trim(), _mailSettings.Password.Trim());
 
+                        client.Send(message);
 
-                    //client.Authenticate(_mailSettings.Mail.Trim(), _mailSettings.Password.Trim());
+                        client.Disconnect(true);
+                    }
 
-                    //client.Send(message);
-
-                    //client.Disconnect(true);
+                    ViewBag.Message = "Şifre yenileme linki mail adresinize gönderildi.";
+                    return View();
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Error = "Mail gönderilemedi: " + ex.Message;
+                    return View();
                 }
 
-                ViewBag.Message = "Şifre sıfırlama maili gönderildi.";
-                return View();
             }
             ViewBag.Error = "Bu email adresi sistemde bulunamadı.";
             return View();
+
+                   
+
+
+        }
+
+
+        [HttpGet]
+        public IActionResult ResetPassword(string token)
+        {
+            var resetToken = ReadToken(token);
+
+            if (resetToken == null)
+            {
+                ViewBag.Error = "Şifre yenileme linki geçersiz veya süresi dolmuş.";
+                return View();
+            }
+
+            ViewBag.Token = token;
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult ResetPassword(string token, string password, string confirmPassword)
+        {
+            var resetToken = ReadToken(token);
+
+            if (resetToken == null)
+            {
+                ViewBag.Error = "Şifre yenileme linki geçersiz veya süresi dolmuş.";
+                return View();
+            }
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                ViewBag.Token = token;
+                ViewBag.Error = "Yeni şifre boş olamaz.";
+                return View();
+            }
+
+            if (password != confirmPassword)
+            {
+                ViewBag.Token = token;
+                ViewBag.Error = "Şifreler eşleşmiyor.";
+                return View();
+            }
+
+            var user = _context.AppUsers
+                .FirstOrDefault(x => x.Email.Trim().ToLower() == resetToken.Email.Trim().ToLower());
+
+            if (user == null)
+            {
+                ViewBag.Error = "Kullanıcı bulunamadı.";
+                return View();
+            }
+
+            user.Password = password;
+            _context.SaveChanges();
+
+            ViewBag.Message = "Şifreniz başarıyla yenilendi. Yeni şifrenizle giriş yapabilirsiniz.";
+            return View();
+        }
+
+        private PasswordResetToken? ReadToken(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return null;
+            }
+
+            try
+            {
+                var json = _protector.Unprotect(token);
+                var resetToken = JsonSerializer.Deserialize<PasswordResetToken>(json);
+
+                if (resetToken == null || resetToken.ExpiresAt < DateTime.UtcNow)
+                {
+                    return null;
+                }
+
+                return resetToken;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        private class PasswordResetToken
+        {
+            public string Email { get; set; } = string.Empty;
+            public DateTime ExpiresAt { get; set; }
         }
     }
 }

@@ -7,7 +7,7 @@ namespace KiraSepet.WebUI.Controllers
     public class LoginController : Controller
     {
         private readonly Context _context;
-
+        
         public LoginController(Context context)
         {
             _context = context;
