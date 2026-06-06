@@ -17,7 +17,13 @@ namespace KiraSepet.WebUII.Controllers
 
         public IActionResult Index()
         {
-            var userName = HttpContext.Session.GetString("UserName") ?? "Guest";
+            var userName = HttpContext.Session.GetString("UserName");
+
+            if (userName == null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
 
             if (!userFavorites.ContainsKey(userName))
             {
@@ -28,7 +34,14 @@ namespace KiraSepet.WebUII.Controllers
         }
         public IActionResult AddToFavorite(int id)
         {
-            var userName = HttpContext.Session.GetString("UserName") ?? "Guest";
+            var userName = HttpContext.Session.GetString("UserName");
+
+            if (userName == null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            
 
             if (!userFavorites.ContainsKey(userName))
             {
@@ -52,7 +65,11 @@ namespace KiraSepet.WebUII.Controllers
                     ProductId = product.Id,
                     ProductName = product.ProductName,
                     SalePrice = product.SalePrice
+
+
                 });
+
+                TempData["FavoriteMessage"] = "Ürün favorilere kaydedildi.";
             }
 
             return RedirectToAction("Index");
@@ -60,7 +77,15 @@ namespace KiraSepet.WebUII.Controllers
 
         public IActionResult RemoveFromFavorite(int id)
         {
-            var userName = HttpContext.Session.GetString("UserName") ?? "Guest";
+            var userName = HttpContext.Session.GetString("UserName");
+
+            if (userName == null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            
+            
 
             if (!userFavorites.ContainsKey(userName))
             {
@@ -73,6 +98,7 @@ namespace KiraSepet.WebUII.Controllers
             if (favoriteItem != null)
             {
                 favoriteItems.Remove(favoriteItem);
+                TempData["FavoriteMessage"] = "Ürün favorilerden kaldırıldı.";
             }
 
             return RedirectToAction("Index");

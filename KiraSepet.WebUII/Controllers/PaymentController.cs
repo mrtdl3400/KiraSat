@@ -16,6 +16,11 @@ namespace KiraSepet.WebUII.Controllers
             _context = context;
         }
 
+        private bool IsLoggedIn()
+        {
+            return !string.IsNullOrEmpty(HttpContext.Session.GetString("UserName"));
+        }
+
         private string GetCartKey()
         {
             return "Cart_" + HttpContext.Session.GetString("UserName");
@@ -42,6 +47,11 @@ namespace KiraSepet.WebUII.Controllers
 
         public IActionResult Index(int? productId, DateTime? startDate, DateTime? endDate, string type, string totalPrice)
         {
+            if (!IsLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
             decimal parsedTotal = 0;
 
             if (!string.IsNullOrEmpty(totalPrice))
@@ -58,22 +68,19 @@ namespace KiraSepet.WebUII.Controllers
 
                     if (totalDays > 0)
                     {
-                        parsedTotal = product.DailPrice.Value * totalDays;
+                        parsedTotal = (product.DailPrice ?? 0) * totalDays;
                     }
                 }
             }
             else if (productId != null)
             {
-                var rentalTotal = HttpContext.Session.GetString("RentalTotalPrice");
-
-
                 var saleProduct = _context.Products.FirstOrDefault(x => x.Id == productId);
 
                 if (saleProduct != null)
                 {
                     if (type == "rent")
                     {
-                        parsedTotal = saleProduct.DailPrice.Value;
+                        parsedTotal = saleProduct.DailPrice ?? 0;
                     }
                     else
                     {
@@ -103,17 +110,19 @@ namespace KiraSepet.WebUII.Controllers
 
         public IActionResult CompletePayment()
         {
-
+            if (!IsLoggedIn())
+            {
+                return RedirectToAction("Index", "Login");
+            }
 
             var rentalTotal = HttpContext.Session.GetString("RentalTotalPrice");
             var productId = HttpContext.Session.GetInt32("RentalProductId") ?? 0;
 
             var startDateStr = HttpContext.Session.GetString("RentalStartDate");
             var endDateStr = HttpContext.Session.GetString("RentalEndDate");
-
-
-
-
+            var userEmail = HttpContext.Session.GetString("UserEmail")
+                            ?? HttpContext.Session.GetString("UserName")
+                            ?? "";
 
             if (!string.IsNullOrEmpty(rentalTotal) && productId != 0
             && !string.IsNullOrEmpty(startDateStr)
@@ -134,8 +143,7 @@ namespace KiraSepet.WebUII.Controllers
                         EndDate = Convert.ToDateTime(HttpContext.Session.GetString("RentalEndDate")),
                         TotalDays = (Convert.ToDateTime(HttpContext.Session.GetString("RentalEndDate")) - Convert.ToDateTime(HttpContext.Session.GetString("RentalStartDate"))).Days,
                         TotalPrice = Convert.ToDecimal(rentalTotal),
-                        UserEmail = HttpContext.Session.GetString("UserEmail")
-                                    ?? HttpContext.Session.GetString("UserName"),
+                        UserEmail = userEmail,
                         OrderDate = DateTime.Now,
                         Status = "Kiralandı",
                         Quantity = 1
@@ -175,7 +183,7 @@ namespace KiraSepet.WebUII.Controllers
                     Quantity = item.Quantity,
                     TotalPrice = item.SalePrice * item.Quantity,
                     OrderDate = DateTime.Now,
-                    UserEmail = HttpContext.Session.GetString("UserEmail")
+                    UserEmail = userEmail
 
                 };
                 _context.Orders.Add(order);
@@ -212,7 +220,7 @@ namespace KiraSepet.WebUII.Controllers
                     EndDate = rentalEndDate,
                     TotalDays = (rentalEndDate - rentalStartDate).Days,
                     TotalPrice = totalPrice,
-                    UserEmail = HttpContext.Session.GetString("UserEmail"),
+                    UserEmail = userEmail,
                     OrderDate = DateTime.Now,
                     Status = "Kiralandı",
                     Quantity = 1

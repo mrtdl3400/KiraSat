@@ -20,3 +20,451 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
+body {
+    background: #f7f8fb;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.ks-navbar {
+    background: white;
+    border-bottom: 1px solid #eceff3;
+    box-shadow: 0 8px 24px rgba(0,0,0,.06);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.ks-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #222;
+    font-size: 24px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.ks-logo {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f27a1a, #ffb000);
+    color: white;
+    display: grid;
+    place-items: center;
+    font-weight: 900;
+}
+
+.ks-search {
+    flex: 1;
+    max-width: 560px;
+    display: flex;
+    margin: 0 28px;
+    border: 2px solid #ffd3ad;
+    border-radius: 999px;
+    overflow: hidden;
+    background: white;
+}
+
+    .ks-search input {
+        flex: 1;
+        border: none;
+        outline: none;
+        padding: 12px 18px;
+    }
+
+    .ks-search button {
+        border: none;
+        background: #f27a1a;
+        color: white;
+        font-weight: 700;
+        padding: 0 24px;
+    }
+
+.ks-menu {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+    .ks-menu a {
+        color: #333;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+.ks-login {
+    color: #f27a1a !important;
+}
+
+.ks-register {
+    background: #f27a1a;
+    color: white !important;
+    padding: 9px 16px;
+    border-radius: 999px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 22px;
+    margin-top: 24px;
+}
+
+.product-card {
+    background: white;
+    border: 1px solid #eceff3;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 12px 28px rgba(0,0,0,.07);
+    transition: .2s;
+}
+
+    .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 18px 38px rgba(0,0,0,.12);
+    }
+
+.product-image {
+    display: block;
+    height: 210px;
+    background: #f4f5f7;
+}
+
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.product-image-wrap {
+    position: relative;
+}
+
+.favorite-heart {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid #ef4444;
+    background: #ffffff;
+    color: #ef4444;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.14);
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+    .favorite-heart:hover {
+        background: #ef4444;
+        color: #ffffff;
+        transform: translateY(-2px);
+    }
+
+.product-body {
+    padding: 16px;
+}
+
+.product-category {
+    color: #f27a1a;
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+
+.product-title {
+    display: block;
+    color: #222;
+    font-size: 18px;
+    font-weight: 800;
+    text-decoration: none;
+    margin-bottom: 4px;
+}
+
+.product-brand,
+.product-location {
+    color: #667085;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.product-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 8px;
+    font-size: 15px;
+}
+
+.rating-number {
+    color: #334155;
+    font-weight: 600;
+}
+
+.rating-stars {
+    display: inline-flex;
+    gap: 1px;
+}
+
+.star {
+    color: #cbd5e1;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.star.filled {
+    color: #f59e0b;
+}
+
+.rating-count {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.product-prices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 14px 0;
+}
+
+    .product-prices div {
+        background: #f7f8fb;
+        border-radius: 12px;
+        padding: 10px;
+    }
+
+    .product-prices span {
+        display: block;
+        color: #667085;
+        font-size: 12px;
+    }
+
+    .product-prices strong {
+        color: #111827;
+        font-size: 15px;
+    }
+
+.product-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.stock-badge,
+.rent-badge {
+    background: #0f8f5f;
+    color: white;
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+    .stock-badge.danger,
+    .rent-badge.danger {
+        background: #dc3545;
+    }
+
+.product-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+    .product-actions .btn {
+        border-radius: 10px;
+        font-weight: 700;
+    }
+
+.rent-panel {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    padding: 20px;
+    margin: 20px 0 24px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+}
+
+.rent-panel-title {
+    font-size: 20px;
+    font-weight: 900;
+    color: #111827;
+    margin-bottom: 14px;
+}
+
+.rent-date-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+    .rent-date-grid .form-control {
+        height: 46px;
+        border-radius: 12px;
+    }
+
+.register-page {
+    min-height: calc(100vh - 90px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 20px;
+    background: #f6f8fb;
+}
+
+.register-panel {
+    width: min(1080px, 100%);
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+}
+
+.register-visual {
+    background: linear-gradient(135deg, #ff7a1a, #ffb000);
+    color: white;
+    padding: 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.register-logo {
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: 900;
+    margin-bottom: 28px;
+}
+
+.register-visual h2 {
+    font-size: 36px;
+    font-weight: 900;
+    margin-bottom: 14px;
+}
+
+.register-visual p {
+    font-size: 17px;
+    line-height: 1.6;
+    opacity: 0.95;
+}
+
+.register-benefits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 28px;
+}
+
+.register-benefits span {
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.register-form-card {
+    padding: 48px;
+}
+
+.register-form-card h1 {
+    font-size: 34px;
+    font-weight: 900;
+    color: #111827;
+    margin-bottom: 8px;
+}
+
+.register-subtitle {
+    color: #64748b;
+    margin-bottom: 28px;
+}
+
+.register-form-card .form-group {
+    margin-bottom: 18px;
+}
+
+.register-form-card label {
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 8px;
+}
+
+.register-form-card .form-control {
+    height: 50px;
+    border-radius: 14px;
+    border: 1px solid #d7dce5;
+    padding: 0 16px;
+    font-size: 15px;
+}
+
+.register-form-card .form-control:focus {
+    border-color: #ff7a1a;
+    box-shadow: 0 0 0 4px rgba(255, 122, 26, 0.14);
+}
+
+.register-btn {
+    width: 100%;
+    height: 52px;
+    border: none;
+    border-radius: 16px;
+    background: #ff7a1a;
+    color: white;
+    font-size: 17px;
+    font-weight: 900;
+    margin-top: 8px;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.register-btn:hover {
+    background: #f26b0f;
+    transform: translateY(-1px);
+}
+
+.register-login-link {
+    text-align: center;
+    margin-top: 20px;
+    color: #64748b;
+}
+
+.register-login-link a {
+    color: #ff7a1a;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+@media (max-width: 768px) {
+    .register-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .register-visual,
+    .register-form-card {
+        padding: 32px 24px;
+    }
+
+    .register-visual h2 {
+        font-size: 28px;
+    }
+}
+

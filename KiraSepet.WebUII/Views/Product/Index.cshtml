@@ -65,204 +65,162 @@
             </form>
 
 
-            <div class="table-responsive w-100">
+            <div class="product-grid">
+                @foreach (var item in Model)
+                {
+                    <div class="product-card">
+                        <div class="product-image-wrap">
+                            <a href="/Product/ProductDetails/@item.Id" class="product-image">
+                                <img src="@item.ImageUrl" alt="@item.ProductName" />
+                            </a>
 
-                <table class="table table-hover table-striped table-bordered shadow-sm align-middle w-100">
-
-            <tr class="table-dark">
-                
-                <th>ID</th>
-                <th>Görsel</th>
-                <th>Ürün Adı</th>
-                <th>Marka</th>
-                <th>Fiyat</th>
-                <th>Konum</th>
-                <th>Kategori</th>
-                <th>Stok</th>
-                <th>Kiralanabilir</th>
-                <th>İşlem</th>
-            
-            </tr>
-
-                    @foreach (var item in Model)
-                    {
-                        <tr class="align-middle">
-
-                            <td>@item.Id</td>
-
-                            <td class="text-center align-middle">
-
-                                
-
-                                <a href="/Product/ProductDetails/@item.Id">
-                                    <img src="@item.ImageUrl"
-                                         class="img-fluid"
-                                         style="width:80px; height:80px; object-fit:cover; border-radius:12px;" />
+                            @if (Context.Session.GetString("UserName") == null)
+                            {
+                                <button type="button"
+                                        class="favorite-heart"
+                                        onclick="loginAlert()"
+                                        title="Favorilere ekle">
+                                    ♥
+                                </button>
+                            }
+                            else
+                            {
+                                <a href="/Favorite/AddToFavorite/@item.Id"
+                                   class="favorite-heart"
+                                   title="Favorilere ekle">
+                                    ♥
                                 </a>
-                            </td>
-
-                   <td>
-                   <a href="/Product/ProductDetails/@item.Id" class="text-decoration-none fw-bold text-dark">
-                   @item.ProductName
-                   </a>
-                   </td>
-
-                    <td>@item.Brand</td>
-
-                    <td>
-                        <div>
-                            <strong>Günlük Kira:</strong> @item.DailPrice ₺
+                            }
                         </div>
 
-                        <div>
-                            <strong>Satış:</strong> @item.SalePrice ₺
-                        </div>
-                    </td>
+                        <div class="product-body">
+                            <div class="product-category">
+                                @(item.Category != null ? item.Category.CategoryName : "Kategori Yok")
+                            </div>
 
-                            <td>
-                                <span class="badge bg-info text-dark px-3 py-2">
-                                    📍 @item.City / @item.District
+                            <a href="/Product/ProductDetails/@item.Id" class="product-title">
+                                @item.ProductName
+                            </a>
+
+                            <div class="product-brand">@item.Brand</div>
+
+                            @{
+                                var averageRatings = ViewBag.ProductAverageRatings as System.Collections.Generic.Dictionary<int, double>;
+                                var ratingCounts = ViewBag.ProductRatingCounts as System.Collections.Generic.Dictionary<int, int>;
+
+                                double averageRating = 0;
+                                int ratingCount = 0;
+
+                                if (averageRatings != null)
+                                {
+                                    averageRatings.TryGetValue(item.Id, out averageRating);
+                                }
+
+                                if (ratingCounts != null)
+                                {
+                                    ratingCounts.TryGetValue(item.Id, out ratingCount);
+                                }
+
+                                var roundedRating = (int)Math.Round(averageRating);
+                            }
+
+                            <div class="product-rating">
+                                <span class="rating-number">@averageRating.ToString("0.0")</span>
+
+                                <span class="rating-stars">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= roundedRating)
+                                        {
+                                            <span class="star filled">★</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="star">★</span>
+                                        }
+                                    }
                                 </span>
-                            </td>
 
-                            <td>
-                                @(item.Category != null
-                                ? item.Category.CategoryName
-                                : "Kategori Yok")
-                            </td>
+                                <span class="rating-count">(@ratingCount)</span>
+                            </div>
 
-                           
-                    <td>
-                        @if (item.StockCount <= 0)
-                        {
-                            <span class="badge bg-danger">Tükendi</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-success">@item.StockCount adet</span>
-                        }
+                            <div class="product-location">
+                                @item.City / @item.District
+                            </div>
 
-                    </td>
-                    <td>
-                        @if (item.IsRentable)
-                        {
-                            <span class="badge bg-success">Evet</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-danger">Hayır</span>
-                        }
-                    </td>
+                            <div class="product-prices">
+                                <div>
+                                    <span>Günlük kira</span>
+                                    <strong>@item.DailPrice ₺</strong>
+                                </div>
+                                <div>
+                                    <span>Satış</span>
+                                    <strong>@item.SalePrice ₺</strong>
+                                </div>
+                            </div>
 
-                            <td>
+                            <div class="product-meta">
+                                @if (item.StockCount <= 0)
+                                {
+                                    <span class="stock-badge danger">Tükendi</span>
+                                }
+                                else
+                                {
+                                    <span class="stock-badge">@item.StockCount adet</span>
+                                }
+
+                                @if (item.IsRentable)
+                                {
+                                    <span class="rent-badge">Kiralanabilir</span>
+                                }
+                                else
+                                {
+                                    <span class="rent-badge danger">Kiralanamaz</span>
+                                }
+                            </div>
+
+                            <div class="product-actions">
+                                <a href="/Product/ProductDetails/@item.Id" class="btn btn-info btn-sm">Detay</a>
+
+                                @if (Context.Session.GetString("UserName") == null)
+                                {
+                                    <button type="button" class="btn btn-success btn-sm" onclick="loginAlert()">Sepet</button>
+                                    
+                                }
+                                else
+                                {
+                                    <a href="/Cart/AddToCart/@item.Id" class="btn btn-success btn-sm">Sepet</a>
+                                    
+                                }
+
                                 @if (Context.Session.GetString("UserRole") == "Admin")
                                 {
-                                    <a href="/Product/UpdateProduct/@item.Id" class="btn btn-warning btn-sm">✏️ Güncelle</a>
-                                    <a href="/Product/DeleteProduct/@item.Id" class="btn btn-danger btn-sm">🗑️ Sil</a>
+                                    <a href="/Product/UpdateProduct/@item.Id" class="btn btn-warning btn-sm">Güncelle</a>
+                                    <a href="/Product/DeleteProduct/@item.Id" class="btn btn-danger btn-sm">Sil</a>
                                 }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
 
-                                <a href="/Product/ProductDetails/@item.Id" class="btn btn-info btn-sm">🔍 Detay</a>
-                                @if (Context.Session.GetString("UserName") == null)
-                                {
-                                    <button type="button" class="btn btn-success btn-sm" onclick="loginAlert()">
-                                        🛒 Sepet
-                                    </button>
-                                }
-                                else
-                                {
-                                    <a href="/Cart/AddToCart/@item.Id" class="btn btn-success btn-sm">
-                                        🛒 Sepet
-                                    </a>
-                                }
-                                @if (Context.Session.GetString("UserName") == null)
-                                {
-                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="loginAlert()">
-                                        💖 Favori
-                                    </button>
-                                }
-                                else
-                                {
-                                    <a href="/Favorite/AddToFavorite/@item.Id" class="btn btn-outline-danger btn-sm">
-                                        💖 Favori
-                                    </a>
-                                }
-                    </td>
+            <script>
+                            function loginAlert() {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Giriş yapmanız gerekiyor',
+                                    text: 'Bu işlemi yapmak için giriş yapmalısınız.',
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Giriş Yap',
+                                    cancelButtonText: 'Vazgeç'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.href = '/Login/Index';
+                                    }
+                                });
+                            }
+            </script>
 
-                            <style>
-                                                        .action-buttons {
-                                                            display: grid;
-                                                            grid-template-columns: repeat(2, 1fr);
-                                                            gap: 6px;
-                                                            min-width: 190px;
-                                                        }
-
-                                                            .action-buttons .btn {
-                                                                border-radius: 10px;
-                                                                font-size: 13px;
-                                                                font-weight: 600;
-                                                                padding: 7px 8px;
-                                                                white-space: nowrap;
-                                                                box-shadow: 0 2px 5px rgba(0,0,0,0.10);
-                                                                transition: 0.2s;
-                                                            }
-
-                                                                .action-buttons .btn:hover {
-                                                                    transform: scale(1.03);
-                                                                    opacity: 0.92;
-                                                                }
-                            </style>
-
-                            <style>
-                                                        .hero-text {
-                                                            text-align: center;
-                                                            margin-bottom: 35px;
-                                                            margin-top: 20px;
-                                                        }
-
-                                                            .hero-text h1 {
-                                                                font-size: 72px;
-                                                                font-weight: 800;
-                                                                background: linear-gradient(90deg,#0d6efd,#00c6ff);
-                                                                -webkit-background-clip: text;
-                                                                -webkit-text-fill-color: transparent;
-                                                                letter-spacing: 2px;
-                                                                text-shadow: 0 4px 15px rgba(0,0,0,0.10);
-                                                                margin-bottom: 10px;
-                                                            }
-
-                                                            .hero-text p {
-                                                                font-size: 22px;
-                                                                color: #666;
-                                                                font-weight: 500;
-                                                            }
-                            </style>
-
-                </tr>
-
-
-                        <script>
-                                                function loginAlert() {
-                                                    Swal.fire({
-                                                        icon: 'warning',
-                                                        title: 'Giriş yapmanız gerekiyor',
-                                                        text: 'Bu işlemi yapmak için giriş yapmalısınız.',
-                                                        showCancelButton: true,
-                                                        confirmButtonText: 'Giriş Yap',
-                                                        cancelButtonText: 'Vazgeç'
-                                                    }).then((result) => {
-                                                        if (result.isConfirmed) {
-                                                            window.location.href = '/Login/Index';
-                                                        }
-                                                    });
-                                                }
-                        </script>
-
-                        <style>
-                                                table img {
-                                                    display: block;
-                                                    margin: auto;
-                                                }
-                        </style>
-
-                                                              
-            }
+        </div>
+    </div>
+</div>

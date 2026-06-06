@@ -8,7 +8,13 @@
 
         <div class="mb-3">
             <label>Kart Üzerindeki İsim</label>
-            <input type="text" class="form-control" placeholder="Mert Dalkıran">
+            <input type="text" id="cardHolderName" class="form-control" placeholder="Mert Dalkıran">
+            <div class="form-check mt-2">
+                <input type="checkbox" id="rememberCardHolder" class="form-check-input">
+                <label for="rememberCardHolder" class="form-check-label">
+                    Kart üzerindeki ismi hatırla
+                </label>
+            </div>
         </div>
 
         <div class="mb-3">
@@ -52,3 +58,28 @@
     </div>
 
 </div>
+
+<script>
+    const cardHolderName = document.getElementById('cardHolderName');
+    const rememberCardHolder = document.getElementById('rememberCardHolder');
+    const savedCardHolderName = localStorage.getItem('kiraSepetCardHolderName');
+
+    if (savedCardHolderName) {
+        cardHolderName.value = savedCardHolderName;
+        rememberCardHolder.checked = true;
+    }
+
+    rememberCardHolder.addEventListener('change', function () {
+        if (this.checked) {
+            localStorage.setItem('kiraSepetCardHolderName', cardHolderName.value);
+        } else {
+            localStorage.removeItem('kiraSepetCardHolderName');
+        }
+    });
+
+    cardHolderName.addEventListener('input', function () {
+        if (rememberCardHolder.checked) {
+            localStorage.setItem('kiraSepetCardHolderName', this.value);
+        }
+    });
+</script>

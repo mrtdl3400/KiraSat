@@ -76,6 +76,20 @@ public class ProductController : Controller
     NormalizeText(x.District).Contains(district)).ToList();
         }
 
+        ViewBag.ProductAverageRatings = _context.Comments
+            .GroupBy(x => x.ProductId)
+            .ToDictionary(
+                g => g.Key,
+                g => g.Average(x => x.Rating)
+            );
+
+        ViewBag.ProductRatingCounts = _context.Comments
+            .GroupBy(x => x.ProductId)
+            .ToDictionary(
+                g => g.Key,
+                g => g.Count()
+            );
+
         return View(values.ToList());
     }
 

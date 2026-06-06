@@ -22,36 +22,38 @@
                     <strong>@Model.SalePrice ₺</strong>
                 </div>
 
-                @if (Model.IsRentable)
-                {
-                    <div class="card mt-4 p-3 shadow-sm">
-                        <h5>📅 Kiralama Tarihi Seç</h5>
-
-                        <input type="date" id="startDate"
-                               class="form-control mb-2"
-                               min="@DateTime.Now.ToString("yyyy-MM-dd")" />
-
-                        <input type="hidden" id="hiddenTotalPrice" value="0" />
-
-                        <input type="date" id="endDate"
-                               class="form-control mb-2"
-                               min="@DateTime.Now.ToString("yyyy-MM-dd")" />
-
-                        <button type="button" class="btn btn-primary mt-2" onclick="calculateRent()">
-                            Kiralama Ücretini Hesapla
-                        </button>
-
-                        
-
-                        <div class="alert alert-info mt-3" id="rentResult" style="display:none;"></div>
-                    </div>
-                }
-
                 <div>
                     <small>Günlük Kiralama</small>
                     <strong>@Model.DailPrice ₺</strong>
                 </div>
             </div>
+
+            @if (Model.IsRentable)
+            {
+                <div class="rent-panel">
+                    <div class="rent-panel-title">
+                        Kiralama Tarihi Seç
+                    </div>
+
+                    <div class="rent-date-grid">
+                        <input type="date" id="startDate"
+                               class="form-control"
+                               min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+
+                        <input type="date" id="endDate"
+                               class="form-control"
+                               min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    </div>
+
+                    <input type="hidden" id="hiddenTotalPrice" value="0" />
+
+                    <button type="button" class="btn btn-primary w-100 mt-3" onclick="calculateRent()">
+                        Kiralama Ücretini Hesapla
+                    </button>
+
+                    <div class="alert alert-info mt-3" id="rentResult" style="display:none;"></div>
+                </div>
+            }
 
             <p><b>Stok:</b> @Model.StockCount adet</p>
 
@@ -66,12 +68,21 @@
                     <span class="rent-no">Hayır</span>
                 }
             </p>
-
-            <div class="detail-buttons">
+            @if (Context.Session.GetString("UserName") == null)
+            {
+                <a href="/Login/Index"
+                   class="btn btn-dark"
+                   onclick="alert('Satın alma işlemi için lütfen giriş yapın veya kaydolun!')">
+                    Satın Al
+                </a>
+            }
+            else
+            {
                 <a href="/Payment/Index?productId=@Model.Id&type=buy"
                    class="btn btn-dark">
                     Satın Al
                 </a>
+            }
 
                 @if (Model.IsRentable)
                 {
@@ -96,7 +107,7 @@
             </div>
         </div>
 
-    </div>
+   
 </div>
 
 @if (TempData["CommentError"] != null)
@@ -112,24 +123,6 @@
         @TempData["RatingError"]
     </div>
 }
-<script>
-    function goToPayment(productId) {
-
-        var startDate = document.getElementById("startDate").value;
-        var endDate = document.getElementById("endDate").value;
-
-        if (startDate == "" || endDate == "") {
-            alert("Lütfen tarih seçin");
-            return;
-        }
-
-        window.location.href =
-            "/Payment/Index?productId=" + productId +
-            "&startDate=" + startDate +
-            "&endDate=" + endDate +
-            "&type=rent";
-    }
-</script>
 @if (ViewBag.RatingCount > 0)
 {
     <h4>⭐ Ortalama Puan: @ViewBag.AverageRating.ToString("0.0") / 5</h4>
@@ -266,6 +259,33 @@ else
         border-radius: 20px;
         font-weight: bold;
     }
+
+    .rent-panel {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 20px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+        margin: 20px 0 24px;
+        padding: 20px;
+    }
+
+    .rent-panel-title {
+        color: #111827;
+        font-size: 20px;
+        font-weight: 900;
+        margin-bottom: 14px;
+    }
+
+    .rent-date-grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: 1fr 1fr;
+    }
+
+        .rent-date-grid .form-control {
+            border-radius: 12px;
+            height: 46px;
+        }
 
     .detail-buttons {
         display: flex;

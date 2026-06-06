@@ -12,137 +12,36 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-dark bg-dark shadow-sm mb-4">
-            <div class="container-fluid">
-                <a class="navbar-brand fw-bold text-warning" asp-area="" asp-controller="Home" asp-action="Index">KiraSat</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav me-auto">
-                        <div class="d-flex">
-                            <li class="nav-item">
-                                
-                            </li>
-                            
+        
+        <nav class="navbar navbar-expand-lg ks-navbar">
+            <div class="container-fluid px-4">
+                <a class="ks-brand" href="/Home/Index">
+                    <span class="ks-logo">KS</span>
+                    <span>KiraSat</span>
+                </a>
 
-                        </div>
-                        <li class="nav-item dropdown">
-                            @if (Context.Session.GetString("UserRole") == "Admin")
-                            {
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle text-light" href="#" role="button" data-bs-toggle="dropdown">
-                                        Ürünler
-                                    </a>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="/Product/Index">Ürün Listesi</a></li>
-                                        <li><a class="dropdown-item" href="/Product/AddProduct">Ürün Ekle</a></li>
-                                    </ul>
-                                </li>
-                            }
+                <form method="get" action="/Product/Index" class="ks-search">
+                    <input type="text" name="p" placeholder="Ürün, marka veya kategori ara..." />
+                    <button type="submit">Ara</button>
+                </form>
 
-                           
+                <div class="ks-menu">
+                    <a href="/Product/Index?category=Elektronik">Elektronik</a>
+                    <a href="/Product/Index?category=Mobilya">Mobilya</a>
+                    <a href="/Product/Index?category=Spor">Spor</a>
+                    <a href="/Favorite/Index">Favoriler</a>
+                    <a href="/Cart/Index">Sepet</a>
 
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="kategoriDropdown" role="button" data-bs-toggle="dropdown">
-                                Kategoriler
-                            </a>
-                                <ul class="dropdown-menu">
-
-                                    <li><a class="dropdown-item" href="/Product/Index?category=Elektronik">Elektronik</a></li>
-                                    <li><a class="dropdown-item" href="/Product/Index?category=Mobilya">Mobilya</a></li>
-                                    <li><a class="dropdown-item" href="/Product/Index?category=Spor">Spor</a></li>
-
-                                    @if (Context.Session.GetString("UserRole") == "Admin")
-                                    {
-                                        <li><hr class="dropdown-divider" /></li>
-                                        <li><a class="dropdown-item" href="/Category/Index">Kategori Listesi</a></li>
-                                        <li><a class="dropdown-item" href="/Category/AddCategory">Kategori Ekle</a></li>
-                                    }
-
-                                </ul>
-                        </li>
-                        <li class="nav-item">
-
-
-                           
-
-                        </li>
-
-                            @{
-                                var cartCount = Context.Session.GetInt32("CartCount") ?? 0;
-                            }
-
-                            <li class="nav-item">
-                                <a class="nav-link text-light" href="/Cart/Index">
-                                    🛒 Sepet
-                                    <span class="badge bg-danger">
-                                        @cartCount
-                                    </span>
-                                </a>
-                            </li>
-
-
-                            
-                           @{
-                                    <li class="nav-item">
-                                        <a class="nav-link text-warning" href="/Order/Index">
-                                            📦 Siparişlerim
-                                        </a>
-                                    </li>
-    var userName = Context.Session.GetString("UserName") ?? "Guest";
-    var favCount = FavoriteController.userFavorites.ContainsKey(userName)
-        ? FavoriteController.userFavorites[userName].Count
-        : 0;
-}
-
-<li class="nav-item">
-         <a class="nav-link text-light d-flex align-items-center gap-1" href="/Favorite/Index">
-        ♡ Favoriler
-
-        @if (favCount > 0)
-        {
-            <span class="badge bg-danger">@favCount</span>
-        }
-    </a>
-</li>
-    
-                        
-                        @if (Context.Session.GetString("UserEmail") == null)
-                         {
-                           
-
-                                <a href="/Login/Index" class="btn btn-outline-primary me-2">
-                                    Giriş Yap
-                                </a>
-                                <a href="/Register/Index" class="btn btn-primary">
-                                    Kayıt Ol
-                                </a>
-
-                                <a href="/ForgotPassword/Index" class="btn btn-link">
-                                    Şifremi Unuttum
-                                </a>
-                        
-                       }
-                      else
-                      {
-                            <li class="nav-item">
-                                <span class="nav-link fw-bold text-primary">
-                                    👋 Hoşgeldin, @Context.Session.GetString("UserName")
-                                </span>
-
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link text-danger" href="/Login/Logout">
-                                    Çıkış Yap
-                                </a>
-                            </li>
-                     
-                     }                     
-                    </ul>
-
+                    @if (Context.Session.GetString("UserEmail") == null)
+                    {
+                        <a href="/Login/Index" class="ks-login">Giriş Yap</a>
+                        <a href="/Register/Index" class="ks-register">Kayıt Ol</a>
+                    }
+                    else
+                    {
+                        <a href="/Order/Index">Siparişlerim</a>
+                        <a href="/Login/Logout" class="ks-logout">Çıkış</a>
+                    }
                 </div>
             </div>
         </nav>
