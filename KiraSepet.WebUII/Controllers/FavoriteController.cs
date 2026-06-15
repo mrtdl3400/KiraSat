@@ -15,7 +15,9 @@ namespace KiraSepet.WebUII.Controllers
 
         public static Dictionary<string, List<FavoriteItem>> userFavorites = new Dictionary<string, List<FavoriteItem>>();
 
+        
         public IActionResult Index()
+
         {
             var userName = HttpContext.Session.GetString("UserName");
 
@@ -31,6 +33,20 @@ namespace KiraSepet.WebUII.Controllers
             }
 
             return View(userFavorites[userName]);
+        }
+
+        private void UpdateFavoriteCount()
+        {
+            var userName = HttpContext.Session.GetString("UserName");
+
+            var favoriteCount = 0;
+
+            if (userName != null && userFavorites.ContainsKey(userName))
+            {
+                favoriteCount = userFavorites[userName].Count;
+            }
+
+            HttpContext.Session.SetInt32("FavoriteCount", favoriteCount);
         }
         public IActionResult AddToFavorite(int id)
         {
@@ -70,9 +86,14 @@ namespace KiraSepet.WebUII.Controllers
                 });
 
                 TempData["FavoriteMessage"] = "Ürün favorilere kaydedildi.";
+
+               
             }
 
+            UpdateFavoriteCount();
             return RedirectToAction("Index");
+            
+
         }
 
         public IActionResult RemoveFromFavorite(int id)
@@ -101,6 +122,8 @@ namespace KiraSepet.WebUII.Controllers
                 TempData["FavoriteMessage"] = "Ürün favorilerden kaldırıldı.";
             }
 
+
+            UpdateFavoriteCount();
             return RedirectToAction("Index");
         }
     }

@@ -1,5 +1,7 @@
-﻿+@using KiraSepet.WebUII.Controllers
-
+﻿@{
+    var cartCount = Context.Session.GetInt32("CartCount") ?? 0;
+    var favoriteCount = Context.Session.GetInt32("FavoriteCount") ?? 0;
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,8 +31,21 @@
                     <a href="/Product/Index?category=Elektronik">Elektronik</a>
                     <a href="/Product/Index?category=Mobilya">Mobilya</a>
                     <a href="/Product/Index?category=Spor">Spor</a>
-                    <a href="/Favorite/Index">Favoriler</a>
-                    <a href="/Cart/Index">Sepet</a>
+                    <a href="/Favorite/Index" class="ks-count-link">
+                   
+                    Favoriler
+                    @if (favoriteCount > 0)
+                    {
+                        <span class="ks-count-badge">@favoriteCount</span>
+                    }
+                
+                <a href="/Cart/Index" class="ks-count-link">
+                    Sepet
+                    @if (cartCount > 0)
+                    {
+                        <span class="ks-count-badge">@cartCount</span>
+                    }
+                </a>
 
                     @if (Context.Session.GetString("UserEmail") == null)
                     {

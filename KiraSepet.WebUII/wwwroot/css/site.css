@@ -466,5 +466,26 @@ body {
     .register-visual h2 {
         font-size: 28px;
     }
+
+    .ks-count-link {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .ks-count-badge {
+        min-width: 18px;
+        height: 18px;
+        padding: 0 6px;
+        border-radius: 999px;
+        background: #f27a1a;
+        color: white;
+        font-size: 12px;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
 }
 
