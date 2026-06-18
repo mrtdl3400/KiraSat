@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using KiraSepet.DataAccessLayer;
 using KiraSepet.WebUI.Models;
 using MailKit.Net.Smtp;
@@ -167,7 +168,8 @@ namespace KiraSepet.WebUII.Controllers
                 return View();
             }
 
-            user.Password = password;
+            var passwordHasher = new PasswordHasher<AppUser>();
+            user.Password = passwordHasher.HashPassword(user, password);
             _context.SaveChanges();
 
             ViewBag.Message = "Şifreniz başarıyla yenilendi. Yeni şifrenizle giriş yapabilirsiniz.";

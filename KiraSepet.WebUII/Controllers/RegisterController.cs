@@ -4,6 +4,7 @@ using KiraSepet.EntityLayer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
+using Microsoft.AspNetCore.Identity;
 
 namespace KiraSepet.WebUI.Controllers
 {
@@ -26,7 +27,10 @@ namespace KiraSepet.WebUI.Controllers
         public IActionResult Index(AppUser appUser)
         {
             appUser.Role = "User";
-            
+
+            var passwordHasher = new PasswordHasher<AppUser>();
+            appUser.Password = passwordHasher.HashPassword(appUser, appUser.Password);
+
             _context.AppUsers.Add(appUser);
             _context.SaveChanges();
 

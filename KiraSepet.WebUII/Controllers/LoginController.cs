@@ -1,4 +1,5 @@
-﻿using KiraSepet.DataAccessLayer;
+﻿using Microsoft.AspNetCore.Identity;
+using KiraSepet.DataAccessLayer;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 
@@ -23,14 +24,33 @@ namespace KiraSepet.WebUI.Controllers
         public IActionResult Index(AppUser appUser)
         {
             var user = _context.AppUsers
-    .FirstOrDefault(x => x.Email == appUser.Email
-    && x.Password == appUser.Password);
+    .FirstOrDefault(x => x.Email == appUser.Email);
 
-            Console.WriteLine(appUser.Email);
-            Console.WriteLine(appUser.Password);
-
+            var passwordHasher = new PasswordHasher<AppUser>();
+            var passwordResult = PasswordVerificationResult.Failed;
 
             if (user != null)
+            {
+                try
+                {
+                    passwordResult = passwordHasher.VerifyHashedPassword(user, user.Password, appUser.Password);
+                }
+                catch (FormatException)
+                {
+                    passwordResult = PasswordVerificationResult.Failed;
+                }
+
+                if (passwordResult == PasswordVerificationResult.Failed && user.Password == appUser.Password)
+                {
+                    user.Password = passwordHasher.HashPassword(user, appUser.Password);
+                    _context.SaveChanges();
+
+                    passwordResult = PasswordVerificationResult.Success;
+                }
+            }
+
+
+            if (user != null && passwordResult != PasswordVerificationResult.Failed)
             {
                 HttpContext.Session.SetString("UserEmail", user.Email);
                 HttpContext.Session.SetString("UserName", user.NameSurname);
