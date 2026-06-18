@@ -82,14 +82,14 @@ namespace KiraSepet.WebUII.Controllers
 
                 try
                 {
+                    if (string.IsNullOrWhiteSpace(_mailSettings.Password))
+                    {
+                        ViewBag.Error = "Mail şifresi yapılandırılmamış. Lütfen User Secrets içine MailSettings:Password ekleyin.";
+                        return View();
+                    }
+
                     using (var client = new SmtpClient())
                     {
-                        Console.WriteLine("OKUNAN MAIL: " + _mailSettings.Mail);
-                        Console.WriteLine("OKUNAN PASSWORD UZUNLUK: " + _mailSettings.Password.Length);
-
-                        Console.WriteLine("OKUNAN HOST: " + _mailSettings.Host);
-                        Console.WriteLine("OKUNAN PORT: " + _mailSettings.Port);
-
                         client.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
 
                         client.Authenticate(_mailSettings.Mail.Trim(), _mailSettings.Password.Trim());
@@ -102,12 +102,12 @@ namespace KiraSepet.WebUII.Controllers
                     ViewBag.Message = "Şifre yenileme linki mail adresinize gönderildi.";
                     return View();
                 }
+
                 catch (Exception ex)
                 {
                     ViewBag.Error = "Mail gönderilemedi: " + ex.Message;
                     return View();
                 }
-
             }
             ViewBag.Error = "Bu email adresi sistemde bulunamadı.";
             return View();

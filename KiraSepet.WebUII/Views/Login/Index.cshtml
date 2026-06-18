@@ -44,6 +44,12 @@
                 <label>Şifreniz</label>
                 <input type="password" name="Password" class="form-control" placeholder="Şifreniz" />
 
+                <div class="text-end mt-2">
+                    <a href="/ForgotPassword/Index" class="forgot-password-link">
+                        Şifremi unuttum?
+                    </a>
+                </div>
+
                 <button type="submit" class="btn-login">
                     Giriş Yap
                 </button>
@@ -184,5 +190,18 @@
         font-weight: bold;
         color: #4f46e5;
     }
+
+    
+        .forgot-password-link {
+            color: #ff7a1a;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .forgot-password-link:hover {
+            text-decoration: underline;
+        }
+
 
 </style>
