@@ -1,4 +1,4 @@
-﻿@{
+﻿+@{
     var cartCount = Context.Session.GetInt32("CartCount") ?? 0;
     var favoriteCount = Context.Session.GetInt32("FavoriteCount") ?? 0;
 }
@@ -38,6 +38,9 @@
                     {
                         <span class="ks-count-badge">@favoriteCount</span>
                     }
+
+                    </a>
+
                 
                 <a href="/Cart/Index" class="ks-count-link">
                     Sepet
@@ -52,8 +55,17 @@
                         <a href="/Login/Index" class="ks-login">Giriş Yap</a>
                         <a href="/Register/Index" class="ks-register">Kayıt Ol</a>
                     }
+
+                    
                     else
                     {
+
+                    @if (Context.Session.GetString("UserRole") == "Admin")
+                    {
+                    <a href="/AdminBusiness/Index">İşletme Yönetimi</a>
+                    }
+                        <a href="/Notification/Index">Bildirimler</a>
+                        <a href="/Business/Apply">İşletme Başvurusu</a>
                         <a href="/Order/Index">Siparişlerim</a>
                         <a href="/Login/Logout" class="ks-logout">Çıkış</a>
                     }
@@ -61,8 +73,19 @@
             </div>
         </nav>
     </header>
+
+
     <div class="container">
+   
+
         <main role="main" class="pb-3">
+            @if (TempData["BusinessMessage"] != null)
+            {
+                <div class="alert alert-info mt-3">
+                    @TempData["BusinessMessage"]
+                </div>
+            }
+
             @RenderBody()
         </main>
     </div>

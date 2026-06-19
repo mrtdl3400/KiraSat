@@ -1,0 +1,58 @@
+﻿@model List<KiraSepet.EntityLayer.AppNotification>
+
+@{
+    ViewData["Title"] = "Bildirimler";
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Bildirimler</h1>
+            <p class="text-muted mb-0">
+                Hesabınızla ilgili güncellemeler burada görünür.
+            </p>
+        </div>
+
+        @if (Model.Any(x => !x.IsRead))
+        {
+            <form asp-action="MarkAllAsRead" method="post">
+                @Html.AntiForgeryToken()
+
+                <button type="submit" class="btn btn-outline-primary">
+                    Tümünü Okundu İşaretle
+                </button>
+            </form>
+        }
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="alert alert-info">
+            Henüz bildiriminiz yok.
+        </div>
+    }
+    else
+    {
+        <div class="list-group">
+            @foreach (var notification in Model)
+            {
+                <div class="list-group-item @(notification.IsRead ? "" : "list-group-item-primary")">
+                    <div class="d-flex justify-content-between align-items-start gap-3">
+                        <div>
+                            <h2 class="h6 mb-1">@notification.Title</h2>
+                            <p class="mb-1">@notification.Message</p>
+                            <small class="text-muted">
+                                @notification.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                            </small>
+                        </div>
+
+                        @if (!notification.IsRead)
+                        {
+                            <span class="badge bg-primary">Yeni</span>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

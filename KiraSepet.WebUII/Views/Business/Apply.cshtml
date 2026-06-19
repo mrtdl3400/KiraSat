@@ -1,0 +1,43 @@
+﻿@model KiraSepet.WebUII.Models.BusinessApplicationViewModel
+
+@{
+    ViewData["Title"] = "İşletme Başvurusu";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <h1 class="h3 mb-3">İşletme Başvurusu</h1>
+            <p class="text-muted">
+                Başvurunuz incelendikten sonra satış ve kiralama yapabilirsiniz.
+            </p>
+
+            <form asp-action="Apply" method="post">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="CompanyName" class="form-label">İşletme Adı</label>
+                    <input asp-for="CompanyName"
+                           class="form-control"
+                           placeholder="İşletme adınızı yazın" />
+                    <span asp-validation-for="CompanyName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="TaxNumber" class="form-label">Vergi Numarası</label>
+                    <input asp-for="TaxNumber"
+                           class="form-control"
+                           inputmode="numeric"
+                           placeholder="Vergi numaranızı yazın" />
+                    <span asp-validation-for="TaxNumber" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Başvuru Gönder
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,6 @@
 ﻿using KiraSepet.EntityLayer;
 using Microsoft.EntityFrameworkCore;
-using KiraSepet.EntityLayer;
+
 
 namespace KiraSepet.DataAccessLayer
 {
@@ -15,6 +15,42 @@ namespace KiraSepet.DataAccessLayer
             optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=KiraSepetDb;Trusted_Connection=True;TrustServerCertificate=True");
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Business>()
+                .Property(x => x.CommissionRate)
+                .HasPrecision(5, 2);
+
+            modelBuilder.Entity<Business>()
+    .Property(x => x.Status)
+    .HasConversion<string>()
+    .HasMaxLength(20)
+    .HasDefaultValue(BusinessStatus.Pending);
+
+            modelBuilder.Entity<AppNotification>()
+    .Property(x => x.Title)
+    .HasMaxLength(120);
+
+            modelBuilder.Entity<AppNotification>()
+                .Property(x => x.Message)
+                .HasMaxLength(500);
+
+            modelBuilder.Entity<AppNotification>()
+                .HasIndex(x => new { x.UserId, x.IsRead, x.CreatedAt });
+
+            modelBuilder.Entity<Product>()
+    .HasOne(x => x.Business)
+    .WithMany()
+    .HasForeignKey(x => x.BusinessId)
+    .OnDelete(DeleteBehavior.Restrict);
+        }
+
+
+
+
+
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Category> Categories { get; set; }
@@ -22,6 +58,8 @@ namespace KiraSepet.DataAccessLayer
         public DbSet<Comment> Comments { get; set; }
         public DbSet<RentalOrder> RentalOrders { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<Business> Businesses { get; set; }
+        public DbSet<AppNotification> AppNotifications { get; set; }
 
     }
 }

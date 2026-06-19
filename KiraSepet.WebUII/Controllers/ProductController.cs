@@ -95,9 +95,10 @@ public class ProductController : Controller
 
     public IActionResult AddProduct()
     {
-        if (!IsAdmin())
+        var adminCheck = RedirectIfNotAdmin();
+        if (adminCheck != null)
         {
-            return RedirectToAction("Index", "Product");
+            return adminCheck;
         }
 
         ViewBag.Categories = _context.Categories.ToList();
@@ -107,6 +108,12 @@ public class ProductController : Controller
     [HttpPost]
     public IActionResult AddProduct(Product p, IFormFile imageFile)
     {
+        var adminCheck = RedirectIfNotAdmin();
+        if (adminCheck != null)
+        {
+            return adminCheck;
+        }
+
         if (imageFile != null)
         {
             var extension = Path.GetExtension(imageFile.FileName);
@@ -135,7 +142,13 @@ public class ProductController : Controller
     [HttpPost]
     public IActionResult UpdateProduct(Product p, IFormFile imageFile)
     {
-       var values = _context.Products.Find(p.Id);;
+        var adminCheck = RedirectIfNotAdmin();
+        if (adminCheck != null)
+        {
+            return adminCheck;
+        }
+
+        var values = _context.Products.Find(p.Id);
 
         if (values == null)
         {
@@ -174,6 +187,12 @@ public class ProductController : Controller
     }
     public IActionResult UpdateProduct(int id)
     {
+        var adminCheck = RedirectIfNotAdmin();
+        if (adminCheck != null)
+        {
+            return adminCheck;
+        }
+
         ViewBag.Categories = _context.Categories.ToList();
 
 
@@ -183,10 +202,16 @@ public class ProductController : Controller
 
     }
 
-    
 
+    [HttpPost]
     public IActionResult DeleteProduct(int id)
     {
+        var adminCheck = RedirectIfNotAdmin();
+        if (adminCheck != null)
+        {
+            return adminCheck;
+        }
+
         var value = _context.Products.Find(id);
 
         if (value == null)
@@ -227,6 +252,17 @@ public class ProductController : Controller
     private bool IsAdmin()
     {
         return HttpContext.Session.GetString("UserRole") == "Admin";
+    }
+
+    private IActionResult? RedirectIfNotAdmin()
+    {
+        if (!IsAdmin())
+        {
+            TempData["AuthError"] = "Bu işlem için admin yetkisi gerekiyor.";
+            return RedirectToAction("Index", "Product");
+        }
+
+        return null;
     }
    
 

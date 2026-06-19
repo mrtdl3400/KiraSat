@@ -195,8 +195,21 @@
 
                                 @if (Context.Session.GetString("UserRole") == "Admin")
                                 {
-                                    <a href="/Product/UpdateProduct/@item.Id" class="btn btn-warning btn-sm">Güncelle</a>
-                                    <a href="/Product/DeleteProduct/@item.Id" class="btn btn-danger btn-sm">Sil</a>
+                                    @if (Context.Session.GetString("UserRole") == "Admin")
+                                    {
+                                        <a href="/Product/UpdateProduct/@item.Id" class="btn btn-warning btn-sm">Güncelle</a>
+
+                                        <form method="post"
+                                              action="/Product/DeleteProduct/@item.Id"
+                                              class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit"
+                                                    class="btn btn-danger btn-sm"
+                                                    onclick="return confirm('Bu ürünü silmek istediğinize emin misiniz?');">
+                                                Sil
+                                            </button>
+                                        </form>
+                                    }
                                 }
                             </div>
                         </div>

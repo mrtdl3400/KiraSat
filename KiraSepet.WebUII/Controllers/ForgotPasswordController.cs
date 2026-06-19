@@ -38,8 +38,6 @@ namespace KiraSepet.WebUII.Controllers
         [HttpPost]
         public IActionResult Index(string email)
         {
-            Console.WriteLine("GELEN EMAIL = " + email);
-
             var user = _context.AppUsers
             .FirstOrDefault(x => x.Email.Trim().ToLower() == email.Trim().ToLower());
 

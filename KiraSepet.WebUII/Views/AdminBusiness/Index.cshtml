@@ -1,0 +1,126 @@
+﻿@using KiraSepet.EntityLayer
+@model List<Business>
+
+@{
+    ViewData["Title"] = "İşletme Başvuruları";
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">İşletme Başvuruları</h1>
+
+        <a href="/Product/Index" class="btn btn-outline-secondary">
+            Ürünlere Dön
+        </a>
+    </div>
+
+    @if (TempData["BusinessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["BusinessMessage"]
+        </div>
+    }
+
+    @if (TempData["BusinessError"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["BusinessError"]
+        </div>
+    }
+
+    @if (Model.Count == 0)
+    {
+        <div class="alert alert-info">
+            Henüz işletme başvurusu yok.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>İşletme</th>
+                        <th>Vergi No</th>
+                        <th>Sahip Kullanıcı Id</th>
+                        <th>Komisyon</th>
+                        <th>Durum</th>
+                        <th>İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var business in Model)
+                    {
+                        <tr>
+                            <td>@business.CompanyName</td>
+                            <td>@business.TaxNumber</td>
+                            <td>@business.OwnerUserId</td>
+                            <td>%@business.CommissionRate</td>
+                            <td>
+                                @if (business.Status == BusinessStatus.Pending)
+                                {
+                                    <span class="badge bg-warning text-dark">Onay Bekliyor</span>
+                                }
+                                else if (business.Status == BusinessStatus.Approved)
+                                {
+                                    <span class="badge bg-success">Aktif</span>
+                                }
+                                else if (business.Status == BusinessStatus.Suspended)
+                                {
+                                    <span class="badge bg-danger">Askıya Alındı</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Reddedildi</span>
+                                }
+                            </td>
+                            <td>
+                                @if (business.Status == BusinessStatus.Pending)
+                                {
+                                    <form asp-action="Approve"
+                                          asp-route-id="@business.Id"
+                                          method="post"
+                                          class="d-inline">
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            Onayla
+                                        </button>
+                                    </form>
+                                }
+                                else if (business.Status == BusinessStatus.Approved)
+                                {
+                                    <form asp-action="Suspend"
+                                          asp-route-id="@business.Id"
+                                          method="post"
+                                          class="d-inline">
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                class="btn btn-danger btn-sm"
+                                                onclick="return confirm('Bu işletmeyi askıya almak istiyor musunuz?');">
+                                            Askıya Al
+                                        </button>
+                                    </form>
+                                }
+                                else if (business.Status == BusinessStatus.Suspended)
+                                {
+                                    <form asp-action="Reactivate"
+                                          asp-route-id="@business.Id"
+                                          method="post"
+                                          class="d-inline">
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit" class="btn btn-primary btn-sm">
+                                            Tekrar Aktifleştir
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

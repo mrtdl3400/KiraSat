@@ -8,7 +8,11 @@ namespace KiraSepet.EntityLayer
 {
     public class Product
     {
-        public int Id { get; set; } 
+        public int Id { get; set; }
+        // Ürünün ait olduğu işletme. Eski ürünlerde başlangıçta boş olabilir.
+        public int? BusinessId { get; set; }
+
+        public Business? Business { get; set; }
         public string ProductName { get; set; } 
 
         public decimal SalePrice { get; set; }  

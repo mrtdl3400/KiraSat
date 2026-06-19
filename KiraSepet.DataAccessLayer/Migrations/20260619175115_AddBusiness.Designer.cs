@@ -4,6 +4,7 @@ using KiraSepet.DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KiraSepet.DataAccessLayer.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20260619175115_AddBusiness")]
+    partial class AddBusiness
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,40 +54,6 @@ namespace KiraSepet.DataAccessLayer.Migrations
                     b.ToTable("AppUsers");
                 });
 
-            modelBuilder.Entity("KiraSepet.EntityLayer.AppNotification", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("nvarchar(120)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId", "IsRead", "CreatedAt");
-
-                    b.ToTable("AppNotifications");
-                });
-
             modelBuilder.Entity("KiraSepet.EntityLayer.Business", b =>
                 {
                     b.Property<int>("Id")
@@ -106,13 +75,6 @@ namespace KiraSepet.DataAccessLayer.Migrations
 
                     b.Property<int>("OwnerUserId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasDefaultValue("Pending");
 
                     b.Property<string>("TaxNumber")
                         .IsRequired()
@@ -249,9 +211,6 @@ namespace KiraSepet.DataAccessLayer.Migrations
                     b.Property<string>("Brand")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("BusinessId")
-                        .HasColumnType("int");
-
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
@@ -292,8 +251,6 @@ namespace KiraSepet.DataAccessLayer.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BusinessId");
 
                     b.HasIndex("CategoryId");
 
@@ -362,18 +319,11 @@ namespace KiraSepet.DataAccessLayer.Migrations
 
             modelBuilder.Entity("KiraSepet.EntityLayer.Product", b =>
                 {
-                    b.HasOne("KiraSepet.EntityLayer.Business", "Business")
-                        .WithMany()
-                        .HasForeignKey("BusinessId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("KiraSepet.EntityLayer.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Business");
 
                     b.Navigation("Category");
                 });
