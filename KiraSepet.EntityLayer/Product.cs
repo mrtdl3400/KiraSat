@@ -13,7 +13,7 @@ namespace KiraSepet.EntityLayer
         public int? BusinessId { get; set; }
 
         public Business? Business { get; set; }
-        public string ProductName { get; set; } 
+        public string ProductName { get; set; } = string.Empty;
 
         public decimal SalePrice { get; set; }  
         
@@ -27,13 +27,14 @@ namespace KiraSepet.EntityLayer
 
 
         public int CategoryId { get; set; } 
-        public Category Category { get; set; }
+        public Category Category { get; set; } = null!;
         public int StockCount { get; set; }
         public string? Description { get; set; }
-        public string City { get; set; }
+        public string City { get; set; } = string.Empty;
 
-        public string District { get; set; }
+        public string District { get; set; } = string.Empty;
 
         public string? Address { get; set; }
+        public decimal? DailyPrice { get; set; }
     }
 }

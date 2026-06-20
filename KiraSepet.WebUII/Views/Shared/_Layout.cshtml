@@ -1,6 +1,24 @@
-﻿+@{
+﻿@using KiraSepet.DataAccessLayer
+@inject Context DbContext
+
+@{
     var cartCount = Context.Session.GetInt32("CartCount") ?? 0;
     var favoriteCount = Context.Session.GetInt32("FavoriteCount") ?? 0;
+
+    var userEmail = Context.Session.GetString("UserEmail");
+    var unreadNotificationCount = 0;
+
+    if (!string.IsNullOrWhiteSpace(userEmail))
+    {
+        var currentUser = DbContext.AppUsers
+            .FirstOrDefault(x => x.Email == userEmail);
+
+        if (currentUser != null)
+        {
+            unreadNotificationCount = DbContext.AppNotifications
+                .Count(x => x.UserId == currentUser.Id && !x.IsRead);
+        }
+    }
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -59,13 +77,21 @@
                     
                     else
                     {
+                        <a href="/Business/Apply" class="ks-business-apply">İşletme Başvurusu</a>
 
                     @if (Context.Session.GetString("UserRole") == "Admin")
                     {
                     <a href="/AdminBusiness/Index">İşletme Yönetimi</a>
                     }
-                        <a href="/Notification/Index">Bildirimler</a>
-                        <a href="/Business/Apply">İşletme Başvurusu</a>
+                        <a href="/Notification/Index">
+                            Bildirimler
+                            @if (unreadNotificationCount > 0)
+                            {
+                                <span style="background:#dc3545; color:white; border-radius:50%; padding:2px 7px; font-size:12px; margin-left:4px;">
+                                    @unreadNotificationCount
+                                </span>
+                            }
+                        </a>
                         <a href="/Order/Index">Siparişlerim</a>
                         <a href="/Login/Logout" class="ks-logout">Çıkış</a>
                     }

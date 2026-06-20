@@ -10,7 +10,7 @@ namespace KiraSepet.EntityLayer
         public int ProductId { get; set; }
        
 
-        public string ProductName { get; set; }
+        public string ProductName { get; set; } = string.Empty;
 
         public decimal DailyRentPrice { get; set; }
 
@@ -22,11 +22,11 @@ namespace KiraSepet.EntityLayer
 
         public decimal TotalPrice { get; set; }
 
-        public string UserEmail { get; set; }
+        public string UserEmail { get; set; } = string.Empty;
 
         public DateTime OrderDate { get; set; }
 
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
         public int Quantity { get; set; }
     }
 }

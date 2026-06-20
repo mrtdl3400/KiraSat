@@ -4,9 +4,9 @@
     {
         public int Id { get; set; }
 
-        public string UserEmail { get; set; }
+        public string UserEmail { get; set; } = string.Empty;
 
-        public string ProductName { get; set; }
+        public string ProductName { get; set; } = string.Empty;
 
         public decimal Price { get; set; }
 

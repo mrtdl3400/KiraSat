@@ -121,6 +121,22 @@ namespace KiraSepet.WebUII.Controllers
             _context.Businesses.Add(business);
             _context.SaveChanges();
 
+            var admins = _context.AppUsers
+            .Where(x => x.Role == "Admin")
+            .ToList();
+
+            foreach (var admin in admins)
+            {
+                _context.AppNotifications.Add(new AppNotification
+                {
+                    UserId = admin.Id,
+                    Title = "Yeni satıcı başvurusu",
+                    Message = $"{business.CompanyName} adlı işletme onay bekliyor."
+                });
+            }
+
+            _context.SaveChanges();
+
             TempData["BusinessMessage"] =
                 "İşletme başvurunuz alındı. Admin onayı bekleniyor.";
 
