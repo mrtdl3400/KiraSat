@@ -91,6 +91,23 @@ namespace KiraSepet.WebUII.Controllers
                 : RedirectToAction("Index");
         }
 
+        public IActionResult OpenContactMessage(int id)
+        {
+            var user = GetCurrentUser();
+            if (user == null) return RedirectToAction("Index", "Login");
+
+            var notification = _context.AppNotifications.FirstOrDefault(x => x.Id == id && x.UserId == user.Id);
+            if (notification != null && !notification.IsRead)
+            {
+                notification.IsRead = true;
+                _context.SaveChanges();
+            }
+
+            return user.Role == "Admin"
+                ? RedirectToAction("ContactMessages", "Account")
+                : RedirectToAction("MyMessages", "Account");
+        }
+
         private AppUser? GetCurrentUser()
         {
             var userEmail = HttpContext.Session.GetString("UserEmail");

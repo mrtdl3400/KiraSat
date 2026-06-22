@@ -1,0 +1,5 @@
+@model bool
+<div class="container py-5 text-center">
+@if (Model) { <div class="alert alert-success">E-posta adresiniz doğrulandı. Artık giriş yapabilirsiniz.</div><a class="btn btn-primary" href="/Login/Index">Giriş Yap</a> }
+else { <div class="alert alert-danger">Doğrulama bağlantısı geçersiz veya süresi dolmuş.</div><a class="btn btn-outline-primary" href="/Register/Index">Yeniden Kayıt Ol</a> }
+</div>

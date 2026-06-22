@@ -24,7 +24,7 @@
 
                 <div>
                     <small>Günlük Kiralama</small>
-                    <strong>@Model.DailPrice ₺</strong>
+                    <strong>@Model.DailyPrice ₺</strong>
                 </div>
             </div>
 
@@ -367,7 +367,7 @@ else
 
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-      const dailyPrice = parseFloat("@Model.DailPrice".replace(",", "."));
+      const dailyPrice = parseFloat("@Model.DailyPrice".replace(",", "."));
 
         const total = diffDays * dailyPrice;
 

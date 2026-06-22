@@ -461,6 +461,16 @@ body {
     text-decoration: none;
 }
 
+.optional-label { color: #64748b; font-weight: 500; }
+.gender-options { display: grid; grid-template-columns: 1fr 1fr; }
+.gender-options label { margin: 0; padding: 13px; text-align: center; border: 1px solid #d7dce5; cursor: pointer; font-weight: 600; }
+.gender-options label:first-child { border-radius: 12px 0 0 12px; }
+.gender-options label:last-child { border-radius: 0 12px 12px 0; border-left: 0; }
+.gender-options input, .consent-item input { accent-color: #ff7a1a; }
+.consent-list { display: grid; gap: 12px; margin: 22px 0; }
+.consent-item { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; line-height: 1.45; cursor: pointer; }
+.consent-item input { width: 18px; height: 18px; margin-top: 2px; flex: 0 0 auto; }
+
 @media (max-width: 768px) {
     .register-panel {
         grid-template-columns: 1fr;

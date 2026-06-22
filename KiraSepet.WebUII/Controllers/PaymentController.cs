@@ -68,7 +68,7 @@ namespace KiraSepet.WebUII.Controllers
 
                     if (totalDays > 0)
                     {
-                        parsedTotal = (product.DailPrice ?? 0) * totalDays;
+                        parsedTotal = (product.DailyPrice ?? 0) * totalDays;
                     }
                 }
             }
@@ -80,7 +80,7 @@ namespace KiraSepet.WebUII.Controllers
                 {
                     if (type == "rent")
                     {
-                        parsedTotal = saleProduct.DailPrice ?? 0;
+                        parsedTotal = saleProduct.DailyPrice ?? 0;
                     }
                     else
                     {
@@ -138,7 +138,7 @@ namespace KiraSepet.WebUII.Controllers
                     {
                         ProductId = paymentProduct.Id,
                         ProductName = paymentProduct.ProductName,
-                        DailyRentPrice = paymentProduct.DailPrice ?? 0,
+                        DailyRentPrice = paymentProduct.DailyPrice ?? 0,
                         StartDate = Convert.ToDateTime(HttpContext.Session.GetString("RentalStartDate")),
                         EndDate = Convert.ToDateTime(HttpContext.Session.GetString("RentalEndDate")),
                         TotalDays = (Convert.ToDateTime(HttpContext.Session.GetString("RentalEndDate")) - Convert.ToDateTime(HttpContext.Session.GetString("RentalStartDate"))).Days,
@@ -215,7 +215,7 @@ namespace KiraSepet.WebUII.Controllers
                 var rentalOrder = new RentalOrder
                 {
                     ProductName = product?.ProductName ?? "Ürün Bulunamadı",
-                    DailyRentPrice = product?.DailPrice ?? 0,
+                    DailyRentPrice = product?.DailyPrice ?? 0,
                     StartDate = rentalStartDate,
                     EndDate = rentalEndDate,
                     TotalDays = (rentalEndDate - rentalStartDate).Days,

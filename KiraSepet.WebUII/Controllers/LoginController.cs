@@ -52,6 +52,12 @@ namespace KiraSepet.WebUI.Controllers
 
             if (user != null && passwordResult != PasswordVerificationResult.Failed)
             {
+                if (!user.IsEmailVerified)
+                {
+                    ViewBag.Error = "Giriş yapmadan önce e-posta adresinizi doğrulamanız gerekiyor.";
+                    return View();
+                }
+
                 HttpContext.Session.SetString("UserEmail", user.Email);
                 HttpContext.Session.SetString("UserName", user.NameSurname);
                 HttpContext.Session.SetString("UserRole", user.Role);
@@ -72,7 +78,7 @@ namespace KiraSepet.WebUI.Controllers
                 }
             }
 
-            ViewBag.Error = "Email veya şifre hatalı";
+            ViewBag.Error = "E-posta adresiniz veya şifreniz hatalı.";
             return View();
         }
         public IActionResult Logout()

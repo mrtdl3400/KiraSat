@@ -7,17 +7,14 @@
 
     var userEmail = Context.Session.GetString("UserEmail");
     var unreadNotificationCount = 0;
+    var currentUser = string.IsNullOrWhiteSpace(userEmail)
+        ? null
+        : DbContext.AppUsers.FirstOrDefault(x => x.Email == userEmail);
 
-    if (!string.IsNullOrWhiteSpace(userEmail))
+    if (currentUser != null)
     {
-        var currentUser = DbContext.AppUsers
-            .FirstOrDefault(x => x.Email == userEmail);
-
-        if (currentUser != null)
-        {
-            unreadNotificationCount = DbContext.AppNotifications
-                .Count(x => x.UserId == currentUser.Id && !x.IsRead);
-        }
+        unreadNotificationCount = DbContext.AppNotifications
+            .Count(x => x.UserId == currentUser.Id && !x.IsRead);
     }
 }
 <!DOCTYPE html>
@@ -77,7 +74,14 @@
                     
                     else
                     {
-                        <a href="/Business/Apply" class="ks-business-apply">İşletme Başvurusu</a>
+                        @if (currentUser != null && DbContext.Businesses.Any(x => x.OwnerUserId == currentUser.Id && x.IsApproved))
+                        {
+                            <a href="/Seller/Dashboard" class="ks-business-apply">Satıcı Paneli</a>
+                        }
+                        else
+                        {
+                            <a href="/Business/Apply" class="ks-business-apply">İşletme Başvurusu</a>
+                        }
 
                     @if (Context.Session.GetString("UserRole") == "Admin")
                     {
@@ -92,8 +96,52 @@
                                 </span>
                             }
                         </a>
+                        @if (Context.Session.GetString("UserRole") != "Admin")
+                        {
+                            <a href="/Account/MyMessages">Mesajlarım</a>
+                        }
                         <a href="/Order/Index">Siparişlerim</a>
-                        <a href="/Login/Logout" class="ks-logout">Çıkış</a>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary dropdown-toggle"
+                                    type="button"
+                                    data-bs-toggle="dropdown">
+                                Hesabım
+                            </button>
+
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="/Account/Profile">
+                                        Profilim
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item" href="/Account/Settings">
+                                        Hesap Ayarları
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item" href="/Account/About">
+                                        Hakkımızda
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item" href="/Account/Contact">
+                                        İletişim
+                                    </a>
+                                </li>
+
+                                <li><hr class="dropdown-divider" /></li>
+
+                                <li>
+                                    <a class="dropdown-item text-danger" href="/Login/Logout">
+                                        Çıkış Yap
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     }
                 </div>
             </div>

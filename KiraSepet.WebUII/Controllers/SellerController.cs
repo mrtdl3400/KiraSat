@@ -55,6 +55,7 @@ namespace KiraSepet.WebUI.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult AddProduct(Product product)
         {
             var business = GetCurrentBusiness();
@@ -90,5 +91,82 @@ namespace KiraSepet.WebUI.Controllers
             TempData["Success"] = "Ürün başarıyla eklendi.";
             return RedirectToAction(nameof(Dashboard));
         }
+
+        [HttpGet]
+        public IActionResult EditProduct(int id)
+        {
+            var business = GetCurrentBusiness();
+
+            if (business == null)
+                return RedirectToAction("Apply", "Business");
+
+            var product = _context.Products
+                .FirstOrDefault(x => x.Id == id &&
+                                     x.BusinessId == business.Id &&
+                                     !x.IsDeleted);
+
+            if (product == null)
+                return NotFound();
+
+            ViewBag.Categories = _context.Categories
+                .OrderBy(x => x.CategoryName)
+                .ToList();
+
+            return View(product);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditProduct(Product product)
+        {
+            var business = GetCurrentBusiness();
+
+            if (business == null)
+                return RedirectToAction("Apply", "Business");
+
+            var existingProduct = _context.Products
+                .FirstOrDefault(x => x.Id == product.Id &&
+                                     x.BusinessId == business.Id &&
+                                     !x.IsDeleted);
+
+            if (existingProduct == null)
+                return NotFound();
+
+            existingProduct.ProductName = product.ProductName;
+            existingProduct.CategoryId = product.CategoryId;
+            existingProduct.SalePrice = product.SalePrice;
+            existingProduct.StockCount = product.StockCount;
+            existingProduct.IsRentable = product.IsRentable;
+            existingProduct.DailyPrice = product.IsRentable ? product.DailyPrice : null;
+            existingProduct.RentType = product.IsRentable ? product.RentType : null;
+
+            _context.SaveChanges();
+
+            TempData["Success"] = "Ürün başarıyla güncellendi.";
+            return RedirectToAction(nameof(Dashboard));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteProduct(int id)
+        {
+            var business = GetCurrentBusiness();
+
+            if (business == null)
+                return RedirectToAction("Apply", "Business");
+
+            var product = _context.Products
+                .FirstOrDefault(x => x.Id == id && x.BusinessId == business.Id && !x.IsDeleted);
+
+            if (product == null)
+                return NotFound();
+
+            product.IsDeleted = true;
+            _context.SaveChanges();
+
+            TempData["Success"] = "Ürün yayından kaldırıldı.";
+            return RedirectToAction(nameof(Dashboard));
+        }
+
     }
 }

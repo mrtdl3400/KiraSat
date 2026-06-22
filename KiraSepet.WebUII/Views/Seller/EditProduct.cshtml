@@ -1,0 +1,66 @@
+﻿@using KiraSepet.EntityLayer
+@model Product
+
+@{
+    ViewData["Title"] = "Ürünü Düzenle";
+    var categories = ViewBag.Categories as List<Category> ?? new List<Category>();
+}
+
+<div class="container py-4">
+    <h2>Ürünü Düzenle</h2>
+
+    <form asp-action="EditProduct" method="post">
+        @Html.AntiForgeryToken()
+        <input asp-for="Id" type="hidden" />
+
+        <div class="mb-3">
+            <label class="form-label">Ürün Adı</label>
+            <input asp-for="ProductName" class="form-control" />
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label asp-for="SalePrice" class="form-label">Satış Fiyatı (₺)</label>
+                <input asp-for="SalePrice" class="form-control" type="number" min="0" step="0.01" />
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="StockCount" class="form-label">Stok Adedi</label>
+                <input asp-for="StockCount" class="form-control" type="number" min="0" />
+            </div>
+            <div class="col-md-4 mb-3 d-flex align-items-end">
+                <div class="form-check mb-2">
+                    <input asp-for="IsRentable" class="form-check-input" />
+                    <label asp-for="IsRentable" class="form-check-label">Kiralanabilir</label>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="DailyPrice" class="form-label">Günlük Kira (₺)</label>
+                <input asp-for="DailyPrice" class="form-control" type="number" min="0" step="0.01" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="RentType" class="form-label">Kiralama Tipi</label>
+                <input asp-for="RentType" class="form-control" placeholder="Günlük" />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Kategori</label>
+            <select asp-for="CategoryId" class="form-select">
+                @foreach (var category in categories)
+                {
+                    <option value="@category.Id">
+                        @category.CategoryName
+                    </option>
+                }
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Kaydet
+        </button>
+
+        <a asp-action="Dashboard" class="btn btn-secondary">
+            İptal
+        </a>
+    </form>
+</div>

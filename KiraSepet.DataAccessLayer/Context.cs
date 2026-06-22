@@ -45,6 +45,10 @@ namespace KiraSepet.DataAccessLayer
     .WithMany()
     .HasForeignKey(x => x.BusinessId)
     .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AppUser>()
+                .Property(x => x.IsEmailVerified)
+                .HasDefaultValue(true);
         }
 
 
@@ -60,6 +64,9 @@ namespace KiraSepet.DataAccessLayer
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Business> Businesses { get; set; }
         public DbSet<AppNotification> AppNotifications { get; set; }
+        public DbSet<AboutPageContent> AboutPageContents { get; set; }
+        public DbSet<ContactMessage> ContactMessages { get; set; }
+        public DbSet<ContactInfo> ContactInfos { get; set; }
 
     }
 }

@@ -36,6 +36,16 @@
             <h2>Hoş Geldin!</h2>
             <p>Devam etmek için hesabına giriş yap.</p>
 
+            @if (TempData["RegisterMessage"] != null)
+            {
+                <div class="alert alert-success">@TempData["RegisterMessage"]</div>
+            }
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger">@ViewBag.Error</div>
+            }
+
             <form method="post">
 
                 <label>E-posta Adresiniz</label>

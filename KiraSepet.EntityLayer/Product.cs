@@ -19,7 +19,6 @@ namespace KiraSepet.EntityLayer
         
         public bool IsDeleted { get; set; } 
 
-        public decimal? DailPrice { get; set; }
         public bool IsRentable { get; set; }
         public string? RentType { get; set; }
         public string? Brand { get; set; }
@@ -36,5 +35,6 @@ namespace KiraSepet.EntityLayer
 
         public string? Address { get; set; }
         public decimal? DailyPrice { get; set; }
+        
     }
 }

@@ -1,0 +1,11 @@
+@using KiraSepet.EntityLayer
+@model AboutPageContent
+<div class="container py-5">
+    <h2>Hakkımızda</h2>
+    @if (TempData["AboutSuccess"] != null) { <div class="alert alert-success">@TempData["AboutSuccess"]</div> }
+    <div class="card shadow-sm p-4 mb-4"><h4>@Model.Title</h4><p class="mb-0" style="white-space: pre-line">@Model.Content</p></div>
+    @if (Context.Session.GetString("UserRole") == "Admin")
+    {
+        <div class="card shadow-sm p-4"><h5>İçeriği Düzenle</h5><form asp-action="About" method="post">@Html.AntiForgeryToken()<div class="mb-3"><label asp-for="Title" class="form-label">Başlık</label><input asp-for="Title" class="form-control" required /></div><div class="mb-3"><label asp-for="Content" class="form-label">Metin</label><textarea asp-for="Content" class="form-control" rows="7" required></textarea></div><button type="submit" class="btn btn-primary">Kaydet</button></form></div>
+    }
+</div>

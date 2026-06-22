@@ -20,7 +20,13 @@
             <h1>Kayıt Ol</h1>
             <p class="register-subtitle">Hesabını oluştur, KiraSat deneyimine başla.</p>
 
-            <form method="post">
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger">@ViewBag.Error</div>
+            }
+
+            <form method="post" novalidate>
+                @Html.AntiForgeryToken()
                 <div class="form-group">
                     <label>Ad Soyad</label>
                     <input asp-for="NameSurname" class="form-control" placeholder="Adınızı ve soyadınızı yazın" />
@@ -34,6 +40,20 @@
                 <div class="form-group">
                     <label>Şifre</label>
                     <input asp-for="Password" type="password" class="form-control" placeholder="Güçlü bir şifre oluşturun" />
+                </div>
+
+                <div class="form-group">
+                    <label>Cinsiyet <span class="optional-label">(isteğe bağlı)</span></label>
+                    <div class="gender-options">
+                        <label><input type="radio" name="Gender" value="Kadın" /> Kadın</label>
+                        <label><input type="radio" name="Gender" value="Erkek" /> Erkek</label>
+                    </div>
+                </div>
+
+                <div class="consent-list">
+                    <label class="consent-item"><input type="checkbox" name="marketingConsent" /> <span>Kampanya ve avantajlı tekliflerle ilgili elektronik ileti almak istiyorum.</span></label>
+                    <label class="consent-item"><input type="checkbox" name="personalDataConsent" value="true" /> <span>Kişisel verilerimin işlenmesine yönelik aydınlatma metnini okudum ve anladım.</span></label>
+                    <label class="consent-item"><input type="checkbox" name="termsConsent" value="true" /> <span>Kullanım koşullarını ve gizlilik politikasını kabul ediyorum.</span></label>
                 </div>
 
                 <button type="submit" class="register-btn">

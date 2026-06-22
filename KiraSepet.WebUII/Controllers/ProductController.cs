@@ -41,6 +41,7 @@ public class ProductController : Controller
     {
         var values = _context.Products
             .Include(x => x.Category)
+            .Where(x => !x.IsDeleted)
             .ToList();
 
 
@@ -158,7 +159,7 @@ public class ProductController : Controller
         values.ProductName = p.ProductName;
         values.Brand = string.IsNullOrWhiteSpace(p.Brand) ? values.Brand : p.Brand;
         values.SalePrice = p.SalePrice;
-        values.DailPrice = p.DailPrice;
+        values.DailyPrice = p.DailyPrice;
         values.CategoryId = p.CategoryId;
         values.IsRentable = p.IsRentable;
         values.StockCount = p.StockCount;
@@ -232,7 +233,12 @@ public class ProductController : Controller
     public IActionResult ProductDetails(int id)
     {
         var values = _context.Products
-            .FirstOrDefault(x => x.Id == id);
+            .FirstOrDefault(x => x.Id == id && !x.IsDeleted);
+
+        if (values == null)
+        {
+            return NotFound();
+        }
 
         ViewBag.comments = _context.Comments
             .Where(x => x.ProductId == id)

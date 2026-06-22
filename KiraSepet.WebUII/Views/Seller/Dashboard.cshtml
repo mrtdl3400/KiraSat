@@ -32,6 +32,7 @@
 
         <div class="card-body">
             <form asp-controller="Seller" asp-action="AddProduct" method="post">
+                @Html.AntiForgeryToken()
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Ürün Adı</label>
@@ -128,6 +129,7 @@
                         <th>Satış Fiyatı</th>
                         <th>Günlük Kira</th>
                         <th>Stok</th>
+                        <th>İşlemler</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -143,15 +145,33 @@
                                     @(product.IsRentable && product.DailyPrice.HasValue
                                         ? product.DailyPrice.Value.ToString("N2") + " ₺"
                                         : "-")
+
+
                                 </td>
                                 <td>@product.StockCount</td>
+
+                                <td>
+                                    <a asp-action="EditProduct"
+                                       asp-route-id="@product.Id"
+                                       class="btn btn-sm btn-outline-primary">
+                                        Düzenle
+                                    </a>
+                                    <form asp-action="DeleteProduct" asp-route-id="@product.Id" method="post" class="d-inline"
+                                          onsubmit="return confirm('Bu ürünü yayından kaldırmak istediğine emin misin?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
+                                    </form>
+                                </td>
                             </tr>
+
+
                         }
+
                     }
                     else
                     {
                         <tr>
-                            <td colspan="5" class="text-center text-muted py-4">
+                            <td colspan="6" class="text-center text-muted py-4">
                                 Henüz ürün eklemedin.
                             </td>
                         </tr>

@@ -1,0 +1,16 @@
+@using KiraSepet.EntityLayer
+@model List<ContactMessage>
+<div class="container py-5">
+    <h2>Gelen Mesajlar</h2>
+    <p class="text-muted">Kullanıcıların iletişim formundan gönderdiği mesajlar.</p>
+    @if (TempData["ReplySuccess"] != null) { <div class="alert alert-success">@TempData["ReplySuccess"]</div> }
+    @if (TempData["ReplyError"] != null) { <div class="alert alert-danger">@TempData["ReplyError"]</div> }
+    @if (!Model.Any()) { <div class="alert alert-info">Henüz mesaj yok.</div> }
+    else { @foreach (var item in Model) { <div class="card shadow-sm mb-3"><div class="card-body">
+        <div class="d-flex justify-content-between"><h5>@item.Subject</h5><small class="text-muted">@item.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</small></div>
+        <p><strong>@item.Name</strong> — @item.Email</p><p><strong>İlk mesaj:</strong> @item.Message</p>
+        @if (!string.IsNullOrWhiteSpace(item.AdminReply)) { <div class="alert alert-primary"><strong>Sizin yanıtınız:</strong> @item.AdminReply</div> }
+        @if (!string.IsNullOrWhiteSpace(item.UserReply)) { <div class="alert alert-warning"><strong>Kullanıcının son yanıtı:</strong> @item.UserReply<br /><small>@item.UserRepliedAt?.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</small></div> }
+        <form asp-action="ReplyToContactMessage" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@item.Id" /><label class="form-label">@(string.IsNullOrWhiteSpace(item.AdminReply) ? "Yanıtınız" : "Yeni yanıtınız")</label><textarea name="reply" class="form-control mb-2" rows="3" required></textarea><button type="submit" class="btn btn-primary">Yanıtla ve E-posta Gönder</button></form>
+    </div></div> } }
+</div>
