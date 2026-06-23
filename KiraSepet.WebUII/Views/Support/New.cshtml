@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Destek Talebi";
+}
+
+<div class="container py-5" style="max-width: 750px;">
+    <h2>Destek Talebi Oluştur</h2>
+    <p class="text-muted">Sorununuzu yazın; destek ekibi size buradan yanıt versin.</p>
+
+    @if (TempData["SupportSuccess"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SupportSuccess"]
+        </div>
+    }
+
+    @if (TempData["SupportError"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["SupportError"]
+        </div>
+    }
+
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="mb-3">
+            <label class="form-label">Konu</label>
+            <input name="subject" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Mesajınız</label>
+            <textarea name="text" class="form-control" rows="6" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Destek Talebi Gönder
+        </button>
+    </form>
+</div>

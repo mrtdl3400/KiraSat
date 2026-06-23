@@ -55,18 +55,8 @@ public class AccountController(Context context, IOptions<MailSettings> mailSetti
         }
 
         model.CreatedAt = DateTime.UtcNow;
+        model.IsAdminRead = false;
         _context.ContactMessages.Add(model);
-
-        var admins = _context.AppUsers.Where(x => x.Role == "Admin").ToList();
-        foreach (var admin in admins)
-        {
-            _context.AppNotifications.Add(new AppNotification
-            {
-                UserId = admin.Id,
-                Title = "Yeni iletişim mesajı",
-                Message = $"{model.Name} adlı kullanıcıdan yeni bir mesaj geldi: {model.Subject}"
-            });
-        }
 
         _context.SaveChanges();
         TempData["ContactSuccess"] = "Mesajınız alındı. En kısa sürede size dönüş yapacağız.";
@@ -91,14 +81,26 @@ public class AccountController(Context context, IOptions<MailSettings> mailSetti
     public IActionResult ContactMessages()
     {
         if (HttpContext.Session.GetString("UserRole") != "Admin") return Forbid();
-        return View(_context.ContactMessages.OrderByDescending(x => x.CreatedAt).ToList());
+        var messages = _context.ContactMessages.OrderByDescending(x => x.CreatedAt).ToList();
+        foreach (var message in messages.Where(x => !x.IsAdminRead))
+        {
+            message.IsAdminRead = true;
+        }
+        _context.SaveChanges();
+        return View(messages);
     }
 
     public IActionResult MyMessages()
     {
         var email = HttpContext.Session.GetString("UserEmail");
         if (string.IsNullOrWhiteSpace(email)) return RedirectToAction("Index", "Login");
-        return View(_context.ContactMessages.Where(x => x.Email == email).OrderByDescending(x => x.CreatedAt).ToList());
+        var messages = _context.ContactMessages.Where(x => x.Email == email).OrderByDescending(x => x.CreatedAt).ToList();
+        foreach (var message in messages.Where(x => !x.IsUserRead && !string.IsNullOrWhiteSpace(x.AdminReply)))
+        {
+            message.IsUserRead = true;
+        }
+        _context.SaveChanges();
+        return View(messages);
     }
 
     [HttpPost]
@@ -112,8 +114,7 @@ public class AccountController(Context context, IOptions<MailSettings> mailSetti
         if (string.IsNullOrWhiteSpace(reply)) return RedirectToAction(nameof(MyMessages));
         message.UserReply = reply.Trim();
         message.UserRepliedAt = DateTime.UtcNow;
-        foreach (var admin in _context.AppUsers.Where(x => x.Role == "Admin"))
-            _context.AppNotifications.Add(new AppNotification { UserId = admin.Id, Title = "Kullanıcı yanıtı", Message = $"{message.Name} destek mesajına yanıt verdi: {message.Subject}" });
+        message.IsAdminRead = false;
         _context.SaveChanges();
         TempData["UserReplySuccess"] = "Yanıtınız admine gönderildi.";
         return RedirectToAction(nameof(MyMessages));
@@ -130,16 +131,7 @@ public class AccountController(Context context, IOptions<MailSettings> mailSetti
 
         message.AdminReply = reply.Trim();
         message.RepliedAt = DateTime.UtcNow;
-        var messageOwner = _context.AppUsers.FirstOrDefault(x => x.Email == message.Email);
-        if (messageOwner != null)
-        {
-            _context.AppNotifications.Add(new AppNotification
-            {
-                UserId = messageOwner.Id,
-                Title = "Destek yanıtı",
-                Message = $"'{message.Subject}' konulu mesajınıza destek ekibi yanıt verdi."
-            });
-        }
+        message.IsUserRead = false;
         _context.SaveChanges();
 
         try

@@ -22,7 +22,10 @@ namespace KiraSepet.WebUII.Controllers
             }
 
             var notifications = _context.AppNotifications
-                .Where(x => x.UserId == user.Id)
+                .Where(x => x.UserId == user.Id &&
+                    x.Title != "Yeni iletişim mesajı" &&
+                    x.Title != "Kullanıcı yanıtı" &&
+                    x.Title != "Destek yanıtı")
                 .OrderByDescending(x => x.CreatedAt)
                 .ToList();
 
@@ -55,7 +58,10 @@ namespace KiraSepet.WebUII.Controllers
             }
 
             var unreadNotifications = _context.AppNotifications
-                .Where(x => x.UserId == user.Id && !x.IsRead)
+                .Where(x => x.UserId == user.Id && !x.IsRead &&
+                    x.Title != "Yeni iletişim mesajı" &&
+                    x.Title != "Kullanıcı yanıtı" &&
+                    x.Title != "Destek yanıtı")
                 .ToList();
 
             foreach (var notification in unreadNotifications)

@@ -12,4 +12,6 @@ public class ContactMessage
     public DateTime? RepliedAt { get; set; }
     public string? UserReply { get; set; }
     public DateTime? UserRepliedAt { get; set; }
+    public bool IsAdminRead { get; set; }
+    public bool IsUserRead { get; set; }
 }

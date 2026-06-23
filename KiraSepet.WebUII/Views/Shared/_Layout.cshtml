@@ -7,6 +7,7 @@
 
     var userEmail = Context.Session.GetString("UserEmail");
     var unreadNotificationCount = 0;
+    var unreadMessageCount = 0;
     var currentUser = string.IsNullOrWhiteSpace(userEmail)
         ? null
         : DbContext.AppUsers.FirstOrDefault(x => x.Email == userEmail);
@@ -14,7 +15,14 @@
     if (currentUser != null)
     {
         unreadNotificationCount = DbContext.AppNotifications
-            .Count(x => x.UserId == currentUser.Id && !x.IsRead);
+            .Count(x => x.UserId == currentUser.Id && !x.IsRead &&
+                x.Title != "Yeni iletişim mesajı" &&
+                x.Title != "Kullanıcı yanıtı" &&
+                x.Title != "Destek yanıtı");
+
+        unreadMessageCount = currentUser.Role == "Admin"
+            ? DbContext.ContactMessages.Count(x => !x.IsAdminRead)
+            : DbContext.ContactMessages.Count(x => x.Email == userEmail && !x.IsUserRead && !string.IsNullOrWhiteSpace(x.AdminReply));
     }
 }
 <!DOCTYPE html>
@@ -96,9 +104,13 @@
                                 </span>
                             }
                         </a>
-                        @if (Context.Session.GetString("UserRole") != "Admin")
+                        @if (Context.Session.GetString("UserRole") == "Admin")
                         {
-                            <a href="/Account/MyMessages">Mesajlarım</a>
+                            <a href="/Account/ContactMessages">Gelen Mesajlar @if (unreadMessageCount > 0) { <span class="ks-message-badge">@unreadMessageCount</span> }</a>
+                        }
+                        else
+                        {
+                            <a href="/Account/MyMessages">Mesajlarım @if (unreadMessageCount > 0) { <span class="ks-message-badge">@unreadMessageCount</span> }</a>
                         }
                         <a href="/Order/Index">Siparişlerim</a>
                         <div class="dropdown">

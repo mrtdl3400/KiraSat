@@ -68,6 +68,11 @@ namespace KiraSepet.DataAccessLayer
         public DbSet<ContactMessage> ContactMessages { get; set; }
         public DbSet<ContactInfo> ContactInfos { get; set; }
 
+        public DbSet<SupportConversation> SupportConversations { get; set; }
+        public DbSet<SupportMessage> SupportMessages { get; set; }
+        public DbSet<RentalConversation> RentalConversations { get; set; }
+        public DbSet<RentalMessage> RentalMessages { get; set; }
+
     }
 }
 

@@ -462,6 +462,20 @@ body {
 }
 
 .optional-label { color: #64748b; font-weight: 500; }
+.ks-message-badge {
+    min-width: 18px;
+    height: 18px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #dc3545;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 4px;
+}
 .gender-options { display: grid; grid-template-columns: 1fr 1fr; }
 .gender-options label { margin: 0; padding: 13px; text-align: center; border: 1px solid #d7dce5; cursor: pointer; font-weight: 600; }
 .gender-options label:first-child { border-radius: 12px 0 0 12px; }
