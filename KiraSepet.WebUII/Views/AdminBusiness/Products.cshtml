@@ -1,0 +1,65 @@
+@using KiraSepet.EntityLayer
+@model List<Product>
+
+@{
+    var business = ViewBag.Business as Business;
+    ViewData["Title"] = "İşletme Ürünleri";
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <p class="text-uppercase text-primary fw-bold mb-1" style="font-size: 12px;">İŞLETME ÜRÜNLERİ</p>
+            <h1 class="h3 mb-1">@(business?.CompanyName ?? "İşletme")</h1>
+            <p class="text-muted mb-0">Bu işletmeye bağlı aktif ürünler.</p>
+        </div>
+
+        <a asp-action="Index" class="btn btn-outline-secondary">← İşletme Listesine Dön</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">Bu işletmenin henüz aktif ürünü yok.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Ürün</th>
+                        <th>Satış Fiyatı</th>
+                        <th>Günlük Kiralama</th>
+                        <th>Stok</th>
+                        <th>Durum</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in Model)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@product.ProductName</td>
+                            <td>@product.SalePrice.ToString("N2") ₺</td>
+                            <td>@(product.IsRentable && product.DailyPrice.HasValue ? product.DailyPrice.Value.ToString("N2") + " ₺" : "Kiralama yok")</td>
+                            <td>@product.StockCount adet</td>
+                            <td>
+                                @if (product.IsRentable)
+                                {
+                                    <span class="badge bg-success">Kiralanabilir</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Sadece satış</span>
+                                }
+                            </td>
+                            <td>
+                                <a href="/Product/ProductDetails?id=@product.Id" class="btn btn-sm btn-outline-primary">Ürünü Gör</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

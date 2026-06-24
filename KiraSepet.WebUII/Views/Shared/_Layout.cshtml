@@ -8,6 +8,7 @@
     var userEmail = Context.Session.GetString("UserEmail");
     var unreadNotificationCount = 0;
     var unreadMessageCount = 0;
+    var rentalUnreadMessageCount = 0;
     var currentUser = string.IsNullOrWhiteSpace(userEmail)
         ? null
         : DbContext.AppUsers.FirstOrDefault(x => x.Email == userEmail);
@@ -19,6 +20,14 @@
                 x.Title != "Yeni iletişim mesajı" &&
                 x.Title != "Kullanıcı yanıtı" &&
                 x.Title != "Destek yanıtı");
+
+        rentalUnreadMessageCount = DbContext.RentalMessages.Count(message =>
+!message.IsRead &&
+message.SenderUserId != currentUser.Id &&
+DbContext.RentalConversations.Any(conversation =>
+conversation.Id == message.RentalConversationId &&
+(conversation.TenantUserId == currentUser.Id ||
+ conversation.OwnerUserId == currentUser.Id)));
 
         unreadMessageCount = currentUser.Role == "Admin"
             ? DbContext.ContactMessages.Count(x => !x.IsAdminRead)
@@ -113,6 +122,16 @@
                             <a href="/Account/MyMessages">Mesajlarım @if (unreadMessageCount > 0) { <span class="ks-message-badge">@unreadMessageCount</span> }</a>
                         }
                         <a href="/Order/Index">Siparişlerim</a>
+                        <a href="/RentalMessage/Index">
+                        İlan Mesajlarım
+
+                        @if (rentalUnreadMessageCount > 0)
+                        {
+                       <span class="ks-message-badge">
+                       @rentalUnreadMessageCount
+                       </span>
+                       }
+                       </a>
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary dropdown-toggle"
                                     type="button"

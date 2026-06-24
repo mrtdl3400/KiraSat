@@ -26,7 +26,41 @@ namespace KiraSepet.WebUII.Controllers
                 .ThenByDescending(x => x.Id)
                 .ToList();
 
+            var ownerIds = businesses.Select(x => x.OwnerUserId).Distinct().ToList();
+
+            ViewBag.OwnerNames = _context.AppUsers
+                .Where(x => ownerIds.Contains(x.Id))
+                .ToDictionary(x => x.Id, x => x.NameSurname);
+
+            ViewBag.OwnerEmails = _context.AppUsers
+                .Where(x => ownerIds.Contains(x.Id))
+                .ToDictionary(x => x.Id, x => x.Email);
+
             return View(businesses);
+        }
+
+        public IActionResult Products(int id)
+        {
+            var adminCheck = RedirectIfNotAdmin();
+            if (adminCheck != null)
+            {
+                return adminCheck;
+            }
+
+            var business = _context.Businesses.Find(id);
+            if (business == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.Business = business;
+
+            var products = _context.Products
+                .Where(x => x.BusinessId == id && !x.IsDeleted)
+                .OrderByDescending(x => x.Id)
+                .ToList();
+
+            return View(products);
         }
 
         [HttpPost]

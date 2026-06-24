@@ -1,0 +1,86 @@
+﻿@using KiraSepet.EntityLayer
+@model List<RentalConversation>
+
+@{
+    var products = ViewBag.Products as Dictionary<int, string>
+        ?? new Dictionary<int, string>();
+    var latestMessages = ViewBag.LatestMessages as Dictionary<int, string>
+        ?? new Dictionary<int, string>();
+
+    var currentUserId = ViewBag.CurrentUserId == null
+        ? 0
+        : (int)ViewBag.CurrentUserId;
+
+    ViewData["Title"] = "İlan Mesajlarım";
+}
+
+<div class="container py-5" style="max-width: 900px;">
+    <p class="text-uppercase text-primary fw-bold mb-1" style="font-size: 12px;">
+        İLAN MESAJLARI
+    </p>
+
+    <h2 class="fw-bold">Sohbetlerim</h2>
+    <p class="text-muted mb-4">
+        Kiracı veya ilan sahibi olduğunuz konuşmalar.
+    </p>
+
+    @if (!Model.Any())
+    {
+        <div class="card border-0 shadow-sm text-center p-5">
+            <div style="font-size: 42px;">✉</div>
+            <h5 class="mt-3 fw-bold">Henüz ilan sohbetiniz yok</h5>
+            <p class="text-muted mb-0">
+                Bir ürünün detayından işletme sahibine mesaj gönderebilirsiniz.
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="list-group shadow-sm">
+            @foreach (var conversation in Model)
+            {
+                var productName = products.ContainsKey(conversation.ProductId)
+                    ? products[conversation.ProductId]
+                    : "Ürün bulunamadı";
+
+                var isOwner = conversation.OwnerUserId == currentUserId;
+                var latestMessage = latestMessages.ContainsKey(conversation.Id)
+                    ? latestMessages[conversation.Id]
+                    : "Henüz mesaj yok.";
+
+                if (latestMessage.Length > 90)
+                {
+                    latestMessage = latestMessage.Substring(0, 90) + "...";
+                }
+
+                <a href="/RentalMessage/Conversation?id=@conversation.Id"
+                   class="list-group-item list-group-item-action p-4">
+                    <div class="d-flex justify-content-between align-items-start gap-3">
+                        <div>
+                            <h5 class="mb-1 fw-bold">@productName</h5>
+
+                            <p class="mb-1 text-muted">
+                                @(isOwner
+                                    ? "Bu ilan için bir kiracıyla konuşuyorsunuz."
+                                    : "Bu ilan için işletme sahibiyle konuşuyorsunuz.")
+                            </p>
+
+                            <p class="mb-1 text-dark">
+                                <strong>Son mesaj:</strong> @latestMessage
+                            </p>
+
+                            <small class="text-muted">
+                                Son hareket:
+                                @conversation.LastMessageAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                            </small>
+                        </div>
+
+                        <span class="badge text-bg-light border text-dark">
+                            Sohbeti aç →
+                        </span>
+                    </div>
+                </a>
+            }
+        </div>
+    }
+</div>

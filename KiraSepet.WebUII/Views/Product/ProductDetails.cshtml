@@ -12,6 +12,13 @@
 
             <h1>@Model.ProductName</h1>
 
+            @if (Model.Business != null)
+            {
+                <p class="text-muted">
+                    <strong>İşletme:</strong> @Model.Business.CompanyName
+                </p>
+            }
+
             <p class="description">
                 @Model.Description
             </p>
@@ -55,55 +62,58 @@
                 </div>
             }
 
-            <p><b>Stok:</b> @Model.StockCount adet</p>
-
-            <p>
-                <b>Kiralanabilir mi?</b>
-                @if (Model.IsRentable)
-                {
-                    <span class="rent-yes">Evet</span>
-                }
-                else
-                {
-                    <span class="rent-no">Hayır</span>
-                }
-            </p>
-            @if (Context.Session.GetString("UserName") == null)
-            {
-                <a href="/Login/Index"
-                   class="btn btn-dark"
-                   onclick="alert('Satın alma işlemi için lütfen giriş yapın veya kaydolun!')">
-                    Satın Al
-                </a>
-            }
-            else
-            {
-                <a href="/Payment/Index?productId=@Model.Id&type=buy"
-                   class="btn btn-dark">
-                    Satın Al
-                </a>
-            }
-
-                @if (Model.IsRentable)
-                {
-                    @if (Context.Session.GetString("UserName") == null)
+            <div class="product-meta-grid">
+                <div class="product-meta-item">
+                    <span>Stok durumu</span>
+                    <strong>@Model.StockCount adet</strong>
+                </div>
+                <div class="product-meta-item">
+                    <span>Kiralanabilir mi?</span>
+                    @if (Model.IsRentable)
                     {
-                        <a href="/Login/Index"
-                           class="btn btn-success ms-2"
-                           onclick="alert('Kiralama işleminizi yapmak için lütfen giriş yapın veya kaydolun!')">
-                            Kirala
-                        </a>
+                        <strong><span class="rent-yes">Evet</span></strong>
                     }
                     else
                     {
-                        <a href="javascript:void(0);"
-                           class="btn btn-success ms-2"
-                           onclick="goToPayment(@Model.Id)">
-                            Kirala
-                        </a>
+                        <strong><span class="rent-no">Hayır</span></strong>
                     }
+                </div>
+            </div>
+
+            <div class="product-actions">
+                <div class="product-primary-actions">
+                    @if (Context.Session.GetString("UserName") == null)
+                    {
+                        <a href="/Login/Index" class="product-action-btn buy-action" onclick="alert('Satın alma işlemi için lütfen giriş yapın veya kaydolun!')">Satın Al</a>
+                    }
+                    else
+                    {
+                        <a href="/Payment/Index?productId=@Model.Id&type=buy" class="product-action-btn buy-action">Satın Al</a>
+                    }
+
+                    @if (Model.IsRentable)
+                    {
+                        @if (Context.Session.GetString("UserName") == null)
+                        {
+                            <a href="/Login/Index" class="product-action-btn rent-action" onclick="alert('Kiralama işleminizi yapmak için lütfen giriş yapın veya kaydolun!')">Kirala</a>
+                        }
+                        else
+                        {
+                            <a href="javascript:void(0);" class="product-action-btn rent-action" onclick="goToPayment(@Model.Id)">Kirala</a>
+                        }
+                    }
+                </div>
+
+                @if (Model.BusinessId != null)
+                {
+                    <a href="/RentalMessage/Start?productId=@Model.Id" class="product-message-action">
+                        <span>✉</span>
+                        @(Model.Business?.CompanyName ?? "Satıcı") işletmesine mesaj gönder
+                    </a>
                 }
-                <a href="/Product/Index" class="btn-back">Listeye Dön</a>
+
+                <a href="/Product/Index" class="product-back-action">← Listeye dön</a>
+            </div>
             </div>
         </div>
 
@@ -287,28 +297,137 @@ else
             height: 46px;
         }
 
-    .detail-buttons {
+    .product-meta-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        margin: 28px 0 22px;
+    }
+
+    .product-meta-item {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border: 1px solid #dbe4f0;
+        border-radius: 18px;
+        padding: 16px 18px;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, .04);
+    }
+
+    .product-meta-item span:first-child {
+        display: block;
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .product-meta-item strong {
+        color: #0f172a;
+        font-size: 16px;
+    }
+
+    .product-actions {
         display: flex;
-        gap: 15px;
-        margin-top: 30px;
+        flex-direction: column;
+        gap: 14px;
+        margin-top: 26px;
+        width: 100%;
     }
 
-    .btn-buy,
-    .btn-back {
-        padding: 14px 22px;
-        border-radius: 14px;
+    .product-primary-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        width: 100%;
+    }
+
+    .product-action-btn,
+    .product-message-action,
+    .product-back-action {
+        align-items: center;
+        border-radius: 16px;
+        display: flex;
+        font-weight: 800;
+        justify-content: center;
+        min-height: 56px;
+        padding: 14px 18px;
+        text-align: center;
         text-decoration: none;
-        font-weight: bold;
+        transition: transform .2s ease, box-shadow .2s ease;
     }
 
-    .btn-buy {
-        background: #111827;
-        color: white;
+    .product-action-btn:hover,
+    .product-message-action:hover,
+    .product-back-action:hover {
+        transform: translateY(-2px);
     }
 
-    .btn-back {
-        background: #e5e7eb;
-        color: #111827;
+    .buy-action {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        box-shadow: 0 10px 20px rgba(15, 23, 42, .18);
+        color: #fff;
+    }
+
+    .rent-action {
+        background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+        box-shadow: 0 10px 20px rgba(234, 88, 12, .2);
+        color: #fff;
+    }
+
+    .product-message-action {
+        background: linear-gradient(135deg, #eef2ff 0%, #f8faff 100%);
+        border: 1px solid #c7d2fe;
+        color: #3730a3;
+        gap: 10px;
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+        padding-left: 20px;
+    }
+
+    .product-message-action span {
+        align-items: center;
+        background: #4f46e5;
+        border-radius: 10px;
+        color: #fff;
+        display: inline-flex;
+        font-size: 18px;
+        height: 32px;
+        justify-content: center;
+        width: 32px;
+    }
+
+    .product-back-action {
+        align-self: flex-start;
+        color: #64748b;
+        min-height: auto;
+        padding: 4px 2px;
+    }
+
+    .rent-yes,
+    .rent-no {
+        border-radius: 999px;
+        display: inline-flex;
+        font-size: 13px;
+        font-weight: 800;
+        padding: 7px 12px;
+    }
+
+    .rent-yes {
+        background: #dcfce7;
+        border: 1px solid #86efac;
+        color: #166534;
+    }
+
+    .rent-no {
+        background: #fee2e2;
+        border: 1px solid #fca5a5;
+        color: #991b1b;
+    }
+
+    @@media (max-width: 576px) {
+        .product-meta-grid,
+        .product-primary-actions {
+            grid-template-columns: 1fr;
+        }
     }
 
     comment-box {

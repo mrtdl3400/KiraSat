@@ -233,7 +233,8 @@ public class ProductController : Controller
     public IActionResult ProductDetails(int id)
     {
         var values = _context.Products
-            .FirstOrDefault(x => x.Id == id && !x.IsDeleted);
+    .Include(x => x.Business)
+    .FirstOrDefault(x => x.Id == id && !x.IsDeleted);
 
         if (values == null)
         {

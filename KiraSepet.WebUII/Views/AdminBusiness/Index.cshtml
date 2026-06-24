@@ -3,6 +3,8 @@
 
 @{
     ViewData["Title"] = "İşletme Başvuruları";
+    var ownerNames = ViewBag.OwnerNames as Dictionary<int, string> ?? new Dictionary<int, string>();
+    var ownerEmails = ViewBag.OwnerEmails as Dictionary<int, string> ?? new Dictionary<int, string>();
 }
 
 <div class="container py-5">
@@ -42,7 +44,8 @@
                     <tr>
                         <th>İşletme</th>
                         <th>Vergi No</th>
-                        <th>Sahip Kullanıcı Id</th>
+                        <th>İşletme Sahibi</th>
+                        <th>E-posta</th>
                         <th>Komisyon</th>
                         <th>Durum</th>
                         <th>İşlem</th>
@@ -52,9 +55,22 @@
                     @foreach (var business in Model)
                     {
                         <tr>
-                            <td>@business.CompanyName</td>
+                            <td>
+                                <a asp-action="Products" asp-route-id="@business.Id" class="fw-bold text-decoration-none">
+                                    @business.CompanyName
+                                </a>
+                            </td>
                             <td>@business.TaxNumber</td>
-                            <td>@business.OwnerUserId</td>
+                            <td>
+                                @(ownerNames.ContainsKey(business.OwnerUserId)
+                                    ? ownerNames[business.OwnerUserId]
+                                    : "Bilinmiyor")
+                            </td>
+                            <td>
+                                @(ownerEmails.ContainsKey(business.OwnerUserId)
+                                    ? ownerEmails[business.OwnerUserId]
+                                    : "E-posta bulunamadı")
+                            </td>
                             <td>%@business.CommissionRate</td>
                             <td>
                                 @if (business.Status == BusinessStatus.Pending)
