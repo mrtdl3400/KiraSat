@@ -14,9 +14,14 @@
 
             @if (Model.Business != null)
             {
-                <p class="text-muted">
-                    <strong>İşletme:</strong> @Model.Business.CompanyName
-                </p>
+                <a href="/SellerProfile/Index?businessId=@Model.Business.Id" class="business-profile-card">
+                    <span class="business-profile-icon">🏪</span>
+                    <span>
+                        <small>Bu ürünün işletmesi</small>
+                        <strong>@Model.Business.CompanyName</strong>
+                    </span>
+                    <b>Profili gör →</b>
+                </a>
             }
 
             <p class="description">
@@ -400,6 +405,60 @@ else
         color: #64748b;
         min-height: auto;
         padding: 4px 2px;
+    }
+
+    .business-profile-card {
+        align-items: center;
+        background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+        border: 1px solid #fed7aa;
+        border-radius: 16px;
+        color: #7c2d12;
+        display: flex;
+        gap: 12px;
+        margin: 18px 0;
+        padding: 12px 14px;
+        text-decoration: none;
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .business-profile-card:hover {
+        box-shadow: 0 10px 22px rgba(234, 88, 12, .12);
+        color: #7c2d12;
+        transform: translateY(-2px);
+    }
+
+    .business-profile-icon {
+        align-items: center;
+        background: #f97316;
+        border-radius: 10px;
+        display: flex;
+        font-size: 18px;
+        height: 38px;
+        justify-content: center;
+        width: 38px;
+    }
+
+    .business-profile-card span:nth-child(2) {
+        display: grid;
+        flex: 1;
+        gap: 2px;
+    }
+
+    .business-profile-card small {
+        color: #9a3412;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .business-profile-card strong {
+        font-size: 15px;
+    }
+
+    .business-profile-card b {
+        color: #c2410c;
+        font-size: 13px;
+        white-space: nowrap;
     }
 
     .rent-yes,

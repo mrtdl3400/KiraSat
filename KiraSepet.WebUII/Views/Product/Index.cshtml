@@ -10,20 +10,19 @@
             
             <div class="d-flex justify-content-between align-items-center mb-4">
 
-                <h2 class="fw-bold text-primary">
+                <h2 class="product-list-title">
                     Ürün Listesi
                 </h2>
 
                 @if (Context.Session.GetString("UserRole") == "Admin")
                 {
-                    <a href="/Product/AddProduct" class="btn btn-primary">Ürün Ekle</a>
+                    <a href="/Product/AddProduct" class="product-add-btn">+ Ürün Ekle</a>
                 }
 
             </div>
 
             
-            <div class="p-5 mb-4 rounded-4 shadow-sm text-center text-white"
-                 style="background: linear-gradient(135deg, #0d6efd, #6610f2);">
+            <div class="product-list-hero">
 
                 <h1 class="display-3 fw-bold">KiraSat</h1>
 
@@ -41,7 +40,7 @@
 
         
 
-            <form method="get" class="d-flex gap-2 mb-4">
+            <form method="get" class="product-filter-bar">
 
                 <input type="text"
                        name="p"
@@ -58,7 +57,7 @@
                        class="form-control"
                        placeholder="İlçe ara..." />
 
-                <button class="btn btn-primary">
+                <button class="product-filter-button">
                     Ara
                 </button>
 
@@ -237,3 +236,107 @@
         </div>
     </div>
 </div>
+
+<style>
+    .product-list-title {
+        color: #172033;
+        font-size: 30px;
+        font-weight: 900;
+        letter-spacing: -.7px;
+        margin: 0;
+    }
+
+    .product-add-btn {
+        background: #f97316;
+        border-radius: 10px;
+        box-shadow: 0 8px 18px rgba(249, 115, 22, .2);
+        color: white;
+        font-weight: 800;
+        padding: 10px 15px;
+        text-decoration: none;
+    }
+
+    .product-list-hero {
+        background: linear-gradient(135deg, #f97316 0%, #fb923c 62%, #ffb347 100%);
+        border-radius: 22px;
+        box-shadow: 0 16px 30px rgba(249, 115, 22, .18);
+        color: white;
+        margin-bottom: 24px;
+        overflow: hidden;
+        padding: 44px 28px;
+        position: relative;
+        text-align: center;
+    }
+
+    .product-list-hero::after {
+        background: rgba(255,255,255,.16);
+        border-radius: 50%;
+        content: "";
+        height: 260px;
+        position: absolute;
+        right: -80px;
+        top: -140px;
+        width: 260px;
+    }
+
+    .product-list-hero h1,
+    .product-list-hero p {
+        position: relative;
+        z-index: 1;
+    }
+
+    .product-list-hero h1 {
+        font-size: clamp(40px, 5vw, 58px);
+        font-weight: 900;
+        letter-spacing: -1.6px;
+        margin: 0;
+    }
+
+    .product-list-hero .fs-4 {
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .product-list-hero .opacity-75 {
+        opacity: .9 !important;
+    }
+
+    .product-filter-bar {
+        align-items: center;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, .05);
+        display: flex;
+        gap: 10px;
+        margin-bottom: 26px;
+        padding: 10px;
+    }
+
+    .product-filter-bar .form-control {
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        box-shadow: none;
+        min-width: 0;
+    }
+
+    .product-filter-button {
+        background: #172033;
+        border: 0;
+        border-radius: 10px;
+        color: white;
+        font-weight: 800;
+        padding: 10px 18px;
+    }
+
+    @@media (max-width: 768px) {
+        .product-filter-bar {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .product-filter-button {
+            width: 100%;
+        }
+    }
+</style>

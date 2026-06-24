@@ -1,0 +1,432 @@
+﻿@using KiraSepet.EntityLayer
+@model List<Product>
+
+@{
+    var business = ViewBag.Business as Business;
+    var ownerName = ViewBag.OwnerName as string ?? "Satıcı";
+    var productCount = ViewBag.ProductCount ?? 0;
+    var isOwner = ViewBag.IsOwner is bool owner && owner;
+
+    ViewData["Title"] = business?.CompanyName ?? "Satıcı Profili";
+}
+
+<div class="seller-profile-page">
+    <section class="seller-profile-header">
+        <div class="seller-avatar">
+            @(business?.CompanyName?.Substring(0, 1).ToUpper() ?? "S")
+        </div>
+
+        <div class="seller-profile-info">
+            <span class="seller-profile-label">DOĞRULANMIŞ İŞLETME</span>
+            <h1>@(business?.CompanyName ?? "İşletme")</h1>
+            <p>
+                <strong>@ownerName</strong> tarafından yönetilen işletme.
+            </p>
+
+            <div class="seller-profile-stats">
+                <div>
+                    <strong>@productCount</strong>
+                    <span>Aktif ürün</span>
+                </div>
+                <div>
+                    <strong>✓</strong>
+                    <span>Onaylı satıcı</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="seller-header-actions">
+            @if (isOwner)
+            {
+                <a href="/Seller/Dashboard#add-product" class="seller-add-product-btn">+ Ürün ekle</a>
+                <a href="/Seller/Dashboard" class="seller-back-btn">Yönetim paneli</a>
+            }
+            else
+            {
+                <a href="/Product/Index" class="seller-back-btn">← Ürünlere dön</a>
+            }
+        </div>
+    </section>
+
+    <section class="seller-products-section">
+        <div class="section-heading">
+            <div>
+                <span>İŞLETME VİTRİNİ</span>
+                <h2>Ürünler</h2>
+            </div>
+
+            @if (isOwner)
+            {
+                <span class="seller-owner-note">Yalnızca sana ait ürünleri yönetiyorsun.</span>
+            }
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="seller-empty-state">
+                <div>📦</div>
+                <h5>Henüz ürün eklenmemiş</h5>
+                <p>Bu işletmenin vitrini yakında güncellenecek.</p>
+            </div>
+        }
+        else
+        {
+            <div class="seller-product-grid">
+                @foreach (var product in Model)
+                {
+                    <article class="seller-product-card">
+                        <a href="/Product/ProductDetails?id=@product.Id" class="seller-product-image">
+                            @if (!string.IsNullOrWhiteSpace(product.ImageUrl))
+                            {
+                                <img src="@product.ImageUrl" alt="@product.ProductName" />
+                            }
+                            else
+                            {
+                                <span>Ürün görseli yok</span>
+                            }
+                        </a>
+
+                        <div class="seller-product-content">
+                            <h3>@product.ProductName</h3>
+
+                            <div class="seller-product-prices">
+                                <div>
+                                    <span>Satış</span>
+                                    <strong>@product.SalePrice.ToString("N2") ₺</strong>
+                                </div>
+
+                                @if (product.IsRentable && product.DailyPrice.HasValue)
+                                {
+                                    <div>
+                                        <span>Günlük kiralama</span>
+                                        <strong>@product.DailyPrice.Value.ToString("N2") ₺</strong>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="seller-product-actions">
+                                @if (isOwner)
+                                {
+                                    <a href="/Seller/EditProduct?id=@product.Id">Düzenle</a>
+
+                                    <form action="/Seller/DeleteProduct/@product.Id" method="post" onsubmit="return confirm('Bu ürünü yayından kaldırmak istediğine emin misin?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit">Yayından kaldır</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <a href="/Product/ProductDetails?id=@product.Id">Ürünü incele</a>
+                                    <a href="/RentalMessage/Start?productId=@product.Id">Mesaj gönder</a>
+                                }
+                            </div>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </section>
+</div>
+
+<style>
+    .seller-profile-page {
+        margin: 44px auto;
+        max-width: 1180px;
+        padding: 0 20px;
+    }
+
+    .seller-profile-header {
+        align-items: center;
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        border-radius: 24px;
+        color: white;
+        display: flex;
+        gap: 20px;
+        padding: 32px;
+    }
+
+    .seller-avatar {
+        align-items: center;
+        background: #f97316;
+        border-radius: 18px;
+        display: flex;
+        flex: 0 0 auto;
+        font-size: 34px;
+        font-weight: 900;
+        height: 76px;
+        justify-content: center;
+        width: 76px;
+    }
+
+    .seller-profile-info {
+        flex: 1;
+    }
+
+    .seller-profile-label,
+    .section-heading span {
+        color: #f97316;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 1px;
+    }
+
+    .seller-profile-info h1 {
+        font-size: 30px;
+        font-weight: 900;
+        margin: 5px 0;
+    }
+
+    .seller-profile-info p {
+        color: #cbd5e1;
+        margin: 0;
+    }
+
+        .seller-profile-info p strong {
+            color: white;
+        }
+
+    .seller-profile-stats {
+        display: flex;
+        gap: 12px;
+        margin-top: 18px;
+    }
+
+        .seller-profile-stats div {
+            background: rgba(255,255,255,.1);
+            border-radius: 10px;
+            padding: 8px 12px;
+        }
+
+        .seller-profile-stats strong {
+            display: block;
+            font-size: 16px;
+        }
+
+        .seller-profile-stats span {
+            color: #cbd5e1;
+            font-size: 11px;
+        }
+
+    .seller-back-btn {
+        background: white;
+        border-radius: 12px;
+        color: #0f172a;
+        font-weight: 800;
+        padding: 11px 14px;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .seller-header-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .seller-add-product-btn {
+        background: #f97316;
+        border-radius: 12px;
+        color: white;
+        font-weight: 800;
+        padding: 11px 14px;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .seller-products-section {
+        margin-top: 36px;
+    }
+
+    .section-heading {
+        align-items: end;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .seller-owner-note {
+        background: #ecfdf5;
+        border-radius: 999px;
+        color: #047857 !important;
+        font-size: 12px !important;
+        letter-spacing: 0 !important;
+        margin-bottom: 20px;
+        padding: 7px 10px;
+    }
+
+    .section-heading h2 {
+        color: #0f172a;
+        font-size: 26px;
+        font-weight: 900;
+        margin: 4px 0 20px;
+    }
+
+    .seller-product-grid {
+        display: grid;
+        gap: 18px;
+        grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    }
+
+    .seller-product-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        overflow: hidden;
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .seller-product-card:hover {
+        box-shadow: 0 12px 26px rgba(15, 23, 42, .10);
+        transform: translateY(-3px);
+    }
+
+    .seller-product-image {
+        align-items: center;
+        background: #f8fafc;
+        display: flex;
+        height: 190px;
+        justify-content: center;
+        text-decoration: none;
+    }
+
+        .seller-product-image img {
+            height: 100%;
+            object-fit: contain;
+            width: 100%;
+        }
+
+        .seller-product-image span {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+    .seller-product-content {
+        padding: 16px;
+    }
+
+        .seller-product-content h3 {
+            color: #1e293b;
+            font-size: 17px;
+            font-weight: 800;
+            margin: 0 0 15px;
+        }
+
+    .seller-product-prices {
+        display: grid;
+        gap: 8px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+        .seller-product-prices div {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 9px;
+        }
+
+        .seller-product-prices span {
+            color: #64748b;
+            display: block;
+            font-size: 10px;
+            font-weight: 800;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+        }
+
+        .seller-product-prices strong {
+            color: #0f172a;
+            font-size: 13px;
+        }
+
+    .seller-product-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 14px;
+    }
+
+    .seller-product-actions form {
+        display: flex;
+        flex: 1;
+    }
+
+    .seller-product-actions form button {
+        background: #fff1f2;
+        border: 0;
+        border-radius: 10px;
+        color: #be123c;
+        flex: 1;
+        font-size: 12px;
+        font-weight: 800;
+        padding: 10px;
+    }
+
+        .seller-product-actions a {
+            border-radius: 10px;
+            flex: 1;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+            .seller-product-actions a:first-child {
+                background: #f1f5f9;
+                color: #334155;
+            }
+
+            .seller-product-actions a:last-child {
+                background: #f97316;
+                color: white;
+            }
+
+    .seller-empty-state {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        color: #64748b;
+        padding: 60px 20px;
+        text-align: center;
+    }
+
+        .seller-empty-state div {
+            font-size: 36px;
+        }
+
+        .seller-empty-state h5 {
+            color: #1e293b;
+            font-weight: 800;
+            margin-top: 12px;
+        }
+
+    @@media (max-width: 768px) {
+        .seller-profile-header {
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .seller-back-btn {
+            width: 100%;
+            text-align: center;
+        }
+
+        .seller-product-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .seller-profile-page {
+            margin-top: 24px;
+        }
+
+        .seller-profile-header {
+            padding: 24px;
+        }
+
+        .seller-product-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .seller-product-prices {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

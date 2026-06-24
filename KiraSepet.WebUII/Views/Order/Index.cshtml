@@ -1,96 +1,115 @@
-﻿@model List<KiraSepet.EntityLayer.Order>
+@using KiraSepet.EntityLayer
+@model List<Order>
+
+@{
+    var rentalOrders = ViewBag.RentalOrders as List<RentalOrder> ?? new List<RentalOrder>();
+    var activeTab = ViewBag.ActiveTab as string ?? "all";
+    var totalSpent = Model.Sum(x => x.TotalPrice) + rentalOrders.Sum(x => x.TotalPrice);
+}
 
 @if (TempData["OrderMessage"] != null)
 {
     <script>
-        Swal.fire({
-            icon: 'success',
-            title: 'Başarılı!',
-            text: '@TempData["OrderMessage"]',
-            confirmButtonText: 'Tamam'
-        });
+        Swal.fire({ icon: 'success', title: 'Başarılı!', text: '@TempData["OrderMessage"]', confirmButtonText: 'Tamam' });
     </script>
-}+
+}
 
-<div class="container mt-5">
-    <h2 class="mb-4">Sipariş Geçmişim</h2>
-
-    <div class="mb-4 d-flex align-items-center">
-        <a href="/Order/PurchasedOrders" class="btn btn-primary">
-            Satın Aldıklarım
-        </a>
-
-        <a href="/Order/RentedOrders" class="btn btn-warning ms-2">
-            Kiraladıklarım
-        </a>
-
-    </div>
-
-    @if (Model.Any())
-    {
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>Ürün</th>
-                    <th>Fiyat</th>
-                    <th>Adet</th>
-                    <th>Toplam</th>
-                    <th>Sipariş Tarihi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@item.ProductName</td>
-                        <td>@item.Price ₺</td>
-                        <td>@item.Quantity</td>
-                        <td>@item.TotalPrice ₺</td>
-                        <td>@item.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <div class="alert alert-info">
-            Henüz siparişiniz bulunmuyor.
+<div class="order-page container py-5">
+    <section class="order-hero">
+        <div>
+            <span>SİPARİŞ MERKEZİ</span>
+            <h1>Siparişlerim</h1>
+            <p>Satın aldığın ve kiraladığın ürünleri tek yerden takip et.</p>
         </div>
+        <a href="/Product/Index">Alışverişe devam et →</a>
+    </section>
+
+    <section class="order-stats">
+        <div><span>Satın alınan</span><strong>@Model.Count</strong><small>sipariş</small></div>
+        <div><span>Kiralanan</span><strong>@rentalOrders.Count</strong><small>sipariş</small></div>
+        <div><span>Toplam harcama</span><strong>@totalSpent.ToString("N2") ₺</strong><small>satın alma + kiralama</small></div>
+    </section>
+
+    <nav class="order-tabs">
+        <a href="/Order/Index" class="@(activeTab == "all" ? "active" : "")">Tümü</a>
+        <a href="/Order/PurchasedOrders" class="@(activeTab == "purchased" ? "active" : "")">Satın aldıklarım</a>
+        <a href="/Order/RentedOrders" class="@(activeTab == "rented" ? "active" : "")">Kiraladıklarım</a>
+    </nav>
+
+    @if (activeTab == "all" || activeTab == "purchased")
+    {
+        <section class="order-section">
+            <div class="order-section-heading"><div><span>SATIN ALMA</span><h2>Satın aldıklarım</h2></div><b>@Model.Count sipariş</b></div>
+            @if (!Model.Any()) { <div class="order-empty">Henüz satın alma siparişin yok.</div> }
+            else
+            {
+                <div class="order-list">
+                    @foreach (var item in Model)
+                    {
+                        <article class="order-card">
+                            <div class="order-icon">🛍️</div>
+                            <div class="order-main"><h3>@item.ProductName</h3><p>@item.Quantity adet · @item.Price.ToString("N2") ₺ birim fiyat</p><small>@item.OrderDate.ToString("dd MMMM yyyy, HH:mm")</small></div>
+                            <div class="order-total"><span>Toplam</span><strong>@item.TotalPrice.ToString("N2") ₺</strong><em>Satın alındı</em></div>
+                        </article>
+                    }
+                </div>
+            }
+        </section>
+    }
+
+    @if (activeTab == "all" || activeTab == "rented")
+    {
+        <section class="order-section rental-section">
+            <div class="order-section-heading"><div><span>KİRALAMA</span><h2>Kiraladıklarım</h2></div><b>@rentalOrders.Count sipariş</b></div>
+            @if (!rentalOrders.Any()) { <div class="order-empty">Henüz kiralama siparişin yok.</div> }
+            else
+            {
+                <div class="order-list">
+                    @foreach (var item in rentalOrders)
+                    {
+                        <article class="order-card rental-order-card">
+                            <div class="order-icon">📦</div>
+                            <div class="order-main"><h3>@item.ProductName</h3><p>@item.TotalDays gün · @item.StartDate.ToString("dd.MM.yyyy") – @item.EndDate.ToString("dd.MM.yyyy")</p><small>Sipariş: @item.OrderDate.ToString("dd MMMM yyyy, HH:mm")</small></div>
+                            <div class="order-total"><span>Toplam kiralama</span><strong>@item.TotalPrice.ToString("N2") ₺</strong><em class="rental-status">@(string.IsNullOrWhiteSpace(item.Status) ? "Kiralama tamamlandı" : item.Status)</em></div>
+                        </article>
+                    }
+                </div>
+            }
+        </section>
     }
 </div>
 
-@if (ViewBag.RentalOrders != null)
-{
-    <h2 class="mt-5">Kiralama Geçmişim</h2>
-
-    <table class="table table-bordered table-striped mt-3">
-        <thead>
-            <tr>
-                <th>Ürün</th>
-                <th>Başlangıç</th>
-                <th>Bitiş</th>
-                <th>Toplam Gün</th>
-                <th>Toplam Ücret</th>
-                <th>Durum</th>
-            </tr>
-        </thead>
-
-        <tbody>
-
-            @foreach (var item in ViewBag.RentalOrders)
-            {
-                <tr>
-                    <td>@item.ProductName</td>
-                    <td>@item.StartDate.ToShortDateString()</td>
-                    <td>@item.EndDate.ToShortDateString()</td>
-                    <td>@item.TotalDays Gün</td>
-                    <td>@item.TotalPrice ₺</td>
-                    <td>@item.Status</td>
-                </tr>
-            }
-
-        </tbody>
-
-    </table>
-}
+<style>
+    .order-page { max-width: 1100px; }
+    .order-hero { align-items: center; background: linear-gradient(135deg, #fff7ed, #fff); border: 1px solid #ffdfbd; border-radius: 22px; display: flex; justify-content: space-between; padding: 30px; }
+    .order-hero span, .order-section-heading span { color: #f97316; font-size: 11px; font-weight: 900; letter-spacing: 1px; }
+    .order-hero h1 { color: #172033; font-size: 34px; font-weight: 900; margin: 5px 0; }
+    .order-hero p { color: #64748b; margin: 0; }
+    .order-hero a { background: #172033; border-radius: 12px; color: white; font-weight: 800; padding: 12px 15px; text-decoration: none; white-space: nowrap; }
+    .order-stats { display: grid; gap: 14px; grid-template-columns: repeat(3, 1fr); margin: 20px 0; }
+    .order-stats > div { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; }
+    .order-stats span, .order-stats small { color: #64748b; display: block; font-size: 12px; }
+    .order-stats strong { color: #172033; display: block; font-size: 22px; font-weight: 900; margin: 5px 0; }
+    .order-tabs { background: #edf2f7; border-radius: 14px; display: inline-flex; gap: 4px; margin: 14px 0 28px; padding: 5px; }
+    .order-tabs a { border-radius: 10px; color: #64748b; font-weight: 800; padding: 9px 13px; text-decoration: none; }
+    .order-tabs a.active { background: #f97316; box-shadow: 0 5px 12px rgba(249,115,22,.22); color: white; }
+    .order-section { margin-top: 30px; }
+    .order-section-heading { align-items: end; display: flex; justify-content: space-between; margin-bottom: 14px; }
+    .order-section-heading h2 { color: #172033; font-size: 25px; font-weight: 900; margin: 4px 0 0; }
+    .order-section-heading b { color: #64748b; font-size: 13px; }
+    .order-list { display: grid; gap: 12px; }
+    .order-card { align-items: center; background: white; border: 1px solid #e2e8f0; border-radius: 16px; display: grid; gap: 14px; grid-template-columns: 48px minmax(0, 1fr) auto; padding: 16px; }
+    .order-icon { align-items: center; background: #fff2e4; border-radius: 13px; display: flex; font-size: 22px; height: 48px; justify-content: center; width: 48px; }
+    .order-main h3 { color: #172033; font-size: 16px; font-weight: 800; margin: 0 0 5px; }
+    .order-main p, .order-main small { color: #64748b; display: block; font-size: 13px; margin: 0; }
+    .order-main small { color: #94a3b8; margin-top: 4px; }
+    .order-total { text-align: right; }
+    .order-total span { color: #94a3b8; display: block; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+    .order-total strong { color: #172033; display: block; font-size: 17px; margin: 3px 0 6px; }
+    .order-total em { background: #dcfce7; border-radius: 999px; color: #15803d; font-size: 11px; font-style: normal; font-weight: 800; padding: 5px 8px; }
+    .rental-order-card .order-icon { background: #e0f2fe; }
+    .order-total .rental-status { background: #fff7ed; color: #c2410c; }
+    .order-empty { background: white; border: 1px dashed #cbd5e1; border-radius: 14px; color: #64748b; padding: 24px; text-align: center; }
+    @@media (max-width: 768px) { .order-hero { align-items: start; flex-direction: column; } .order-stats { grid-template-columns: 1fr; } .order-card { align-items: start; grid-template-columns: 44px minmax(0, 1fr); } .order-total { grid-column: 2; text-align: left; } }
+    @@media (max-width: 576px) { .order-hero { padding: 23px; } .order-tabs { display: flex; width: 100%; } .order-tabs a { flex: 1; font-size: 12px; padding: 9px 5px; text-align: center; } }
+</style>

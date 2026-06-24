@@ -20,13 +20,16 @@ namespace KiraSepet.WebUI.Controllers
 
             var values = _context.Orders
                 .Where(x => x.UserEmail == userEmail)
+                .OrderByDescending(x => x.OrderDate)
                 .ToList();
 
             var rentalValues = _context.RentalOrders
                 .Where(x => x.UserEmail == userEmail)
+                .OrderByDescending(x => x.OrderDate)
                 .ToList();
 
             ViewBag.RentalOrders = rentalValues;
+            ViewBag.ActiveTab = "all";
 
             return View(values);
         }
@@ -38,8 +41,10 @@ namespace KiraSepet.WebUI.Controllers
 
             var values = _context.Orders
                 .Where(x => x.UserEmail == userEmail)
+                .OrderByDescending(x => x.OrderDate)
                 .ToList();
 
+            ViewBag.ActiveTab = "purchased";
             return View("Index", values);
         }
 
@@ -49,9 +54,11 @@ namespace KiraSepet.WebUI.Controllers
 
             var rentalValues = _context.RentalOrders
                 .Where(x => x.UserEmail == userEmail)
+                .OrderByDescending(x => x.OrderDate)
                 .ToList();
 
             ViewBag.RentalOrders = rentalValues;
+            ViewBag.ActiveTab = "rented";
 
             return View("Index", new List<KiraSepet.EntityLayer.Order>());
         }

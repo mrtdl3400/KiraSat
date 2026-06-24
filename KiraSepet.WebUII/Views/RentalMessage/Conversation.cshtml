@@ -5,6 +5,10 @@
     var product = ViewBag.Product as Product;
     var conversation = ViewBag.Conversation as RentalConversation;
     var currentUserId = ViewBag.CurrentUserId == null ? 0 : (int)ViewBag.CurrentUserId;
+    var businessName = ViewBag.BusinessName as string ?? "İşletme bilgisi bulunamadı";
+    var counterpartName = ViewBag.CounterpartName as string ?? "Bilinmiyor";
+    var counterpartEmail = ViewBag.CounterpartEmail as string ?? "E-posta bulunamadı";
+
 
     ViewData["Title"] = "İlan Sahibiyle Mesajlaş";
 }
@@ -15,6 +19,19 @@
             <span class="conversation-label">İLAN HAKKINDA SOHBET</span>
             <h2>@(product?.ProductName ?? "Ürün")</h2>
             <p>İlan sahibiyle güvenli şekilde mesajlaşabilirsiniz.</p>
+
+            <div class="conversation-contact-info">
+                <div>
+                    <span>İşletme</span>
+                    <strong>@businessName</strong>
+                </div>
+
+                <div>
+                    <span>Görüşülen kişi</span>
+                    <strong>@counterpartName</strong>
+                    <a href="mailto:@counterpartEmail">@counterpartEmail</a>
+                </div>
+            </div>
         </div>
 
         <a href="/Product/ProductDetails?id=@product?.Id" class="conversation-back">
@@ -99,6 +116,49 @@
     .conversation-header p {
         color: #64748b;
         margin: 0;
+    }
+
+    .conversation-contact-info {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+    }
+
+        .conversation-contact-info > div {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            min-width: 180px;
+            padding: 10px 12px;
+        }
+
+        .conversation-contact-info span {
+            color: #64748b;
+            display: block;
+            font-size: 11px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .conversation-contact-info strong {
+            color: #1e293b;
+            display: block;
+            font-size: 14px;
+        }
+
+        .conversation-contact-info a {
+            color: #2563eb;
+            display: block;
+            font-size: 12px;
+            margin-top: 3px;
+            text-decoration: none;
+        }
+
+    @@media (max-width: 576px) {
+        .conversation-contact-info {
+            flex-direction: column;
+        }
     }
 
     .conversation-back {

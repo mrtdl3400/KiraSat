@@ -1,102 +1,231 @@
-﻿<div class="container mt-4">
+<div class="container mt-4 home-page">
+    <section class="home-hero">
+        <div class="home-hero-content">
+            <span class="home-hero-label">KiraSat ile kolay alışveriş</span>
 
-    <div class="p-5 rounded-4 shadow-sm"
-         style="background: linear-gradient(135deg, #fff7ed, #ffffff);">
+            <h1>
+                İhtiyacın kadar <span>kirala,</span><br />
+                dilediğin gibi satın al.
+            </h1>
 
-        <div class="row align-items-center">
+            <p class="home-hero-description">
+                Elektronikten mobilyaya, spordan günlük ihtiyaçlara kadar
+                binlerce ürünü güvenle keşfet.
+            </p>
 
-            <div class="col-md-6">
-                <span class="badge bg-warning text-dark mb-3">KiraSat</span>
+            <form method="get" action="/Product/Index" class="hero-search-form">
+                <input type="text" name="p" placeholder="Ne arıyorsun?" />
+                <button type="submit">Ara →</button>
+            </form>
 
-                <h1 class="display-4 fw-bold">
-                    Satın alma, ihtiyacın kadar kirala.
-                </h1>
+            <div class="hero-quick-links">
+                <span>Popüler:</span>
+                <a href="/Product/Index?category=Elektronik">Elektronik</a>
+                <a href="/Product/Index?category=Mobilya">Mobilya</a>
+                <a href="/Product/Index?category=Spor">Spor</a>
+            </div>
 
-                <form method="get" action="/Product/Index" class="mt-4">
-                    <div class="input-group shadow-sm">
-
-                        <input type="text"
-                               name="p"
-                               class="form-control form-control-lg rounded-start-pill"
-                               placeholder="Ürün ara...">
-
-                        <button class="btn btn-dark rounded-end-pill px-4" type="submit">
-                            Ara
-                        </button>
-
-                    </div>
-                </form>
-
-                <p class="lead mt-3">
-                    Elektronikten bisiklete, oyun konsolundan mobilyaya kadar
-                    birçok ürünü kolayca kirala veya satın al.
-                </p>
-
-                <p class="lead mt-3">
-                    Elektronikten bisiklete, oyun konsolundan mobilyaya kadar
-                    birçok ürünü kolayca kirala veya satın al.
-                </p>
-
-               
-
-                <a href="/Product/Index" class="btn btn-warning btn-lg mt-3 px-4">
-                    Ürünlere Git
-                </a>
+            <div class="hero-actions">
+                <a href="/Product/Index" class="hero-primary-action">Ürünleri keşfet →</a>
 
                 @if (Context.Session.GetString("UserRole") == "Admin")
                 {
-
-                    <a href="/Product/AddProduct/"
-                       style="background:#111827; color:white; border:none; border-radius:50px; padding:12px 28px; font-weight:600; box-shadow:0 4px 12px rgba(0,0,0,0.15); text-decoration:none; transition:0.3s;">
-                        + Ürün Ekle
-                    </a>
+                    <a href="/Product/AddProduct/" class="hero-secondary-action">+ Ürün ekle</a>
                 }
             </div>
-
-            <div class="col-md-6 text-center">
-                <img src="/images/kirasat-banner.png"
-                     style="width:100%; max-height:360px; object-fit:cover; border-radius:25px;" />
-            </div>
-
         </div>
-    </div>
 
-    <div class="container mt-5">
-        <h2 class="text-center fw-bold mb-4">Popüler Kategoriler</h2>
+        <div class="home-hero-visual">
+            <img src="/images/kirasat-banner.png" alt="KiraSat ürünleri" />
+        </div>
+    </section>
+
+    <section class="home-categories mt-5">
+        <div class="home-section-heading">
+            <div>
+                <span>HIZLI KEŞFET</span>
+                <h2>Popüler Kategoriler</h2>
+            </div>
+            <a href="/Product/Index">Tüm kategoriler →</a>
+        </div>
 
         <div class="row g-4 justify-content-center">
-
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <a href="/Product/Index?category=Elektronik" class="text-decoration-none">
-                    <div class="card shadow-lg border-0 rounded-4 text-center p-4 category-card">
-                        <div style="font-size:50px;">💻</div>
-                        <h4 class="mt-3 text-dark fw-bold">Elektronik</h4>
-                        <p class="text-muted">Laptop, telefon, konsol ve daha fazlası</p>
+                    <div class="card border-0 text-center p-4 category-card home-category-card">
+                        <div class="home-category-icon">💻</div>
+                        <h4>Elektronik</h4>
+                        <p>Laptop, telefon, konsol ve daha fazlası</p>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <a href="/Product/Index?category=Mobilya" class="text-decoration-none">
-                    <div class="card shadow-lg border-0 rounded-4 text-center p-4 category-card">
-                        <div style="font-size:50px;">🛋️</div>
-                        <h4 class="mt-3 text-dark fw-bold">Mobilya</h4>
-                        <p class="text-muted">Ev ve ofis için modern ürünler</p>
+                    <div class="card border-0 text-center p-4 category-card home-category-card">
+                        <div class="home-category-icon">🛋️</div>
+                        <h4>Mobilya</h4>
+                        <p>Ev ve ofis için modern ürünler</p>
                     </div>
                 </a>
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <a href="/Product/Index?category=Spor" class="text-decoration-none">
-                    <div class="card shadow-lg border-0 rounded-4 text-center p-4 category-card">
-                        <div style="font-size:50px;">⚽</div>
-                        <h4 class="mt-3 text-dark fw-bold">Spor & Outdoor</h4>
-                        <p class="text-muted">Bisiklet, fitness ve outdoor ürünleri</p>
+                    <div class="card border-0 text-center p-4 category-card home-category-card">
+                        <div class="home-category-icon">⚽</div>
+                        <h4>Spor & Outdoor</h4>
+                        <p>Bisiklet, fitness ve outdoor ürünleri</p>
                     </div>
                 </a>
             </div>
-
         </div>
-    </div>
-
+    </section>
 </div>
+
+<style>
+    .home-page { max-width: 1280px; }
+
+    .home-hero {
+        background: linear-gradient(135deg, #fff8ef 0%, #ffffff 65%);
+        border: 1px solid #ffead3;
+        border-radius: 28px;
+        box-shadow: 0 20px 45px rgba(15, 23, 42, .07);
+        display: grid;
+        gap: 42px;
+        grid-template-columns: 1.05fr .95fr;
+        overflow: hidden;
+        padding: 48px;
+        position: relative;
+    }
+
+    .home-hero::after {
+        background: #ff8a18;
+        border-radius: 50%;
+        content: "";
+        height: 260px;
+        opacity: .08;
+        position: absolute;
+        right: -110px;
+        top: -120px;
+        width: 260px;
+    }
+
+    .home-hero-content { position: relative; z-index: 1; }
+
+    .home-hero-label {
+        background: #fff0dc;
+        border-radius: 999px;
+        color: #c2410c;
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: .4px;
+        padding: 8px 12px;
+        text-transform: uppercase;
+    }
+
+    .home-hero h1 {
+        color: #172033;
+        font-size: clamp(38px, 4vw, 58px);
+        font-weight: 900;
+        letter-spacing: -1.8px;
+        line-height: 1.08;
+        margin: 18px 0;
+    }
+
+    .home-hero h1 span { color: #f97316; }
+
+    .home-hero-description {
+        color: #64748b;
+        font-size: 18px;
+        line-height: 1.6;
+        margin: 0;
+        max-width: 570px;
+    }
+
+    .hero-search-form {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        box-shadow: 0 10px 22px rgba(15, 23, 42, .08);
+        display: flex;
+        margin-top: 24px;
+        overflow: hidden;
+    }
+
+    .hero-search-form input {
+        border: 0;
+        min-width: 0;
+        outline: none;
+        padding: 15px 17px;
+        width: 100%;
+    }
+
+    .hero-search-form button {
+        background: #172033;
+        border: 0;
+        color: white;
+        font-weight: 800;
+        padding: 0 24px;
+        white-space: nowrap;
+    }
+
+    .hero-quick-links { color: #94a3b8; font-size: 13px; margin-top: 12px; }
+    .hero-quick-links a { color: #475569; font-weight: 700; margin-left: 8px; text-decoration: none; }
+    .hero-quick-links a:hover { color: #f97316; }
+
+    .hero-actions { display: flex; gap: 12px; margin-top: 24px; }
+    .hero-primary-action, .hero-secondary-action {
+        border-radius: 12px;
+        font-weight: 800;
+        padding: 12px 17px;
+        text-decoration: none;
+    }
+    .hero-primary-action { background: #f97316; color: white; }
+    .hero-secondary-action { background: #fff; border: 1px solid #cbd5e1; color: #334155; }
+
+    .home-hero-visual { align-self: center; position: relative; z-index: 1; }
+    .home-hero-visual img { border-radius: 22px; box-shadow: 0 20px 38px rgba(15, 23, 42, .16); height: 310px; object-fit: cover; width: 100%; }
+
+    .hero-trust-card {
+        align-items: center;
+        background: rgba(255,255,255,.94);
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        bottom: -20px;
+        box-shadow: 0 12px 24px rgba(15, 23, 42, .12);
+        display: flex;
+        gap: 10px;
+        left: -20px;
+        padding: 11px 14px;
+        position: absolute;
+    }
+    .hero-trust-card > span { align-items: center; background: #dcfce7; border-radius: 50%; color: #15803d; display: flex; font-weight: 900; height: 28px; justify-content: center; width: 28px; }
+    .hero-trust-card strong { color: #1e293b; display: block; font-size: 13px; }
+    .hero-trust-card small { color: #64748b; display: block; font-size: 11px; white-space: nowrap; }
+
+    .home-section-heading { align-items: end; display: flex; justify-content: space-between; margin-bottom: 22px; }
+    .home-section-heading span { color: #f97316; font-size: 11px; font-weight: 900; letter-spacing: 1px; }
+    .home-section-heading h2 { color: #172033; font-size: 32px; font-weight: 900; margin: 4px 0 0; }
+    .home-section-heading a { color: #f97316; font-weight: 800; text-decoration: none; }
+
+    .home-category-card { background: white; border: 1px solid #e2e8f0 !important; border-radius: 18px; box-shadow: 0 8px 20px rgba(15, 23, 42, .04); height: 100%; transition: transform .2s ease, box-shadow .2s ease; }
+    .home-category-card:hover { box-shadow: 0 14px 26px rgba(15, 23, 42, .1); transform: translateY(-4px); }
+    .home-category-icon { font-size: 46px; }
+    .home-category-card h4 { color: #172033; font-size: 19px; font-weight: 900; margin: 14px 0 6px; }
+    .home-category-card p { color: #64748b; margin: 0; }
+
+    @@media (max-width: 991px) {
+        .home-hero { grid-template-columns: 1fr; padding: 34px; }
+        .home-hero-visual img { height: 280px; }
+    }
+
+    @@media (max-width: 576px) {
+        .home-hero { gap: 28px; padding: 25px; }
+        .home-hero h1 { font-size: 38px; }
+        .hero-trust-card { bottom: -15px; left: 10px; }
+        .hero-trust-card small { white-space: normal; }
+        .home-section-heading { align-items: start; flex-direction: column; gap: 10px; }
+    }
+</style>

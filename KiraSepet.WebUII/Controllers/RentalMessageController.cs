@@ -117,11 +117,25 @@ public class RentalMessageController : Controller
             _context.SaveChanges();
         }
 
-        ViewBag.CurrentUserId = currentUser.Id;
+        var product = _context.Products.Find(conversation.ProductId);
 
+        var business = product?.BusinessId is int businessId
+            ? _context.Businesses.Find(businessId)
+            : null;
+
+        var counterpartId = conversation.TenantUserId == currentUser.Id
+            ? conversation.OwnerUserId
+            : conversation.TenantUserId;
+
+        var counterpart = _context.AppUsers.Find(counterpartId);
+
+        ViewBag.CurrentUserId = currentUser.Id;
         ViewBag.Conversation = conversation;
-        ViewBag.Product = _context.Products.Find(conversation.ProductId);
+        ViewBag.Product = product;
         ViewBag.IsOwner = conversation.OwnerUserId == currentUser.Id;
+        ViewBag.BusinessName = business?.CompanyName ?? "İşletme bilgisi bulunamadı";
+        ViewBag.CounterpartName = counterpart?.NameSurname ?? "Bilinmiyor";
+        ViewBag.CounterpartEmail = counterpart?.Email ?? "E-posta bulunamadı";
 
         return View(messages);
     }
@@ -197,6 +211,8 @@ public class RentalMessageController : Controller
             .OrderByDescending(x => x.LastMessageAt)
             .ToList();
 
+
+
         var productIds = conversations.Select(x => x.ProductId).ToList();
         var conversationIds = conversations.Select(x => x.Id).ToList();
 
@@ -210,6 +226,43 @@ public class RentalMessageController : Controller
             .ToDictionary(
                 x => x.Key,
                 x => x.OrderByDescending(message => message.SentAt).First().Text);
+
+        ViewBag.UnreadConversationIds = _context.RentalMessages
+            .Where(x => conversationIds.Contains(x.RentalConversationId) &&
+                        x.SenderUserId != currentUser.Id &&
+                        !x.IsRead)
+            .Select(x => x.RentalConversationId)
+            .Distinct()
+            .ToHashSet();
+
+        var counterpartIds = conversations
+    .Select(x => x.TenantUserId == currentUser.Id
+        ? x.OwnerUserId
+        : x.TenantUserId)
+    .Distinct()
+    .ToList();
+
+        ViewBag.CounterpartNames = _context.AppUsers
+            .Where(x => counterpartIds.Contains(x.Id))
+            .ToDictionary(x => x.Id, x => x.NameSurname);
+
+        ViewBag.CounterpartEmails = _context.AppUsers
+            .Where(x => counterpartIds.Contains(x.Id))
+            .ToDictionary(x => x.Id, x => x.Email);
+
+        var businessIds = _context.Products
+            .Where(x => productIds.Contains(x.Id) && x.BusinessId != null)
+            .Select(x => x.BusinessId!.Value)
+            .Distinct()
+            .ToList();
+
+        ViewBag.BusinessNames = _context.Businesses
+            .Where(x => businessIds.Contains(x.Id))
+            .ToDictionary(x => x.Id, x => x.CompanyName);
+
+        ViewBag.ProductBusinessIds = _context.Products
+            .Where(x => productIds.Contains(x.Id))
+            .ToDictionary(x => x.Id, x => x.BusinessId);
 
         ViewBag.CurrentUserId = currentUser.Id;
 
