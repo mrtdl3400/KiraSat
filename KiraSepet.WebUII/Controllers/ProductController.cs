@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace KiraSepet.WebUII.Controllers;
@@ -15,6 +16,9 @@ namespace KiraSepet.WebUII.Controllers;
 
 public class ProductController : Controller
 {
+    
+
+    
     private readonly Context _context;
     private readonly IWebHostEnvironment _webHostEnvironment;
 
@@ -22,6 +26,61 @@ public class ProductController : Controller
     {
         _context = context;
         _webHostEnvironment = webHostEnvironment;
+    }
+
+    private const long MaxImageFileSize = 5 * 1024 * 1024;
+    private static readonly HashSet<string> AllowedImageExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".jpg", ".jpeg", ".png", ".webp"
+    };
+
+    private bool TrySaveProductImage(IFormFile imageFile, out string imageUrl, out string errorMessage)
+    {
+        imageUrl = string.Empty;
+        errorMessage = string.Empty;
+
+        var extension = Path.GetExtension(imageFile.FileName);
+        if (imageFile.Length == 0)
+        {
+            errorMessage = "Yüklenen görsel boş olamaz.";
+            return false;
+        }
+
+        if (imageFile.Length > MaxImageFileSize)
+        {
+            errorMessage = "Görsel dosyası en fazla 5 MB olabilir.";
+            return false;
+        }
+
+        if (!AllowedImageExtensions.Contains(extension) || !HasValidImageSignature(imageFile, extension))
+        {
+            errorMessage = "Sadece JPG, JPEG, PNG veya WEBP formatında geçerli görseller yükleyebilirsin.";
+            return false;
+        }
+
+        var fileName = $"{Guid.NewGuid():N}{extension.ToLowerInvariant()}";
+        var directory = Path.Combine(_webHostEnvironment.WebRootPath, "images", "products");
+        Directory.CreateDirectory(directory);
+
+        using var output = new FileStream(Path.Combine(directory, fileName), FileMode.CreateNew);
+        imageFile.CopyTo(output);
+        imageUrl = $"/images/products/{fileName}";
+        return true;
+    }
+
+    private static bool HasValidImageSignature(IFormFile imageFile, string extension)
+    {
+        var header = new byte[12];
+        using var input = imageFile.OpenReadStream();
+        var bytesRead = input.Read(header, 0, header.Length);
+
+        return extension.ToLowerInvariant() switch
+        {
+            ".jpg" or ".jpeg" => bytesRead >= 3 && header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF,
+            ".png" => bytesRead >= 8 && header.Take(8).SequenceEqual(new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A }),
+            ".webp" => bytesRead >= 12 && header.Take(4).SequenceEqual("RIFF"u8.ToArray()) && header.Skip(8).Take(4).SequenceEqual("WEBP"u8.ToArray()),
+            _ => false
+        };
     }
 
     private string NormalizeText(string text)
@@ -94,8 +153,10 @@ public class ProductController : Controller
         return View(values.ToList());
     }
 
+    [Authorize(Roles = "Admin")]
     public IActionResult AddProduct()
     {
+
         var adminCheck = RedirectIfNotAdmin();
         if (adminCheck != null)
         {
@@ -107,6 +168,7 @@ public class ProductController : Controller
         return View();
     }
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public IActionResult AddProduct(Product p, IFormFile imageFile)
     {
         var adminCheck = RedirectIfNotAdmin();
@@ -117,21 +179,25 @@ public class ProductController : Controller
 
         if (imageFile != null)
         {
-            var extension = Path.GetExtension(imageFile.FileName);
-            var newImageName = Guid.NewGuid() + extension;
+            if (!TrySaveProductImage(imageFile, out var imageUrl, out var imageError))
+            {
+                TempData["Error"] = imageError;
+                return RedirectToAction(nameof(AddProduct));
+            }
 
-            var location = Path.Combine(Directory.GetCurrentDirectory(),
-                "wwwroot/images/products/", newImageName);
-
-            var stream = new FileStream(location, FileMode.Create);
-            imageFile.CopyTo(stream);
-
-            p.ImageUrl = "/images/products/" + newImageName;
+            p.ImageUrl = imageUrl;
         }
 
         if (string.IsNullOrWhiteSpace(p.Description))
         {
             p.Description = "";
+        }
+
+        if (!p.IsRentable)
+        {
+            p.DailyPrice = null;
+            p.RentType = null;
+            p.RentalStockCount = 0;
         }
 
         _context.Products.Add(p);
@@ -141,6 +207,7 @@ public class ProductController : Controller
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public IActionResult UpdateProduct(Product p, IFormFile imageFile)
     {
         var adminCheck = RedirectIfNotAdmin();
@@ -163,6 +230,7 @@ public class ProductController : Controller
         values.CategoryId = p.CategoryId;
         values.IsRentable = p.IsRentable;
         values.StockCount = p.StockCount;
+        values.RentalStockCount = p.IsRentable ? p.RentalStockCount : 0;
         
         values.Description = p.Description ?? "";
         values.City = p.City ?? "";
@@ -171,21 +239,20 @@ public class ProductController : Controller
 
         if (imageFile != null)
         {
-            var extension = Path.GetExtension(imageFile.FileName);
-            var newImageName = Guid.NewGuid() + extension;
-            var location = Path.Combine(Directory.GetCurrentDirectory(),
-                "wwwroot/images/products/", newImageName);
+            if (!TrySaveProductImage(imageFile, out var imageUrl, out var imageError))
+            {
+                TempData["Error"] = imageError;
+                return RedirectToAction(nameof(UpdateProduct), new { id = p.Id });
+            }
 
-            var stream = new FileStream(location, FileMode.Create);
-            imageFile.CopyTo(stream);
-
-            values.ImageUrl = "/images/products/" + newImageName;
+            values.ImageUrl = imageUrl;
         }
 
         _context.SaveChanges();
 
         return RedirectToAction("Index");
     }
+    [Authorize(Roles = "Admin")]
     public IActionResult UpdateProduct(int id)
     {
         var adminCheck = RedirectIfNotAdmin();
@@ -205,6 +272,7 @@ public class ProductController : Controller
 
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public IActionResult DeleteProduct(int id)
     {
         var adminCheck = RedirectIfNotAdmin();

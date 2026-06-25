@@ -9,9 +9,16 @@
 <div class="container py-4">
     <h2>Ürünü Düzenle</h2>
 
-    <form asp-action="EditProduct" method="post">
+    <form asp-action="EditProduct" method="post" enctype="multipart/form-data">
         @Html.AntiForgeryToken()
         <input asp-for="Id" type="hidden" />
+
+        <div class="mb-3">
+            <label class="form-label">Ürün Görseli</label>
+            <input class="form-control" type="file" name="imageFile"
+                   accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+            <small class="text-muted">Yeni görsel seçmezsen mevcut görsel korunur.</small>
+        </div>
 
         <div class="mb-3">
             <label class="form-label">Ürün Adı</label>
@@ -24,7 +31,7 @@
                 <input asp-for="SalePrice" class="form-control" type="number" min="0" step="0.01" />
             </div>
             <div class="col-md-4 mb-3">
-                <label asp-for="StockCount" class="form-label">Stok Adedi</label>
+                <label asp-for="StockCount" class="form-label">Satış Stoğu</label>
                 <input asp-for="StockCount" class="form-control" type="number" min="0" />
             </div>
             <div class="col-md-4 mb-3 d-flex align-items-end">
@@ -40,6 +47,10 @@
             <div class="col-md-6 mb-3">
                 <label asp-for="RentType" class="form-label">Kiralama Tipi</label>
                 <input asp-for="RentType" class="form-control" placeholder="Günlük" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="RentalStockCount" class="form-label">Kiralama Stoğu</label>
+                <input asp-for="RentalStockCount" class="form-control" type="number" min="0" />
             </div>
         </div>
 

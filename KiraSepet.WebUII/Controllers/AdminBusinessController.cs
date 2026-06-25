@@ -1,9 +1,11 @@
 ﻿using KiraSepet.DataAccessLayer;
 using KiraSepet.EntityLayer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace KiraSepet.WebUII.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminBusinessController : Controller
     {
         private readonly Context _context;

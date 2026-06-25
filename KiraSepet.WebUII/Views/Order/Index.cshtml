@@ -15,6 +15,20 @@
 }
 
 <div class="order-page container py-5">
+    @if (TempData["OrderMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["OrderMessage"]
+        </div>
+    }
+
+    @if (TempData["OrderError"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["OrderError"]
+        </div>
+    }
+
     <section class="order-hero">
         <div>
             <span>SİPARİŞ MERKEZİ</span>

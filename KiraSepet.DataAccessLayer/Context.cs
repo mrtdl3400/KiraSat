@@ -49,6 +49,34 @@ namespace KiraSepet.DataAccessLayer
             modelBuilder.Entity<AppUser>()
                 .Property(x => x.IsEmailVerified)
                 .HasDefaultValue(true);
+
+            modelBuilder.Entity<CartItem>()
+                .Property(x => x.SalePrice)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Order>()
+                .Property(x => x.Price)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Order>()
+                .Property(x => x.TotalPrice)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Product>()
+                .Property(x => x.SalePrice)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Product>()
+                .Property(x => x.DailyPrice)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<RentalOrder>()
+                .Property(x => x.DailyRentPrice)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<RentalOrder>()
+                .Property(x => x.TotalPrice)
+                .HasPrecision(18, 2);
         }
 
 

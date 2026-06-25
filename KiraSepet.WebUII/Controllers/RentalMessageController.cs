@@ -2,7 +2,7 @@
 using KiraSepet.EntityLayer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
-
+using System.Text.RegularExpressions;
 namespace KiraSepet.WebUII.Controllers;
 
 public class RentalMessageController : Controller
@@ -68,7 +68,66 @@ public class RentalMessageController : Controller
         return RedirectToAction(nameof(Conversation), new { id = conversation.Id });
     }
 
+    
+
     [HttpGet]
+    public IActionResult StartForRentalOrder(int rentalOrderId)
+    {
+        var userEmail = HttpContext.Session.GetString("UserEmail");
+
+        if (string.IsNullOrWhiteSpace(userEmail))
+        {
+            return RedirectToAction("Index", "Login");
+        }
+
+        var owner = _context.AppUsers.FirstOrDefault(x => x.Email == userEmail);
+        var rentalOrder = _context.RentalOrders.FirstOrDefault(x => x.Id == rentalOrderId);
+
+        if (owner == null || rentalOrder == null)
+        {
+            return NotFound();
+        }
+
+        var product = _context.Products.FirstOrDefault(x => x.Id == rentalOrder.ProductId && !x.IsDeleted);
+
+        if (product == null || product.BusinessId == null)
+        {
+            return NotFound();
+        }
+
+        var business = _context.Businesses.FirstOrDefault(x =>
+            x.Id == product.BusinessId &&
+            x.OwnerUserId == owner.Id);
+
+        var tenant = _context.AppUsers.FirstOrDefault(x => x.Email == rentalOrder.UserEmail);
+
+        if (business == null || tenant == null)
+        {
+            return NotFound();
+        }
+
+        var conversation = _context.RentalConversations.FirstOrDefault(x =>
+            x.ProductId == product.Id &&
+            x.TenantUserId == tenant.Id &&
+            x.OwnerUserId == owner.Id);
+
+        if (conversation == null)
+        {
+            conversation = new RentalConversation
+            {
+                ProductId = product.Id,
+                TenantUserId = tenant.Id,
+                OwnerUserId = owner.Id,
+                CreatedAt = DateTime.UtcNow,
+                LastMessageAt = DateTime.UtcNow
+            };
+
+            _context.RentalConversations.Add(conversation);
+            _context.SaveChanges();
+        }
+
+        return RedirectToAction(nameof(Conversation), new { id = conversation.Id });
+    }
     public IActionResult Conversation(int id)
     {
         var userEmail = HttpContext.Session.GetString("UserEmail");
@@ -102,7 +161,18 @@ public class RentalMessageController : Controller
             .Where(x => x.RentalConversationId == id)
             .OrderBy(x => x.SentAt)
             .ToList();
-        
+
+        var alternativeProductIds = messages
+    .Select(x => Regex.Match(x.Text, @"ProductDetails\?id=(\d+)"))
+    .Where(x => x.Success)
+    .Select(x => int.Parse(x.Groups[1].Value))
+    .Distinct()
+    .ToList();
+
+        ViewBag.MessageProductCards = _context.Products
+            .Where(x => alternativeProductIds.Contains(x.Id) && !x.IsDeleted)
+            .ToDictionary(x => x.Id);
+
         var unreadMessages = messages
         .Where(x => x.SenderUserId != currentUser.Id && !x.IsRead)
         .ToList();
@@ -136,6 +206,18 @@ public class RentalMessageController : Controller
         ViewBag.BusinessName = business?.CompanyName ?? "İşletme bilgisi bulunamadı";
         ViewBag.CounterpartName = counterpart?.NameSurname ?? "Bilinmiyor";
         ViewBag.CounterpartEmail = counterpart?.Email ?? "E-posta bulunamadı";
+
+        ViewBag.AlternativeProducts = conversation.OwnerUserId == currentUser.Id && product?.BusinessId != null
+    ? _context.Products
+        .Where(x => x.BusinessId == product.BusinessId &&
+                    x.Id != product.Id &&
+                    !x.IsDeleted &&
+                    x.IsRentable &&
+                    x.RentalStockCount > 0)
+        .OrderBy(x => x.ProductName)
+        .ToList()
+    : new List<Product>();
+
 
         return View(messages);
     }

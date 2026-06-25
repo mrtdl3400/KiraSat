@@ -1,0 +1,92 @@
+﻿@model IEnumerable<KiraSepet.EntityLayer.RentalOrder>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Kiralama Talepleri</h2>
+            <p class="text-muted mb-0">Onay bekleyen kiralama taleplerini yönet.</p>
+        </div>
+
+        <a asp-action="Dashboard" class="btn btn-outline-secondary">
+            Panele Dön
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            Şu an onay bekleyen kiralama talebi yok.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Ürün</th>
+                        <th>Kiracı</th>
+                        <th>Tarih Aralığı</th>
+                        <th>Gün</th>
+                        <th>Tutar</th>
+                        <th>Talep Tarihi</th>
+                        <th class="text-end">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.ProductName</td>
+                            <td>@item.UserEmail</td>
+                            <td>
+                                @item.StartDate.ToString("dd.MM.yyyy")
+                                -
+                                @item.EndDate.ToString("dd.MM.yyyy")
+                            </td>
+                            <td>@item.TotalDays gün</td>
+                            <td>@item.TotalPrice.ToString("N2") ₺</td>
+                            <td>@item.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td class="text-end">
+                                <form asp-action="ApproveRental" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        Onayla
+                                    </button>
+                                </form>
+
+                                
+
+                                <form asp-action="RejectRental" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        Reddet
+                                    </button>
+                                </form>
+
+                                <a asp-controller="RentalMessage"
+                                   asp-action="StartForRentalOrder"
+                                   asp-route-rentalOrderId="@item.Id"
+                                   class="btn btn-outline-primary btn-sm">
+                                    Mesaj Gönder
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

@@ -12,7 +12,17 @@
             <h2 class="mb-1">Satıcı Paneli</h2>
             <p class="text-muted mb-0">@ViewBag.BusinessName</p>
         </div>
-        <a class="btn btn-outline-secondary" href="/Product/Index">Mağazaya Git</a>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-primary"
+               asp-controller="Seller"
+               asp-action="RentalRequests">
+                Kiralama Talepleri
+            </a>
+
+            <a class="btn btn-outline-secondary" href="/Product/Index">
+                Mağazaya Git
+            </a>
+        </div>
     </div>
 
     @if (TempData["Success"] != null)
@@ -31,7 +41,7 @@
         </div>
 
         <div class="card-body">
-            <form asp-controller="Seller" asp-action="AddProduct" method="post">
+            <form asp-controller="Seller" asp-action="AddProduct" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
                 <div class="row g-3">
                     <div class="col-md-6">
@@ -56,7 +66,7 @@
                     </div>
 
                     <div class="col-md-4">
-                        <label class="form-label">Stok Adedi</label>
+                        <label class="form-label">Satış Stoğu</label>
                         <input class="form-control" type="number" name="StockCount" min="0" required />
                     </div>
 
@@ -66,8 +76,10 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Görsel URL</label>
-                        <input class="form-control" name="ImageUrl" placeholder="/resim/ornek.jpg" />
+                        <label class="form-label">Ürün Görseli</label>
+                        <input class="form-control" type="file" name="imageFile"
+                               accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+                        <small class="text-muted">JPG, PNG veya WEBP · En fazla 5 MB</small>
                     </div>
 
                     <div class="col-md-3">
@@ -107,6 +119,11 @@
                         <input class="form-control" name="RentType" placeholder="Günlük" />
                     </div>
 
+                    <div class="col-md-3">
+                        <label class="form-label">Kiralama Stoğu</label>
+                        <input class="form-control" type="number" name="RentalStockCount" min="0" value="0" />
+                    </div>
+
                     <div class="col-md-3 d-flex align-items-end">
                         <button class="btn btn-primary w-100" type="submit">Ürünü Ekle</button>
                     </div>
@@ -128,7 +145,8 @@
                         <th>Kategori</th>
                         <th>Satış Fiyatı</th>
                         <th>Günlük Kira</th>
-                        <th>Stok</th>
+                        <th>Satış Stoğu</th>
+                        <th>Kiralama Stoğu</th>
                         <th>İşlemler</th>
                     </tr>
                 </thead>
@@ -149,6 +167,7 @@
 
                                 </td>
                                 <td>@product.StockCount</td>
+                                <td>@(product.IsRentable ? product.RentalStockCount : 0)</td>
 
                                 <td>
                                     <a asp-action="EditProduct"
@@ -171,7 +190,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-4">
+                            <td colspan="7" class="text-center text-muted py-4">
                                 Henüz ürün eklemedin.
                             </td>
                         </tr>

@@ -389,6 +389,9 @@ namespace KiraSepet.DataAccessLayer.Migrations
                     b.Property<string>("RentType")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("RentalStockCount")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("SalePrice")
                         .HasColumnType("decimal(18,2)");
 

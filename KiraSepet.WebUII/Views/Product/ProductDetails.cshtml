@@ -1,6 +1,13 @@
 ﻿@model KiraSepet.EntityLayer.Product
 
 <div class="product-detail-page">
+    @if (TempData["OrderError"] != null)
+    {
+        <div class="alert alert-warning mb-4">
+            @TempData["OrderError"]
+        </div>
+    }
+
     <div class="product-detail-card">
 
         <div class="product-image-area">
@@ -40,7 +47,7 @@
                 </div>
             </div>
 
-            @if (Model.IsRentable)
+            @if (Model.IsRentable && Model.RentalStockCount > 0)
             {
                 <div class="rent-panel">
                     <div class="rent-panel-title">
@@ -69,12 +76,16 @@
 
             <div class="product-meta-grid">
                 <div class="product-meta-item">
-                    <span>Stok durumu</span>
+                    <span>Satış stoğu</span>
                     <strong>@Model.StockCount adet</strong>
                 </div>
                 <div class="product-meta-item">
+                    <span>Kiralama stoğu</span>
+                    <strong>@(Model.IsRentable ? Model.RentalStockCount : 0) adet</strong>
+                </div>
+                <div class="product-meta-item">
                     <span>Kiralanabilir mi?</span>
-                    @if (Model.IsRentable)
+                    @if (Model.IsRentable && Model.RentalStockCount > 0)
                     {
                         <strong><span class="rent-yes">Evet</span></strong>
                     }

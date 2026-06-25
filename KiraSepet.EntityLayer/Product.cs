@@ -28,6 +28,7 @@ namespace KiraSepet.EntityLayer
         public int CategoryId { get; set; } 
         public Category Category { get; set; } = null!;
         public int StockCount { get; set; }
+        public int RentalStockCount { get; set; }
         public string? Description { get; set; }
         public string City { get; set; } = string.Empty;
 

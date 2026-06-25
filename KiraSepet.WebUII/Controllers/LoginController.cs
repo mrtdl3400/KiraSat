@@ -2,6 +2,9 @@
 using KiraSepet.DataAccessLayer;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
 
 namespace KiraSepet.WebUI.Controllers
 {
@@ -21,7 +24,7 @@ namespace KiraSepet.WebUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Index(AppUser appUser)
+        public async Task<IActionResult> Index(AppUser appUser)
         {
             var user = _context.AppUsers
     .FirstOrDefault(x => x.Email == appUser.Email);
@@ -68,6 +71,27 @@ namespace KiraSepet.WebUI.Controllers
 
                 HttpContext.Session.SetInt32("CartCount", cartCount);
 
+
+                var claims = new List<Claim>
+                {
+    new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+    new(ClaimTypes.Name, user.NameSurname),
+    new(ClaimTypes.Email, user.Email),
+    new(ClaimTypes.Role, user.Role)
+};
+
+                var identity = new ClaimsIdentity(
+                    claims,
+                    CookieAuthenticationDefaults.AuthenticationScheme);
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(identity),
+                    new AuthenticationProperties
+                    {
+                        IsPersistent = false,
+                        AllowRefresh = true
+                    });
                 if (user.Role == "Admin")
                 {
                     return RedirectToAction("Index", "Product");

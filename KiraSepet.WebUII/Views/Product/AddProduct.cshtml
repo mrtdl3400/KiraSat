@@ -1,6 +1,11 @@
 ﻿@model KiraSepet.EntityLayer.Product
 
 <h2>Ürün Ekle</h2>
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-danger">@error</div>
+}
+
 
    <form method="post" enctype="multipart/form-data">
 
@@ -30,11 +35,15 @@
     <label>Günlük Kiralama Fiyatı</label>
     <input asp-for="DailyPrice" class="form-control" />
     <label>Ürün Görseli</label>
-    <input type="file" name="imageFile" class="form-control" />
+    <input type="file" name="imageFile" class="form-control" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
 
     <div class="mb-3">
-        <label>Stok Adedi</label>
+        <label>Satış Stoğu</label>
         <input type="number" asp-for="StockCount" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Kiralama Stoğu</label>
+        <input type="number" asp-for="RentalStockCount" class="form-control" min="0" />
     </div>
     <br />
     <br />

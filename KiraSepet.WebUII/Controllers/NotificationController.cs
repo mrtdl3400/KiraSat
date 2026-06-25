@@ -114,6 +114,29 @@ namespace KiraSepet.WebUII.Controllers
                 : RedirectToAction("MyMessages", "Account");
         }
 
+
+        public IActionResult OpenRentalRequest(int id)
+        {
+            var user = GetCurrentUser();
+
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            var notification = _context.AppNotifications
+                .FirstOrDefault(x => x.Id == id && x.UserId == user.Id &&
+                    x.Title == "Yeni kiralama talebi");
+
+            if (notification != null && !notification.IsRead)
+            {
+                notification.IsRead = true;
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("RentalRequests", "Seller");
+        }
+
         private AppUser? GetCurrentUser()
         {
             var userEmail = HttpContext.Session.GetString("UserEmail");

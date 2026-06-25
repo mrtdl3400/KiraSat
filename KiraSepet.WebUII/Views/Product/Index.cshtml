@@ -161,16 +161,16 @@
                             <div class="product-meta">
                                 @if (item.StockCount <= 0)
                                 {
-                                    <span class="stock-badge danger">Tükendi</span>
+                                    <span class="stock-badge danger">Satış tükendi</span>
                                 }
                                 else
                                 {
-                                    <span class="stock-badge">@item.StockCount adet</span>
+                                    <span class="stock-badge">Satış: @item.StockCount</span>
                                 }
 
-                                @if (item.IsRentable)
+                                @if (item.IsRentable && item.RentalStockCount > 0)
                                 {
-                                    <span class="rent-badge">Kiralanabilir</span>
+                                    <span class="rent-badge">Kiralık: @item.RentalStockCount</span>
                                 }
                                 else
                                 {
