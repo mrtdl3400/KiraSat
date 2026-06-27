@@ -1,5 +1,14 @@
 ﻿@model List<KiraSepet.EntityLayer.CartItem>
 
+@{
+    var paymentTermsTitle = ViewBag.PaymentTermsTitle as string ?? "Kiralama ve satın alma bilgilendirme metni";
+    var paymentTermsContent = ViewBag.PaymentTermsContent as string ?? "";
+    var paymentTermsHasHtml = paymentTermsContent.Contains("<");
+    var paymentTermsParagraphs = paymentTermsContent
+        .Replace("\r\n", "\n")
+        .Split("\n\n", StringSplitOptions.RemoveEmptyEntries);
+}
+
 <div class="container mt-5">
 
     <h2 class="mb-4">Ödeme Sayfası 💳</h2>
@@ -47,13 +56,51 @@
             </span>
         </h4>
 
-        <div class="text-end mt-3">
+        @if (TempData["PaymentError"] != null)
+        {
+            <div class="alert alert-danger mt-3">
+                @TempData["PaymentError"]
+            </div>
+        }
 
-            <a href="/Payment/CompletePayment" class="btn btn-success btn-lg">
-                Ödemeyi Tamamla
-            </a>
+        <form method="post" action="/Payment/CompletePayment" class="mt-4">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="acceptedTerms" id="acceptedTermsValue" value="false" />
 
-        </div>
+            <div class="payment-consent-box">
+                <div class="payment-consent-header">
+                    <div>
+                        <strong>@paymentTermsTitle</strong>
+                        <span>İşleme devam etmeden önce lütfen şartları okuyup onaylayın.</span>
+                    </div>
+                    <span id="termsStatus" class="terms-status">Onay bekliyor</span>
+                </div>
+
+                <div class="payment-consent-text">
+                    @if (paymentTermsHasHtml)
+                    {
+                        @Html.Raw(paymentTermsContent)
+                    }
+                    else
+                    {
+                        @foreach (var paragraph in paymentTermsParagraphs)
+                        {
+                            <p>@paragraph.Trim()</p>
+                        }
+                    }
+                </div>
+
+                <button type="button" id="acceptTermsButton" class="btn btn-outline-primary mt-3">
+                    Okudum, anladım, onaylıyorum
+                </button>
+            </div>
+
+            <div class="text-end mt-3">
+                <button type="submit" id="completePaymentButton" class="btn btn-success btn-lg" disabled>
+                    Ödemeyi Tamamla
+                </button>
+            </div>
+        </form>
 
     </div>
 
@@ -82,4 +129,99 @@
             localStorage.setItem('kiraSepetCardHolderName', this.value);
         }
     });
+
+    const acceptedTermsValue = document.getElementById('acceptedTermsValue');
+    const acceptTermsButton = document.getElementById('acceptTermsButton');
+    const completePaymentButton = document.getElementById('completePaymentButton');
+    const termsStatus = document.getElementById('termsStatus');
+
+    acceptTermsButton.addEventListener('click', function () {
+        acceptedTermsValue.value = 'true';
+        completePaymentButton.disabled = false;
+        termsStatus.textContent = 'Onaylandı';
+        termsStatus.classList.add('approved');
+        acceptTermsButton.classList.remove('btn-outline-primary');
+        acceptTermsButton.classList.add('btn-primary');
+        acceptTermsButton.textContent = 'Metin onaylandı';
+    });
 </script>
+
+<style>
+    .payment-consent-box {
+        background: #f8fafc;
+        border: 1px solid #dbe4ef;
+        border-radius: 12px;
+        padding: 16px 18px;
+    }
+
+    .payment-consent-header {
+        align-items: flex-start;
+        display: flex;
+        gap: 16px;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    .payment-consent-header strong {
+        color: #0f172a;
+        display: block;
+        font-size: 16px;
+    }
+
+    .payment-consent-header span {
+        color: #64748b;
+        display: block;
+        font-size: 14px;
+    }
+
+    .terms-status {
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+        border-radius: 999px;
+        color: #9a3412;
+        flex: 0 0 auto;
+        font-size: 13px;
+        font-weight: 700;
+        padding: 6px 10px;
+    }
+
+    .terms-status.approved {
+        background: #dcfce7;
+        border-color: #86efac;
+        color: #166534;
+    }
+
+    .payment-consent-text {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        color: #334155;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 1.55;
+        max-height: 180px;
+        overflow-y: auto;
+        padding: 14px;
+    }
+
+    .payment-consent-text h3,
+    .payment-consent-text h4,
+    .payment-consent-text strong {
+        color: #0f172a;
+        font-weight: 800;
+    }
+
+    .payment-consent-text p {
+        margin-bottom: 10px;
+    }
+
+    .payment-consent-text p:last-child {
+        margin-bottom: 0;
+    }
+
+    @@media (max-width: 576px) {
+        .payment-consent-header {
+            flex-direction: column;
+        }
+    }
+</style>

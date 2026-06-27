@@ -55,6 +55,17 @@
                             </td>
                             <td>
                                 <a href="/Product/ProductDetails?id=@product.Id" class="btn btn-sm btn-outline-primary">Ürünü Gör</a>
+
+                                <form asp-action="RemoveProduct" method="post" class="d-inline ms-1">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@product.Id" />
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('Bu ürünü yayından kaldırmak istediğinize emin misiniz?');">
+                                        Yayından Kaldır
+                                    </button>
+                                </form>
+
                             </td>
                         </tr>
                     }

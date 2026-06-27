@@ -94,6 +94,8 @@ namespace KiraSepet.WebUII.Controllers
             ViewBag.StartDate = startDate;
             ViewBag.EndDate = endDate;
             ViewBag.TotalPrice = parsedTotal;
+            ViewBag.PaymentTermsTitle = GetPaymentTermsTitle();
+            ViewBag.PaymentTermsContent = GetPaymentTermsContent();
 
             HttpContext.Session.Remove("RentalProductId");
             HttpContext.Session.Remove("RentalTotalPrice");
@@ -123,11 +125,19 @@ namespace KiraSepet.WebUII.Controllers
             return View();
         }
 
-        public IActionResult CompletePayment()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CompletePayment(bool acceptedTerms)
         {
             if (!IsLoggedIn())
             {
                 return RedirectToAction("Index", "Login");
+            }
+
+            if (!acceptedTerms)
+            {
+                TempData["PaymentError"] = "İşleme devam etmek için kiralama/satın alma şartlarını kabul etmelisiniz.";
+                return RedirectToAction("Index");
             }
 
             var rentalTotal = HttpContext.Session.GetString("RentalTotalPrice");
@@ -340,6 +350,30 @@ namespace KiraSepet.WebUII.Controllers
                 TempData["OrderError"] = "Ödeme sırasında bir hata oluştu. İşlem tamamlanmadı.";
                 return RedirectToAction("Index", "Cart");
             }
+        }
+
+        private string GetPaymentTermsTitle()
+        {
+            return _context.LegalTexts
+                .Where(x => x.Key == "PaymentTerms")
+                .Select(x => x.Title)
+                .FirstOrDefault() ?? "Kiralama ve satın alma bilgilendirme metni";
+        }
+
+        private string GetPaymentTermsContent()
+        {
+            return _context.LegalTexts
+                .Where(x => x.Key == "PaymentTerms")
+                .Select(x => x.Content)
+                .FirstOrDefault() ?? @"KiraSat üzerinden yapılan satın alma ve kiralama işlemlerinde kullanıcı, seçtiği ürünü açıklamada belirtilen niteliklere göre incelediğini ve işlem bedelini onayladığını kabul eder.
+
+Kiralama işlemlerinde kullanıcı, ürünü teslim aldığı haliyle korumakla, kullanım süresi boyunca ürüne makul özeni göstermekle ve ürünü kararlaştırılan tarihte eksiksiz şekilde iade etmekle sorumludur.
+
+Ürünün teslim alınması sırasında kullanıcı, üründe görünür bir hasar veya eksiklik olup olmadığını kontrol etmelidir. Teslim sonrası ortaya çıkan hasar, kayıp, eksik parça veya geç iade durumlarında satıcı ile kullanıcı arasında sorumluluk değerlendirmesi yapılabilir.
+
+Satıcı, ilana eklediği ürün bilgilerinin doğru olduğunu, ürünün kullanıma uygun durumda bulunduğunu ve teslim sürecinde kullanıcıyı yanıltıcı bilgi vermeyeceğini kabul eder.
+
+Platform, kullanıcı ile satıcı arasındaki alışveriş ve kiralama sürecini kolaylaştıran aracı bir hizmet sunar. Taraflar, işlemle ilgili mesajlaşma ve bildirimleri takip etmekle sorumludur.";
         }
 
     }

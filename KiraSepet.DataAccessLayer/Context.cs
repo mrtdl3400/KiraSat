@@ -77,6 +77,18 @@ namespace KiraSepet.DataAccessLayer
             modelBuilder.Entity<RentalOrder>()
                 .Property(x => x.TotalPrice)
                 .HasPrecision(18, 2);
+
+            modelBuilder.Entity<LegalText>()
+                .HasIndex(x => x.Key)
+                .IsUnique();
+
+            modelBuilder.Entity<LegalText>()
+                .Property(x => x.Key)
+                .HasMaxLength(80);
+
+            modelBuilder.Entity<LegalText>()
+                .Property(x => x.Title)
+                .HasMaxLength(160);
         }
 
 
@@ -100,6 +112,7 @@ namespace KiraSepet.DataAccessLayer
         public DbSet<SupportMessage> SupportMessages { get; set; }
         public DbSet<RentalConversation> RentalConversations { get; set; }
         public DbSet<RentalMessage> RentalMessages { get; set; }
+        public DbSet<LegalText> LegalTexts { get; set; }
 
     }
 }

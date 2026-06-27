@@ -265,6 +265,19 @@ public class RentalMessageController : Controller
 
         conversation.LastMessageAt = DateTime.UtcNow;
 
+        var receiverUserId = conversation.TenantUserId == currentUser.Id
+    ? conversation.OwnerUserId
+    : conversation.TenantUserId;
+
+        _context.AppNotifications.Add(new AppNotification
+        {
+            UserId = receiverUserId,
+            Title = "Yeni mesaj",
+            Message = "İlan hakkında yeni bir mesajınız var.",
+            IsRead = false,
+            CreatedAt = DateTime.UtcNow
+        });
+
         _context.SaveChanges();
 
         return RedirectToAction(nameof(Conversation), new { id = conversationId });
